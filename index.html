@@ -1,0 +1,546 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>专家系统管理员端</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <section id="loginView" class="login-view" aria-label="管理员登录">
+      <main class="login-main">
+        <div class="login-card">
+          <div class="login-title">
+            <div>
+              <h1>专家系统管理员端</h1>
+            </div>
+          </div>
+          <form id="loginForm" class="login-form">
+            <label>
+              <span>邮箱</span>
+              <input type="email" name="email" value="admin@winwise.ai" autocomplete="email" required />
+            </label>
+            <label>
+              <span>密码</span>
+              <input type="password" name="password" value="Winwise@2026" autocomplete="current-password" required />
+            </label>
+            <div class="form-row">
+              <label class="check-line">
+                <input type="checkbox" checked />
+                <span>保持登录</span>
+              </label>
+              <button class="link-button" type="button">忘记密码</button>
+            </div>
+            <button class="primary-button" type="submit">登录</button>
+          </form>
+        </div>
+      </main>
+    </section>
+
+    <section id="adminView" class="admin-shell is-hidden">
+      <aside class="sidebar">
+        <div class="app-logo">
+          <span>W</span>
+          <strong>WinWise</strong>
+        </div>
+        <nav class="side-nav" aria-label="管理员导航">
+          <button class="nav-item is-active" data-page="dashboard" type="button">控制台</button>
+          <button class="nav-item" data-page="knowledge" type="button">知识库管理</button>
+          <button class="nav-item" data-page="documents" type="button">文档管理</button>
+          <button class="nav-item" data-page="skills" type="button">Skill 管理</button>
+          <button class="nav-item" data-page="users" type="button">用户管理</button>
+          <button class="nav-item" data-page="ops" type="button">运维指标</button>
+          <button class="nav-item" data-page="plans" type="button">套餐管理</button>
+          <button class="nav-item" data-page="settings" type="button">系统设置</button>
+          <div class="nav-submenu" aria-label="系统设置子目录">
+            <button class="nav-subitem is-active" data-settings-tab="ai" data-page-link="settings" type="button">AI 模型</button>
+            <button class="nav-subitem" data-settings-tab="notify" data-page-link="settings" type="button">通知告警</button>
+            <button class="nav-subitem" data-settings-tab="security" data-page-link="settings" type="button">安全访问</button>
+            <button class="nav-subitem" data-settings-tab="appearance" data-page-link="settings" type="button">外观与语言</button>
+            <button class="nav-subitem" data-settings-tab="logs" data-page-link="settings" type="button">操作日志</button>
+          </div>
+          <button class="nav-item" data-page="profile" type="button">个人中心</button>
+        </nav>
+        <div class="user-menu-wrap">
+          <div id="userMenu" class="user-popover is-hidden">
+            <button data-page-link="profile" type="button">个人中心</button>
+            <button id="logoutButton" type="button">退出登录</button>
+          </div>
+          <button id="userAvatarButton" class="user-mini" type="button" title="打开用户菜单">
+            <span>C</span>
+            <div>
+              <strong>cathy</strong>
+              <small>Free plan</small>
+            </div>
+          </button>
+        </div>
+      </aside>
+
+      <main class="workspace">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">Admin Console</p>
+            <h1 id="pageTitle">控制台</h1>
+          </div>
+        </header>
+
+        <section id="dashboard" class="page is-active">
+          <div class="metric-grid">
+            <article class="metric-card"><span>知识库</span><strong>8</strong><small>6 个生效中</small></article>
+            <article class="metric-card"><span>文档</span><strong>156</strong><small>12 个今日新增</small></article>
+            <article class="metric-card"><span>Skill</span><strong>14</strong><small>3 个需要更新</small></article>
+            <article class="metric-card"><span>平均评分</span><strong>4.62</strong><small>近 7 天问答</small></article>
+          </div>
+          <div class="two-column">
+            <section class="panel">
+              <div class="panel-head">
+                <div>
+                  <h2>待处理事项</h2>
+                  <p>把需要管理员关注的风险聚合到首页。</p>
+                </div>
+              </div>
+              <div class="issue-list">
+                <article><span class="dot danger"></span><div><strong>知识产权材料解析失败</strong><p>页码结构异常，建议重新上传清晰版本。</p></div><button class="mini-button">处理</button></article>
+                <article><span class="dot warn"></span><div><strong>问答评分低于 3 分</strong><p>售后专家库昨日出现 7 条低分反馈。</p></div><button class="mini-button">查看</button></article>
+                <article><span class="dot ok"></span><div><strong>套餐变更待审核</strong><p>企业版新增向量额度和 Skill 数量限制。</p></div><button class="mini-button">审核</button></article>
+              </div>
+            </section>
+          </div>
+        </section>
+
+        <section id="knowledge" class="page">
+          <section class="panel">
+            <div class="panel-head">
+              <div>
+                <h2>知识库列表</h2>
+                <p>支持删除、停用、上传文档和查看同步状态。</p>
+              </div>
+              <button class="primary-button compact" data-open-knowledge type="button">添加知识库</button>
+            </div>
+            <input class="search-input knowledge-search" data-filter="kbTable" placeholder="搜索知识库" />
+            <div class="table-wrap">
+              <table id="kbTable">
+                <thead><tr><th>名称</th><th>范围</th><th>文档数</th><th>状态</th><th>更新时间</th><th>操作</th></tr></thead>
+                <tbody>
+                  <tr><td>expert</td><td>official</td><td>50</td><td><span class="status ok">生效中</span></td><td>2026/05/22 16:14</td><td><button class="mini-button" data-open-upload>上传文档</button><button class="mini-button">停用</button></td></tr>
+                  <tr><td>patent</td><td>team</td><td>72</td><td><span class="status ok">生效中</span></td><td>2026/05/29 08:43</td><td><button class="mini-button" data-open-upload>上传文档</button><button class="mini-button">停用</button></td></tr>
+                  <tr><td>faq</td><td>private</td><td>34</td><td><span class="status warn">维护中</span></td><td>2026/05/28 19:02</td><td><button class="mini-button" data-open-upload>上传文档</button><button class="mini-button">启用</button><button class="danger-button">删除</button></td></tr>
+                  <tr><td>after_sales</td><td>team</td><td>0</td><td><span class="status pending">待启用</span></td><td>2026/05/29 11:36</td><td><button class="mini-button" data-open-upload>上传文档</button><button class="mini-button">启用</button><button class="danger-button">删除</button></td></tr>
+                  <tr><td>ops_runbook</td><td>official</td><td>8</td><td><span class="status warn">维护中</span></td><td>2026/05/29 10:58</td><td><button class="mini-button" data-open-upload>上传文档</button><button class="mini-button">启用</button><button class="danger-button">删除</button></td></tr>
+                  <tr><td>pricing_policy</td><td>private</td><td>0</td><td><span class="status pending">待启用</span></td><td>2026/05/29 11:21</td><td><button class="mini-button" data-open-upload>上传文档</button><button class="mini-button">启用</button><button class="danger-button">删除</button></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </section>
+
+        <section id="documents" class="page">
+          <section class="panel">
+            <div class="panel-head">
+              <div>
+                <h2>文档管理</h2>
+                <p>查看解析状态、KB 同步状态、分块数量，并支持删除文档。</p>
+              </div>
+            </div>
+            <div class="document-filters">
+              <select id="docKbFilter"><option value="">全部知识库</option><option>expert</option><option>patent</option><option>faq</option></select>
+              <input class="search-input document-search" data-filter="docTable" placeholder="搜索文档标题" />
+            </div>
+            <div class="table-wrap tall">
+              <table id="docTable">
+                <thead><tr><th>标题</th><th>知识库</th><th>解析</th><th>KB 状态</th><th>分块</th><th>更新时间</th><th>操作</th></tr></thead>
+                <tbody>
+                  <tr><td>防窜息标签.pdf</td><td>expert</td><td>ready</td><td><span class="status ok">已同步</span></td><td>18</td><td>2026/05/29 09:12</td><td><button class="mini-button">查看</button><button class="danger-button">删除</button></td></tr>
+                  <tr><td>亚马逊最新选品方案.pptx</td><td>expert</td><td>ready</td><td><span class="status ok">已同步</span></td><td>42</td><td>2026/05/29 08:57</td><td><button class="mini-button">查看</button><button class="danger-button">删除</button></td></tr>
+                  <tr><td>知识产权的辨认、查询与侵权规避.pdf</td><td>patent</td><td>processing</td><td><span class="status warn">同步中</span></td><td>0</td><td>2026/05/29 08:20</td><td><button class="mini-button">查看</button><button class="danger-button">删除</button></td></tr>
+                  <tr><td>宠物智能产品专利检索报告.pdf</td><td>patent</td><td>failed</td><td><span class="status danger">失败</span></td><td>0</td><td>2026/05/25 13:09</td><td><button class="mini-button">重试</button><button class="danger-button">删除</button></td></tr>
+                  <tr><td>注销店铺流程步骤.pdf</td><td>faq</td><td>ready</td><td><span class="status ok">已同步</span></td><td>12</td><td>2026/05/27 16:40</td><td><button class="mini-button">查看</button><button class="danger-button">删除</button></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </section>
+
+        <section id="skills" class="page">
+          <section class="panel">
+            <div class="panel-head">
+              <div>
+                <h2>Skill 列表</h2>
+                <p>支持添加、停用和删除 Skill。</p>
+              </div>
+              <button class="primary-button compact" data-open-skill type="button">添加 Skill</button>
+            </div>
+            <input class="search-input skill-search" data-filter="skillTable" placeholder="搜索 Skill" />
+            <div class="table-wrap">
+              <table id="skillTable">
+                <thead><tr><th>名称</th><th>类型</th><th>调用量</th><th>状态</th><th>操作</th></tr></thead>
+                <tbody>
+                  <tr><td>广告 ACOS 诊断</td><td>运营诊断</td><td>3001</td><td><span class="status ok">启用</span></td><td><button class="mini-button">编辑</button><button class="danger-button">删除</button></td></tr>
+                  <tr><td>专利侵权规避</td><td>文档分析</td><td>1582</td><td><span class="status ok">启用</span></td><td><button class="mini-button">编辑</button><button class="danger-button">删除</button></td></tr>
+                  <tr><td>店铺注销流程问答</td><td>问答增强</td><td>824</td><td><span class="status warn">草稿</span></td><td><button class="mini-button">启用</button><button class="danger-button">删除</button></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </section>
+
+        <section id="users" class="page">
+          <section class="panel">
+            <div class="panel-head">
+              <div>
+                <h2>用户列表</h2>
+                <p>按角色分配后台权限，减少越权操作。</p>
+              </div>
+              <button class="primary-button compact" data-open-user type="button">添加用户</button>
+            </div>
+            <input class="search-input user-search" data-filter="userTable" placeholder="搜索用户" />
+            <div class="table-wrap">
+              <table id="userTable">
+                <thead><tr><th>姓名</th><th>邮箱</th><th>角色</th><th>权限摘要</th><th>状态</th><th>操作</th></tr></thead>
+                <tbody>
+                  <tr><td>李明</td><td>expert@winwise.ai</td><td>专家角色</td><td>文档删除、文档上传</td><td><span class="status ok">启用</span></td><td><button class="mini-button">编辑</button></td></tr>
+                  <tr><td>周岚</td><td>ops@winwise.ai</td><td>运维人员</td><td>异常数据、性能指标、评分</td><td><span class="status ok">启用</span></td><td><button class="mini-button">编辑</button></td></tr>
+                  <tr><td>陈洁</td><td>plan@winwise.ai</td><td>套餐管理员</td><td>新增、修改、删除套餐</td><td><span class="status warn">待激活</span></td><td><button class="mini-button">编辑</button></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </section>
+
+        <section id="ops" class="page">
+          <div class="metric-grid">
+            <article class="metric-card"><span>异常数据</span><strong>17</strong><small>需要排查</small></article>
+            <article class="metric-card"><span>P95 响应</span><strong>1.8s</strong><small>目标低于 2s</small></article>
+            <article class="metric-card"><span>失败任务</span><strong>3</strong><small>近 24 小时</small></article>
+            <article class="metric-card"><span>低分反馈</span><strong>9</strong><small>评分低于 3</small></article>
+          </div>
+          <div class="two-column">
+            <section class="panel">
+              <div class="panel-head"><div><h2>数据问题</h2><p>运维人员用于定位脏数据、解析失败和同步异常。</p></div></div>
+              <div class="issue-list">
+                <article><span class="dot danger"></span><div><strong>2 个文档无分块</strong><p>patent 知识库存在解析成功但分块为 0 的文档。</p></div><button class="mini-button">查看</button></article>
+                <article><span class="dot warn"></span><div><strong>5 条问答未命中文档</strong><p>集中发生在售后政策类问题。</p></div><button class="mini-button">定位</button></article>
+                <article><span class="dot ok"></span><div><strong>向量同步延迟</strong><p>当前队列延迟 42 秒，仍在阈值内。</p></div><button class="mini-button">详情</button></article>
+              </div>
+            </section>
+            <section class="panel">
+              <div class="panel-head"><div><h2>问答评分</h2><p>用户对专家系统答案的评分分布。</p></div></div>
+              <div class="score-bars">
+                <div><span>5 分</span><progress max="100" value="72"></progress><strong>72%</strong></div>
+                <div><span>4 分</span><progress max="100" value="18"></progress><strong>18%</strong></div>
+                <div><span>3 分</span><progress max="100" value="6"></progress><strong>6%</strong></div>
+                <div><span>低分</span><progress max="100" value="4"></progress><strong>4%</strong></div>
+              </div>
+            </section>
+          </div>
+        </section>
+
+        <section id="plans" class="page">
+          <section class="panel">
+            <div class="panel-head">
+              <div>
+                <h2>套餐列表</h2>
+                <p>支持修改、删除和上下架。</p>
+              </div>
+              <button class="primary-button compact" data-open-plan type="button">新增套餐</button>
+            </div>
+            <input class="search-input plan-search" data-filter="planTable" placeholder="搜索套餐" />
+            <div class="table-wrap">
+              <table id="planTable">
+                <thead><tr><th>套餐</th><th>价格</th><th>知识库</th><th>Skill</th><th>状态</th><th>操作</th></tr></thead>
+                <tbody>
+                  <tr><td>Free</td><td>0/月</td><td>1</td><td>2</td><td><span class="status ok">上架</span></td><td><button class="mini-button">修改</button><button class="danger-button">删除</button></td></tr>
+                  <tr><td>Professional</td><td>999/月</td><td>5</td><td>10</td><td><span class="status ok">上架</span></td><td><button class="mini-button">修改</button><button class="danger-button">删除</button></td></tr>
+                  <tr><td>Enterprise</td><td>2999/月</td><td>20</td><td>50</td><td><span class="status warn">审核中</span></td><td><button class="mini-button">修改</button><button class="danger-button">删除</button></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </section>
+
+        <section id="settings" class="page">
+          <div class="settings-console">
+            <section class="settings-detail is-active" id="settings-ai">
+              <div class="settings-detail-head">
+                <h2>AI 模型配置</h2>
+                <p>配置底层语言模型及接口参数</p>
+              </div>
+              <form class="settings-form settings-form-compact">
+                <label><span>模型提供商</span><select><option>Anthropic Claude</option><option>OpenAI</option><option>Azure OpenAI</option></select></label>
+                <label><span>模型版本</span><select><option>claude-sonnet</option><option>gpt-4.1</option><option>gpt-4o</option></select></label>
+                <label class="wide"><span>API Key</span><div class="input-action"><input type="password" value="sk-demo-token" /><button class="mini-button" type="button">查看</button><button class="mini-button" type="button">测试</button></div></label>
+                <label><span>最大回复 Token</span><input type="number" value="2000" /></label>
+                <label><span>Temperature</span><input type="number" step="0.1" value="0.7" /></label>
+                <label><span>超时时间（秒）</span><input type="number" value="30" /></label>
+                <label class="wide"><span>System Prompt（全局）</span><textarea placeholder="输入全局 system prompt，作用于所有 Skill..."></textarea></label>
+                <button class="primary-button settings-action" type="button">保存配置</button>
+              </form>
+            </section>
+
+            <section class="settings-detail" id="settings-notify">
+              <div class="settings-detail-head">
+                <h2>通知与告警</h2>
+                <p>设置事件通知渠道和触发条件</p>
+              </div>
+              <form class="settings-form">
+                <label class="setting-check"><span><strong>文档解析失败</strong><small>解析或同步出错时推送</small></span><input type="checkbox" checked /></label>
+                <label class="setting-check"><span><strong>新管理员登录</strong><small>有账号登录时邮件告警</small></span><input type="checkbox" checked /></label>
+                <label class="setting-check"><span><strong>存储空间告警</strong><small>使用率超 80% 时提醒</small></span><input type="checkbox" /></label>
+                <label class="setting-check"><span><strong>P95 响应超阈值</strong><small>响应时间超过 2s 时告警</small></span><input type="checkbox" /></label>
+                <div class="form-split">
+                  <label><span>通知邮箱</span><input type="email" value="admin@winwise.ai" /></label>
+                  <label><span>Webhook URL（可选）</span><input placeholder="https://hook.example.com" /></label>
+                </div>
+                <button class="primary-button settings-action" type="button">保存设置</button>
+              </form>
+            </section>
+
+            <section class="settings-detail" id="settings-security">
+              <div class="settings-detail-head">
+                <h2>安全与访问控制</h2>
+                <p>登录限制、会话策略和 IP 白名单</p>
+              </div>
+              <form class="settings-form settings-form-compact">
+                <label><span>登录失败锁定次数</span><input type="number" value="5" /></label>
+                <label><span>账号锁定时长（分钟）</span><input type="number" value="15" /></label>
+                <label><span>会话超时（分钟）</span><input type="number" value="30" /></label>
+                <label class="wide"><span>IP 白名单（每行一个，留空不限制）</span><textarea>192.168.1.0/24&#10;10.0.0.1</textarea></label>
+                <label class="setting-check wide"><span><strong>强制两步验证（2FA）</strong><small>所有管理员登录需验证</small></span><input type="checkbox" /></label>
+                <label class="setting-check wide"><span><strong>异地登录提醒</strong><small>检测到新设备或位置时发邮件</small></span><input type="checkbox" checked /></label>
+                <button class="primary-button settings-action" type="button">保存安全设置</button>
+              </form>
+            </section>
+
+            <section class="settings-detail" id="settings-appearance">
+              <div class="settings-detail-head">
+                <h2>外观与语言</h2>
+                <p>系统展示名称、语言及界面偏好</p>
+              </div>
+              <form class="settings-form settings-form-compact">
+                <label><span>系统名称</span><input value="WinWise 专家系统" /></label>
+                <label><span>系统语言</span><select><option>简体中文</option><option>English</option></select></label>
+                <label class="wide"><span>系统描述（显示在登录页）</span><textarea placeholder="输入系统介绍，展示给用户看..."></textarea></label>
+                <label><span>时区</span><select><option>Asia/Shanghai</option><option>UTC</option></select></label>
+                <label><span>日期格式</span><select><option>YYYY/MM/DD</option><option>YYYY-MM-DD</option></select></label>
+                <label class="setting-check wide"><span><strong>侧边栏默认折叠</strong><small>进入系统时自动收起导航</small></span><input type="checkbox" /></label>
+                <button class="primary-button settings-action" type="button">保存</button>
+              </form>
+            </section>
+
+            <section class="settings-detail" id="settings-logs">
+              <div class="settings-detail-head">
+                <h2>操作日志</h2>
+                <p>查看系统内所有管理员操作记录</p>
+              </div>
+              <div class="log-toolbar">
+                <select><option>全部类型</option><option>上传</option><option>修改</option><option>删除</option><option>登录</option></select>
+                <input placeholder="搜索操作内容..." />
+              </div>
+              <div class="table-wrap settings-log-table">
+                <table>
+                  <thead><tr><th>操作内容</th><th>类型</th><th>操作人</th><th>IP</th><th>时间</th></tr></thead>
+                  <tbody>
+                    <tr><td>上传「知识库文档」</td><td><span class="status pending">上传</span></td><td>超级管理员</td><td>192.168.1.14</td><td>10 分钟前</td></tr>
+                    <tr><td>修改 AI 模型配置</td><td><span class="status pending">修改</span></td><td>超级管理员</td><td>192.168.1.14</td><td>1 小时前</td></tr>
+                    <tr><td>删除「旧套餐」</td><td><span class="status danger">删除</span></td><td>运营管理员</td><td>10.0.0.12</td><td>昨天</td></tr>
+                    <tr><td>登录系统</td><td><span class="status ok">登录</span></td><td>超级管理员</td><td>192.168.1.14</td><td>昨天</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </section>
+          </div>
+        </section>
+
+        <section id="profile" class="page">
+          <div class="profile-layout">
+            <section class="profile-card profile-summary">
+              <div class="profile-persona">
+                <div class="profile-avatar">管</div>
+                <div class="profile-identity">
+                  <h2>超级管理员</h2>
+                  <p>admin@winwise.ai</p>
+                  <span class="profile-badge">超级管理员</span>
+                </div>
+              </div>
+              <div class="profile-meta">
+                <div><span>注册于</span><p>2025/01/08</p></div>
+                <div><span>最近登录</span><p>10 分钟前</p></div>
+                <div><span>上次 IP</span><p>192.168.1.4</p></div>
+              </div>
+            </section>
+
+            <section class="profile-card">
+              <div class="profile-card-head">
+                <h2>基本信息</h2>
+                <p>修改账号显示名称和联系方式</p>
+              </div>
+              <form class="profile-form">
+                <label><span>显示名称</span><input value="超级管理员" /></label>
+                <label><span>登录账号</span><input value="admin@winwise.ai" /></label>
+                <button class="primary-button settings-action" type="button">保存</button>
+              </form>
+            </section>
+
+            <section class="profile-card" id="profilePassword">
+              <div class="profile-card-head">
+                <h2>修改密码</h2>
+                <p>定期更换密码以保证账号安全</p>
+              </div>
+              <form class="profile-form">
+                <label class="wide"><span>当前密码</span><input type="password" placeholder="输入当前密码" /></label>
+                <label><span>新密码</span><input type="password" placeholder="至少 8 位" /></label>
+                <label><span>确认新密码</span><input type="password" placeholder="再次输入" /></label>
+                <div class="password-rules wide">
+                  <p>密码强度要求</p>
+                  <div class="rule-inline">
+                    <span>至少 8 个字符</span>
+                    <span>包含字母和数字</span>
+                    <span>包含特殊字符（推荐）</span>
+                  </div>
+                </div>
+                <button class="primary-button settings-action" type="button">更新密码</button>
+              </form>
+            </section>
+
+            <section class="profile-card" id="profileNotify">
+              <div class="profile-card-head">
+                <h2>我的通知偏好</h2>
+                <p>独立设置个人接收的通知类型</p>
+              </div>
+              <form class="profile-form">
+                <label class="setting-check wide"><span><strong>文档同步完成通知</strong><small>我上传的文档处理完毕时提醒</small></span><input type="checkbox" checked /></label>
+                <label class="setting-check wide"><span><strong>系统告警推送</strong><small>运维异常和错误提醒</small></span><input type="checkbox" checked /></label>
+                <label class="setting-check wide"><span><strong>每周运营报告</strong><small>每周一发送系统使用摘要</small></span><input type="checkbox" /></label>
+                <label class="wide"><span>接收通知的邮箱</span><input value="admin@winwise.ai" /></label>
+                <button class="primary-button settings-action" type="button">保存偏好</button>
+              </form>
+            </section>
+
+            <section class="profile-card" id="profileDevices">
+              <div class="profile-card-head">
+                <h2>登录设备管理</h2>
+                <p>查看并撤销其他设备的登录状态</p>
+              </div>
+              <div class="device-list">
+                <article><div><h3>Chrome / macOS</h3><p>192.168.1.4 · 10 分钟前</p></div><span class="status ok">当前</span></article>
+                <article><div><h3>Safari / iOS</h3><p>10.0.0.8 · 2026/05/28 09:32</p></div><button class="mini-button">撤销</button></article>
+                <article><div><h3>Edge / Windows</h3><p>10.0.0.12 · 2026/05/27 16:14</p></div><button class="mini-button">撤销</button></article>
+              </div>
+              <button class="primary-button settings-action" type="button">撤销所有其他设备</button>
+            </section>
+          </div>
+        </section>
+      </main>
+    </section>
+
+    <div id="planModal" class="modal-backdrop is-hidden" role="dialog" aria-modal="true" aria-labelledby="planModalTitle">
+      <section class="modal-panel modal-panel-wide">
+        <button class="modal-close" data-close-plan type="button" aria-label="关闭新增套餐弹窗">×</button>
+        <div class="panel-head">
+          <div>
+            <h2 id="planModalTitle">新增套餐</h2>
+            <p>套餐管理员可新增、修改、删除套餐。</p>
+          </div>
+        </div>
+        <form class="data-form">
+          <label><span>套餐名称</span><input placeholder="例如：企业增长版" /></label>
+          <label><span>月费</span><input type="number" placeholder="7" /></label>
+          <label><span>知识库数量</span><input type="number" placeholder="10" /></label>
+          <label><span>Skill 数量</span><input type="number" placeholder="20" /></label>
+          <label class="wide"><span>权益说明</span><input placeholder="向量额度、账号数量、服务等级等" /></label>
+          <button class="primary-button wide" data-close-plan type="button">保存套餐</button>
+        </form>
+      </section>
+    </div>
+
+    <div id="userModal" class="modal-backdrop is-hidden" role="dialog" aria-modal="true" aria-labelledby="userModalTitle">
+      <section class="modal-panel modal-panel-wide">
+        <button class="modal-close" data-close-user type="button" aria-label="关闭添加用户弹窗">×</button>
+        <div class="panel-head">
+          <div>
+            <h2 id="userModalTitle">添加用户</h2>
+            <p>填写用户信息并分配后台角色。</p>
+          </div>
+        </div>
+        <form class="data-form">
+          <label><span>用户姓名</span><input placeholder="例如：李明" /></label>
+          <label><span>邮箱</span><input type="email" placeholder="name@winwise.ai" /></label>
+          <label class="wide">
+            <span>角色</span>
+            <select id="userRoleSelect">
+              <option value="expert">专家角色</option>
+              <option value="ops">运维人员</option>
+              <option value="plan">套餐管理员</option>
+            </select>
+          </label>
+          <div class="permission-card wide">
+            <strong>角色权限</strong>
+            <p id="rolePermissionText">可管理知识库，包含删除文档、上传文档、重析文档。</p>
+          </div>
+          <button class="primary-button wide" data-close-user type="button">添加用户</button>
+        </form>
+      </section>
+    </div>
+
+    <div id="knowledgeModal" class="modal-backdrop is-hidden" role="dialog" aria-modal="true" aria-labelledby="knowledgeModalTitle">
+      <section class="modal-panel modal-panel-wide">
+        <button class="modal-close" data-close-knowledge type="button" aria-label="关闭添加知识库弹窗">×</button>
+        <div class="panel-head">
+          <div>
+            <h2 id="knowledgeModalTitle">添加知识库</h2>
+            <p>专家角色可管理知识库，包括删除文档和上传文档。</p>
+          </div>
+        </div>
+        <form class="data-form">
+          <label><span>知识库名称</span><input placeholder="例如：售后专家库" /></label>
+          <label><span>范围</span><select><option>official</option><option>team</option><option>private</option></select></label>
+          <label class="wide"><span>描述</span><input placeholder="说明知识库的业务范围和适用角色" /></label>
+          <button class="primary-button wide" data-close-knowledge type="button">创建知识库</button>
+        </form>
+      </section>
+    </div>
+
+    <div id="skillModal" class="modal-backdrop is-hidden" role="dialog" aria-modal="true" aria-labelledby="skillModalTitle">
+      <section class="modal-panel modal-panel-wide">
+        <button class="modal-close" data-close-skill type="button" aria-label="关闭添加 Skill 弹窗">×</button>
+        <div class="skill-upload-head">
+          <h2 id="skillModalTitle">上传技能</h2>
+        </div>
+        <label class="skill-drop">
+          <input type="file" accept=".zip,.md" />
+          <span>拖拽文件或点击上传</span>
+        </label>
+        <label class="check-line skill-auto-install">
+          <input type="checkbox" />
+          <span>非高风险自动安装</span>
+        </label>
+        <div class="skill-requirements">
+          <h3>文件要求</h3>
+          <p>文件夹或者 .zip 需要包含 SKILL.md 文件</p>
+          <p>.md 文件需包含 YAML 格式的技能名称和描述</p>
+        </div>
+      </section>
+    </div>
+
+    <div id="uploadModal" class="modal-backdrop is-hidden" role="dialog" aria-modal="true" aria-labelledby="uploadModalTitle">
+      <section class="modal-panel">
+        <button class="modal-close" data-close-upload type="button" aria-label="关闭上传文档弹窗">×</button>
+        <div class="panel-head">
+          <div>
+            <h2 id="uploadModalTitle">上传文档</h2>
+            <p>支持 PDF、Word、PPTX、TXT，上传后进入解析与同步队列。</p>
+          </div>
+        </div>
+        <form class="data-form upload-form">
+          <label><span>目标知识库</span><select><option>expert</option><option>patent</option><option>faq</option><option>after_sales</option><option>ops_runbook</option><option>pricing_policy</option></select></label>
+          <label><span>文档标题</span><input placeholder="默认使用文件名" /></label>
+          <label class="file-drop wide"><input id="fileInput" type="file" multiple /><span id="fileLabel">选择或拖入文档</span></label>
+          <button class="primary-button wide" data-close-upload type="button">上传文档</button>
+        </form>
+      </section>
+    </div>
+
+    <div id="toast" class="toast" role="status"></div>
+    <script src="./app.js"></script>
+  </body>
+</html>
