@@ -116,12 +116,31 @@ button {
   color: var(--ink);
 }
 
+.nav-parent {
+  position: relative;
+}
+
+.nav-parent::after {
+  content: "⌄";
+  margin-left: auto;
+  color: var(--muted);
+  transition: transform 0.18s ease;
+}
+
+.nav-parent[aria-expanded="true"]::after {
+  transform: rotate(180deg);
+}
+
 .nav-submenu {
   display: grid;
   gap: 2px;
   margin: -4px 0 4px 18px;
   padding-left: 10px;
   border-left: 1px solid var(--line-dark);
+}
+
+.nav-submenu.is-collapsed {
+  display: none;
 }
 
 .nav-subitem {
@@ -380,6 +399,18 @@ textarea:focus {
 .mini-button + .mini-button,
 .mini-button + .danger-button {
   margin-left: 8px;
+}
+
+.action-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.action-group .mini-button,
+.action-group .danger-button {
+  margin-left: 0;
 }
 
 .admin-shell {
@@ -691,6 +722,297 @@ progress::-webkit-progress-value {
   background: var(--muted);
 }
 
+.skill-edit-panel {
+  width: min(680px, 100%);
+  max-height: min(88vh, 760px);
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+}
+
+.skill-edit-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 18px 22px;
+  border-bottom: 1px solid var(--line);
+}
+
+.skill-edit-head h2,
+.skill-edit-head p {
+  margin: 0;
+}
+
+.skill-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  background: #dbe9f8;
+  color: #2d5f92;
+}
+
+.skill-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  padding: 16px 22px;
+  background: #fff;
+  border-bottom: 1px solid var(--line);
+}
+
+.skill-stats div {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 14px 16px;
+  background: #fff;
+}
+
+.skill-stats span,
+.skill-stats small {
+  display: block;
+  color: var(--muted);
+}
+
+.skill-stats strong {
+  display: block;
+  margin: 6px 0 4px;
+  font-size: 28px;
+  line-height: 1.15;
+}
+
+.readonly-input {
+  color: var(--muted);
+  background: #f6f6f4;
+}
+
+.skill-edit-form {
+  display: grid;
+  gap: 14px;
+  padding: 22px;
+  overflow: auto;
+}
+
+.skill-edit-form h3 {
+  margin: 6px 0 0;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--line);
+  font-size: 15px;
+  font-weight: 400;
+}
+
+.kb-picker {
+  min-height: 58px;
+  border: 1px solid var(--line-dark);
+  border-radius: 8px;
+  padding: 8px;
+  background: #fff;
+}
+
+.readonly-box {
+  border-radius: 8px;
+  padding: 12px;
+  background: #f6f6f1;
+}
+
+.readonly-box p {
+  margin: 6px 0 0;
+  color: var(--text);
+}
+
+.modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 22px;
+  border-top: 1px solid var(--line);
+  background: #fff;
+}
+
+.confirm-panel {
+  width: min(420px, 100%);
+}
+
+.confirm-content {
+  padding: 6px 2px 0;
+}
+
+.confirm-content h2 {
+  margin-bottom: 10px;
+}
+
+.confirm-content p {
+  margin-bottom: 18px;
+}
+
+.confirm-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.issue-detail {
+  display: grid;
+  gap: 14px;
+}
+
+.issue-summary {
+  display: grid;
+  grid-template-columns: 10px 1fr;
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.issue-summary h3,
+.issue-summary p {
+  margin: 0;
+}
+
+.issue-summary p {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.danger-soft {
+  background: #fffafa;
+}
+
+.issue-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.issue-grid div {
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fafafa;
+}
+
+.issue-grid span {
+  display: block;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.issue-grid p {
+  margin: 6px 0 0;
+  color: var(--ink);
+}
+
+.compact-table {
+  max-height: 260px;
+}
+
+.document-detail-panel {
+  width: min(780px, 100%);
+  max-height: min(88vh, 760px);
+  padding: 0;
+  overflow: auto;
+}
+
+.document-detail-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px 22px;
+  border-bottom: 1px solid var(--line);
+}
+
+.document-detail-head h2,
+.document-detail-head p {
+  margin: 0;
+}
+
+.document-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  padding: 16px 22px;
+  border-bottom: 1px solid var(--line);
+}
+
+.document-metrics article {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.document-metrics span {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--muted);
+}
+
+.document-detail-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 0.85fr);
+  gap: 16px;
+  padding: 18px 22px;
+}
+
+.document-detail-grid section,
+.chunk-preview {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 14px;
+}
+
+.document-detail-grid h3,
+.chunk-preview h3 {
+  margin: 0 0 10px;
+  font-size: 15px;
+  font-weight: 400;
+}
+
+.detail-timeline {
+  display: grid;
+  gap: 10px;
+}
+
+.detail-timeline div {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 10px;
+}
+
+.detail-timeline p,
+.detail-timeline small {
+  margin: 0;
+}
+
+.chunk-preview {
+  margin: 0 22px 18px;
+}
+
+.chunk-list {
+  display: grid;
+  gap: 10px;
+}
+
+.chunk-list article {
+  display: grid;
+  grid-template-columns: 56px 1fr;
+  gap: 10px;
+  border-radius: 8px;
+  padding: 10px;
+  background: #f6f6f4;
+}
+
+.chunk-list p {
+  margin: 0;
+}
+
 .modal-close {
   position: absolute;
   top: 12px;
@@ -716,9 +1038,9 @@ progress::-webkit-progress-value {
 }
 
 .panel-head .toolbar {
-  align-self: flex-start;
-  display: grid;
-  grid-template-columns: 180px 220px;
+  align-self: center;
+  display: flex;
+  justify-content: flex-end;
   gap: 10px;
 }
 
@@ -772,6 +1094,36 @@ progress::-webkit-progress-value {
 .permission-card p {
   margin: 6px 0 0;
   font-size: 14px;
+}
+
+.user-edit-meta {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #f7f7f2;
+}
+
+.user-edit-meta div {
+  min-width: 0;
+}
+
+.user-edit-meta span {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.user-edit-meta p {
+  margin: 4px 0 0;
+  color: var(--ink);
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
 }
 
 .table-wrap {
@@ -839,6 +1191,29 @@ td:first-child {
 .status.danger {
   background: #ffe8e8;
   color: var(--red);
+}
+
+.kb-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 2px 4px 2px 0;
+  border-radius: 5px;
+  padding: 3px 8px;
+  background: #dbe9f8;
+  color: #2d5f92;
+  font-size: 12px;
+}
+
+.kb-chip.removable {
+  border: 1px solid #9bbde3;
+}
+
+.kb-chip button {
+  border: 0;
+  background: transparent;
+  color: #2d5f92;
+  padding: 0;
 }
 
 .role-grid {
@@ -1252,6 +1627,11 @@ td:first-child {
   .settings-form,
   .settings-form-compact,
   .form-split,
+  .skill-stats,
+  .document-metrics,
+  .document-detail-grid,
+  .issue-grid,
+  .user-edit-meta,
   .profile-layout,
   .profile-form {
     grid-template-columns: 1fr;

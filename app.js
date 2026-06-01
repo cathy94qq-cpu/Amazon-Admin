@@ -6,17 +6,36 @@ const userAvatarButton = document.querySelector("#userAvatarButton");
 const userMenu = document.querySelector("#userMenu");
 const pageTitle = document.querySelector("#pageTitle");
 const toast = document.querySelector("#toast");
+const settingsToggle = document.querySelector("[data-settings-toggle]");
+const settingsSubmenu = document.querySelector(".nav-submenu");
 const docKbFilter = document.querySelector("#docKbFilter");
 const uploadModal = document.querySelector("#uploadModal");
 const userModal = document.querySelector("#userModal");
+const editUserModal = document.querySelector("#editUserModal");
 const planModal = document.querySelector("#planModal");
+const editPlanModal = document.querySelector("#editPlanModal");
+const deleteConfirmModal = document.querySelector("#deleteConfirmModal");
 const knowledgeModal = document.querySelector("#knowledgeModal");
 const skillModal = document.querySelector("#skillModal");
+const addSkillModal = document.querySelector("#addSkillModal");
+const editSkillModal = document.querySelector("#editSkillModal");
+const docDetailModal = document.querySelector("#docDetailModal");
+const issueModals = {
+  parse: document.querySelector("#parseIssueModal"),
+  rating: document.querySelector("#ratingIssueModal"),
+  plan: document.querySelector("#planIssueModal"),
+};
 
 const rolePermissions = {
   expert: "可管理知识库，包含删除文档、上传文档、重析文档。",
   ops: "可查看异常数据、性能指标、用户问答评分和任务状态。",
   plan: "可新增、修改、删除套餐，并审核套餐规则变更。",
+};
+
+const roleValues = {
+  专家角色: "expert",
+  运维人员: "ops",
+  套餐管理员: "plan",
 };
 
 const pageNames = {
@@ -36,6 +55,15 @@ function showToast(message) {
   toast.classList.add("is-visible");
   window.clearTimeout(showToast.timer);
   showToast.timer = window.setTimeout(() => toast.classList.remove("is-visible"), 2200);
+}
+
+function selectSettingsTab(tab) {
+  document.querySelectorAll("[data-settings-tab]").forEach((item) => {
+    item.classList.toggle("is-active", item.dataset.settingsTab === tab);
+  });
+  document.querySelectorAll(".settings-detail").forEach((panel) => {
+    panel.classList.toggle("is-active", panel.id === `settings-${tab}`);
+  });
 }
 
 function switchPage(pageId) {
@@ -94,20 +122,26 @@ document.addEventListener("click", (event) => {
 
 document.querySelectorAll("[data-page], [data-page-link]").forEach((control) => {
   control.addEventListener("click", () => {
+    if (control.matches("[data-settings-toggle]")) return;
     switchPage(control.dataset.page || control.dataset.pageLink);
     userMenu.classList.add("is-hidden");
   });
 });
 
+settingsToggle.addEventListener("click", () => {
+  const shouldExpand = settingsSubmenu.classList.contains("is-collapsed");
+  settingsSubmenu.classList.toggle("is-collapsed", !shouldExpand);
+  settingsToggle.setAttribute("aria-expanded", String(shouldExpand));
+  if (shouldExpand) {
+    switchPage("settings");
+    selectSettingsTab("ai");
+  }
+  userMenu.classList.add("is-hidden");
+});
+
 document.querySelectorAll("[data-settings-tab]").forEach((button) => {
   button.addEventListener("click", () => {
-    const tab = button.dataset.settingsTab;
-    document.querySelectorAll("[data-settings-tab]").forEach((item) => {
-      item.classList.toggle("is-active", item.dataset.settingsTab === tab);
-    });
-    document.querySelectorAll(".settings-detail").forEach((panel) => {
-      panel.classList.toggle("is-active", panel.id === `settings-${tab}`);
-    });
+    selectSettingsTab(button.dataset.settingsTab);
   });
 });
 
@@ -136,6 +170,47 @@ document.querySelector("#userRoleSelect").addEventListener("change", (event) => 
   document.querySelector("#rolePermissionText").textContent = rolePermissions[event.target.value];
 });
 
+document.querySelectorAll("[data-open-edit-user]").forEach((button) => {
+  button.addEventListener("click", () => {
+    const cells = button.closest("tr").children;
+    const roleValue = roleValues[cells[2].textContent] || "expert";
+    const statusText = cells[4].textContent.trim() || button.dataset.userStatus || "启用";
+
+    document.querySelector("#editUserName").value = cells[0].textContent;
+    document.querySelector("#editUserEmail").value = cells[1].textContent;
+    document.querySelector("#editUserRoleSelect").value = roleValue;
+    document.querySelector("#editUserStatus").value = statusText;
+    document.querySelector("#editRolePermissionText").textContent = rolePermissions[roleValue];
+    document.querySelector("#editUserLastLogin").textContent = statusText === "停用" ? "账号已停用" : "10 分钟前";
+    editUserModal.classList.remove("is-hidden");
+  });
+});
+
+document.querySelector("#editUserRoleSelect").addEventListener("change", (event) => {
+  document.querySelector("#editRolePermissionText").textContent = rolePermissions[event.target.value];
+});
+
+document.querySelectorAll("[data-close-edit-user]").forEach((button) => {
+  button.addEventListener("click", () => {
+    editUserModal.classList.add("is-hidden");
+    if (button.classList.contains("primary-button")) {
+      showToast("用户修改已保存");
+    }
+  });
+});
+
+editUserModal.addEventListener("click", (event) => {
+  if (event.target === editUserModal) {
+    editUserModal.classList.add("is-hidden");
+  }
+});
+
+document.querySelectorAll("[data-delete-user]").forEach((button) => {
+  button.addEventListener("click", () => {
+    showToast("用户已删除");
+  });
+});
+
 document.querySelectorAll("[data-open-plan]").forEach((button) => {
   button.addEventListener("click", () => {
     planModal.classList.remove("is-hidden");
@@ -155,6 +230,79 @@ planModal.addEventListener("click", (event) => {
   if (event.target === planModal) {
     planModal.classList.add("is-hidden");
   }
+});
+
+document.querySelectorAll("[data-open-edit-plan]").forEach((button) => {
+  button.addEventListener("click", () => {
+    const cells = button.closest("tr").children;
+    document.querySelector("#editPlanName").value = cells[0].textContent;
+    document.querySelector("#editPlanPrice").value = cells[1].textContent;
+    document.querySelector("#editPlanKb").value = cells[2].textContent;
+    document.querySelector("#editPlanSkill").value = cells[3].textContent;
+    document.querySelector("#editPlanStatus").value = cells[4].textContent.trim();
+    editPlanModal.classList.remove("is-hidden");
+  });
+});
+
+document.querySelectorAll("[data-close-edit-plan]").forEach((button) => {
+  button.addEventListener("click", () => {
+    editPlanModal.classList.add("is-hidden");
+    if (button.classList.contains("primary-button")) {
+      showToast("套餐修改已保存");
+    }
+  });
+});
+
+editPlanModal.addEventListener("click", (event) => {
+  if (event.target === editPlanModal) {
+    editPlanModal.classList.add("is-hidden");
+  }
+});
+
+document.querySelectorAll("[data-open-delete-confirm]").forEach((button) => {
+  button.addEventListener("click", () => {
+    document.querySelector("#deletePlanName").textContent = button.closest("tr").children[0].textContent;
+    deleteConfirmModal.classList.remove("is-hidden");
+  });
+});
+
+document.querySelectorAll("[data-close-delete-confirm]").forEach((button) => {
+  button.addEventListener("click", () => {
+    deleteConfirmModal.classList.add("is-hidden");
+    if (button.classList.contains("danger-button")) {
+      showToast("套餐已删除");
+    }
+  });
+});
+
+deleteConfirmModal.addEventListener("click", (event) => {
+  if (event.target === deleteConfirmModal) {
+    deleteConfirmModal.classList.add("is-hidden");
+  }
+});
+
+document.querySelectorAll("[data-open-issue]").forEach((button) => {
+  button.addEventListener("click", () => {
+    issueModals[button.dataset.openIssue]?.classList.remove("is-hidden");
+  });
+});
+
+document.querySelectorAll("[data-close-issue]").forEach((button) => {
+  button.addEventListener("click", () => {
+    const modal = button.closest(".modal-backdrop");
+    modal.classList.add("is-hidden");
+    if (button.classList.contains("primary-button")) {
+      showToast("待处理事项已更新");
+    }
+  });
+});
+
+Object.values(issueModals).forEach((modal) => {
+  modal.addEventListener("click", (event) => {
+    if (event.target === modal) {
+      modal.classList.add("is-hidden");
+    }
+  });
 });
 
 document.querySelectorAll("[data-open-knowledge]").forEach((button) => {
@@ -223,6 +371,82 @@ document.querySelectorAll("[data-close-skill]").forEach((button) => {
 skillModal.addEventListener("click", (event) => {
   if (event.target === skillModal) {
     skillModal.classList.add("is-hidden");
+  }
+});
+
+document.querySelectorAll("[data-open-add-skill]").forEach((button) => {
+  button.addEventListener("click", () => {
+    addSkillModal.classList.remove("is-hidden");
+  });
+});
+
+document.querySelectorAll("[data-close-add-skill]").forEach((button) => {
+  button.addEventListener("click", () => {
+    addSkillModal.classList.add("is-hidden");
+    if (button.classList.contains("primary-button")) {
+      showToast("Skill 已保存");
+    }
+  });
+});
+
+addSkillModal.addEventListener("click", (event) => {
+  if (event.target === addSkillModal) {
+    addSkillModal.classList.add("is-hidden");
+  }
+});
+
+document.querySelectorAll("[data-open-edit-skill]").forEach((button) => {
+  button.addEventListener("click", () => {
+    editSkillModal.classList.remove("is-hidden");
+  });
+});
+
+document.querySelectorAll("[data-close-edit-skill]").forEach((button) => {
+  button.addEventListener("click", () => {
+    editSkillModal.classList.add("is-hidden");
+    if (button.classList.contains("primary-button")) {
+      showToast("Skill 修改已保存");
+    }
+  });
+});
+
+editSkillModal.addEventListener("click", (event) => {
+  if (event.target === editSkillModal) {
+    editSkillModal.classList.add("is-hidden");
+  }
+});
+
+document.querySelectorAll("[data-open-doc-detail]").forEach((button) => {
+  button.addEventListener("click", () => {
+    const cells = button.closest("tr").children;
+    document.querySelector("#docDetailTitle").textContent = cells[0].textContent;
+    document.querySelector("#docDetailSubtitle").textContent = `查看 ${cells[1].textContent} 知识库中的文档处理详情`;
+    document.querySelector("#docDetailKb").textContent = cells[1].textContent;
+    document.querySelector("#docDetailParse").textContent = cells[2].textContent;
+    document.querySelector("#docDetailStatus").textContent = cells[3].textContent;
+    document.querySelector("#docDetailStatus").className = cells[3].querySelector(".status")?.className || "status";
+    document.querySelector("#docDetailChunks").textContent = cells[4].textContent;
+    document.querySelector("#docDetailUpdated").textContent = cells[5].textContent;
+    docDetailModal.classList.remove("is-hidden");
+  });
+});
+
+document.querySelectorAll("[data-close-doc-detail]").forEach((button) => {
+  button.addEventListener("click", () => {
+    docDetailModal.classList.add("is-hidden");
+  });
+});
+
+document.querySelectorAll("[data-download-doc]").forEach((button) => {
+  button.addEventListener("click", () => {
+    const title = button.closest("tr").children[0].textContent;
+    showToast(`${title} 已开始下载`);
+  });
+});
+
+docDetailModal.addEventListener("click", (event) => {
+  if (event.target === docDetailModal) {
+    docDetailModal.classList.add("is-hidden");
   }
 });
 
