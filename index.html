@@ -53,10 +53,10 @@
           <button class="nav-item" data-page="plans" type="button">套餐管理</button>
           <button class="nav-item nav-parent" data-page="settings" data-settings-toggle type="button" aria-expanded="false">系统设置</button>
           <div class="nav-submenu is-collapsed" aria-label="系统设置子目录">
+            <button class="nav-subitem" data-settings-tab="appearance" data-page-link="settings" type="button">基本信息</button>
             <button class="nav-subitem is-active" data-settings-tab="ai" data-page-link="settings" type="button">AI 模型</button>
             <button class="nav-subitem" data-settings-tab="notify" data-page-link="settings" type="button">通知告警</button>
             <button class="nav-subitem" data-settings-tab="security" data-page-link="settings" type="button">安全访问</button>
-            <button class="nav-subitem" data-settings-tab="appearance" data-page-link="settings" type="button">外观与语言</button>
             <button class="nav-subitem" data-settings-tab="logs" data-page-link="settings" type="button">操作日志</button>
           </div>
           <button class="nav-item" data-page="profile" type="button">个人中心</button>
@@ -89,7 +89,6 @@
             <article class="metric-card"><span>知识库</span><strong>8</strong><small>6 个生效中</small></article>
             <article class="metric-card"><span>文档</span><strong>156</strong><small>12 个今日新增</small></article>
             <article class="metric-card"><span>Skill</span><strong>14</strong><small>3个高频调用</small></article>
-            <article class="metric-card"><span>平均评分</span><strong>4.62</strong><small>近 7 天问答</small></article>
           </div>
           <div class="two-column">
             <section class="panel">
@@ -120,14 +119,10 @@
             <input class="search-input knowledge-search" data-filter="kbTable" placeholder="搜索知识库" />
             <div class="table-wrap">
               <table id="kbTable">
-                <thead><tr><th>名称</th><th>范围</th><th>文档数</th><th>状态</th><th>更新时间</th><th>操作</th></tr></thead>
+                <thead><tr><th>名称</th><th>描述</th><th>文档数</th><th>状态</th><th>更新时间</th><th>操作</th></tr></thead>
                 <tbody>
-                  <tr><td>expert</td><td>official</td><td>50</td><td><span class="status ok">生效中</span></td><td>2026/05/22 16:14</td><td><button class="mini-button" data-open-upload>上传文档</button><button class="mini-button">停用</button></td></tr>
-                  <tr><td>patent</td><td>team</td><td>72</td><td><span class="status ok">生效中</span></td><td>2026/05/29 08:43</td><td><button class="mini-button" data-open-upload>上传文档</button><button class="mini-button">停用</button></td></tr>
-                  <tr><td>faq</td><td>private</td><td>34</td><td><span class="status warn">维护中</span></td><td>2026/05/28 19:02</td><td><button class="mini-button" data-open-upload>上传文档</button><button class="mini-button">启用</button><button class="danger-button">删除</button></td></tr>
-                  <tr><td>after_sales</td><td>team</td><td>0</td><td><span class="status pending">待启用</span></td><td>2026/05/29 11:36</td><td><button class="mini-button" data-open-upload>上传文档</button><button class="mini-button">启用</button><button class="danger-button">删除</button></td></tr>
-                  <tr><td>ops_runbook</td><td>official</td><td>8</td><td><span class="status warn">维护中</span></td><td>2026/05/29 10:58</td><td><button class="mini-button" data-open-upload>上传文档</button><button class="mini-button">启用</button><button class="danger-button">删除</button></td></tr>
-                  <tr><td>pricing_policy</td><td>private</td><td>0</td><td><span class="status pending">待启用</span></td><td>2026/05/29 11:21</td><td><button class="mini-button" data-open-upload>上传文档</button><button class="mini-button">启用</button><button class="danger-button">删除</button></td></tr>
+                  <tr><td>expert</td><td>专家问答核心资料库，覆盖运营、售后和平台规则。</td><td>50</td><td><span class="status ok">生效中</span></td><td>2026/05/22 16:14</td><td><button class="mini-button" data-open-upload>上传文档</button><button class="mini-button">停用</button></td></tr>
+                  <tr><td>ops_runbook</td><td>运维排障手册，记录异常数据、同步延迟和任务处理流程。</td><td>8</td><td><span class="status warn">维护中</span></td><td>2026/05/29 10:58</td><td><button class="mini-button" data-open-upload>上传文档</button><button class="mini-button">启用</button><button class="danger-button">删除</button></td></tr>
                 </tbody>
               </table>
             </div>
@@ -143,7 +138,7 @@
               </div>
             </div>
             <div class="document-filters">
-              <select id="docKbFilter"><option value="">全部知识库</option><option>expert</option><option>patent</option><option>faq</option></select>
+              <select id="docKbFilter"><option value="">按知识库查看</option><option>expert</option><option>patent</option><option>faq</option></select>
               <input class="search-input document-search" data-filter="docTable" placeholder="搜索文档标题" />
             </div>
             <div class="table-wrap tall">
@@ -175,12 +170,12 @@
             <input class="search-input skill-search" data-filter="skillTable" placeholder="搜索 Skill" />
             <div class="table-wrap">
               <table id="skillTable">
-                <thead><tr><th>名称</th><th>类型</th><th>绑定知识库</th><th>调用量</th><th>状态</th><th>操作</th></tr></thead>
+                <thead><tr><th>名称</th><th>类型</th><th>Skill 描述</th><th>上传时间</th><th>状态</th><th>操作</th></tr></thead>
                 <tbody>
-                  <tr><td>广告 ACOS 诊断</td><td>运营诊断</td><td><span class="kb-chip">expert</span></td><td>3001</td><td><span class="status ok">启用</span></td><td><button class="mini-button" data-open-edit-skill>编辑</button></td></tr>
-                  <tr><td>专利侵权规避</td><td>文档分析</td><td><span class="kb-chip">patent</span></td><td>1582</td><td><span class="status ok">启用</span></td><td><button class="mini-button" data-open-edit-skill>编辑</button></td></tr>
-                  <tr><td>店铺注销流程问答</td><td>问答增强</td><td><span class="kb-chip">faq</span><span class="kb-chip">expert</span></td><td>824</td><td><span class="status pending">停用</span></td><td><button class="mini-button" data-open-edit-skill>编辑</button><button class="danger-button">删除</button></td></tr>
-                  <tr><td>竞品评论摘要</td><td>数据分析</td><td><span class="kb-chip">faq</span></td><td>209</td><td><span class="status pending">停用</span></td><td><button class="mini-button" data-open-edit-skill>编辑</button><button class="danger-button">删除</button></td></tr>
+                  <tr><td>广告 ACOS 诊断</td><td>运营诊断</td><td>分析广告数据，诊断 ACOS 异常并给出降本建议</td><td>2026/05/22 16:14</td><td><span class="status ok">启用</span></td><td><span class="empty-action">-</span></td></tr>
+                  <tr><td>专利侵权规避</td><td>文档分析</td><td>识别专利风险，辅助判断侵权规避方案</td><td>2026/05/26 10:32</td><td><span class="status ok">启用</span></td><td><span class="empty-action">-</span></td></tr>
+                  <tr><td>店铺注销流程问答</td><td>问答增强</td><td>回答店铺注销流程、材料准备和常见异常</td><td>2026/05/28 14:05</td><td><span class="status pending">停用</span></td><td><button class="danger-button">删除</button></td></tr>
+                  <tr><td>竞品评论摘要</td><td>数据分析</td><td>汇总竞品评论高频问题和用户情绪趋势</td><td>2026/05/29 09:47</td><td><span class="status pending">停用</span></td><td><button class="danger-button">删除</button></td></tr>
                 </tbody>
               </table>
             </div>
@@ -215,24 +210,14 @@
             <article class="metric-card"><span>异常数据</span><strong>17</strong><small>需要排查</small></article>
             <article class="metric-card"><span>P95 响应</span><strong>1.8s</strong><small>目标低于 2s</small></article>
             <article class="metric-card"><span>失败任务</span><strong>3</strong><small>近 24 小时</small></article>
-            <article class="metric-card"><span>低分反馈</span><strong>9</strong><small>评分低于 3</small></article>
           </div>
           <div class="two-column">
             <section class="panel">
               <div class="panel-head"><div><h2>数据问题</h2><p>运维人员用于定位脏数据、解析失败和同步异常。</p></div></div>
               <div class="issue-list">
-                <article><span class="dot danger"></span><div><strong>2 个文档无分块</strong><p>patent 知识库存在解析成功但分块为 0 的文档。</p></div><button class="mini-button">查看</button></article>
-                <article><span class="dot warn"></span><div><strong>5 条问答未命中文档</strong><p>集中发生在售后政策类问题。</p></div><button class="mini-button">定位</button></article>
-                <article><span class="dot ok"></span><div><strong>向量同步延迟</strong><p>当前队列延迟 42 秒，仍在阈值内。</p></div><button class="mini-button">详情</button></article>
-              </div>
-            </section>
-            <section class="panel">
-              <div class="panel-head"><div><h2>问答评分</h2><p>用户对专家系统答案的评分分布。</p></div></div>
-              <div class="score-bars">
-                <div><span>5 分</span><progress max="100" value="72"></progress><strong>72%</strong></div>
-                <div><span>4 分</span><progress max="100" value="18"></progress><strong>18%</strong></div>
-                <div><span>3 分</span><progress max="100" value="6"></progress><strong>6%</strong></div>
-                <div><span>低分</span><progress max="100" value="4"></progress><strong>4%</strong></div>
+                <article><span class="dot danger"></span><div><strong>2 个文档无分块</strong><p>patent 知识库存在解析成功但分块为 0 的文档。</p></div><button class="mini-button" data-open-issue="noChunks">查看</button></article>
+                <article><span class="dot warn"></span><div><strong>5 条问答未命中文档</strong><p>集中发生在售后政策类问题。</p></div><button class="mini-button" data-open-issue="missedAnswers">定位</button></article>
+                <article><span class="dot ok"></span><div><strong>向量同步延迟</strong><p>当前队列延迟 42 秒，仍在阈值内。</p></div><button class="mini-button" data-open-issue="syncDelay">详情</button></article>
               </div>
             </section>
           </div>
@@ -250,13 +235,13 @@
             <input class="search-input plan-search" data-filter="planTable" placeholder="搜索套餐" />
             <div class="table-wrap">
               <table id="planTable">
-                <thead><tr><th>套餐</th><th>价格</th><th>知识库</th><th>Skill</th><th>状态</th><th>操作</th></tr></thead>
+                <thead><tr><th>套餐</th><th>价格</th><th>问答数量</th><th>Token 数量</th><th>状态</th><th>操作</th></tr></thead>
                 <tbody>
-                  <tr><td>免费版</td><td>0元</td><td>1</td><td>2</td><td><span class="status ok">已上架</span></td><td><button class="mini-button" data-open-edit-plan>修改</button><button class="danger-button" data-open-delete-confirm>删除</button></td></tr>
-                  <tr><td>专业版</td><td>20元</td><td>5</td><td>10</td><td><span class="status ok">已上架</span></td><td><button class="mini-button" data-open-edit-plan>修改</button><button class="danger-button" data-open-delete-confirm>删除</button></td></tr>
-                  <tr><td>Max版</td><td>100元</td><td>12</td><td>30</td><td><span class="status ok">已上架</span></td><td><button class="mini-button" data-open-edit-plan>修改</button><button class="danger-button" data-open-delete-confirm>删除</button></td></tr>
-                  <tr><td>Business版</td><td>200元</td><td>30</td><td>80</td><td><span class="status ok">已上架</span></td><td><button class="mini-button" data-open-edit-plan>修改</button><button class="danger-button" data-open-delete-confirm>删除</button></td></tr>
-                  <tr><td>Enterprise版</td><td>80元</td><td>20</td><td>50</td><td><span class="status warn">审核中</span></td><td><button class="mini-button" data-open-edit-plan>修改</button><button class="danger-button" data-open-delete-confirm>删除</button></td></tr>
+                  <tr><td>免费版</td><td>0元</td><td>100</td><td>5万</td><td><span class="status ok">已上架</span></td><td><button class="mini-button" data-open-edit-plan>修改</button><button class="danger-button" data-open-delete-confirm>删除</button></td></tr>
+                  <tr><td>专业版</td><td>20元</td><td>1,000</td><td>50万</td><td><span class="status ok">已上架</span></td><td><button class="mini-button" data-open-edit-plan>修改</button><button class="danger-button" data-open-delete-confirm>删除</button></td></tr>
+                  <tr><td>Max版</td><td>100元</td><td>5,000</td><td>300万</td><td><span class="status ok">已上架</span></td><td><button class="mini-button" data-open-edit-plan>修改</button><button class="danger-button" data-open-delete-confirm>删除</button></td></tr>
+                  <tr><td>Business版</td><td>200元</td><td>10,000</td><td>800万</td><td><span class="status ok">已上架</span></td><td><button class="mini-button" data-open-edit-plan>修改</button><button class="danger-button" data-open-delete-confirm>删除</button></td></tr>
+                  <tr><td>Enterprise版</td><td>80元</td><td>3,000</td><td>200万</td><td><span class="status warn">审核中</span></td><td><button class="mini-button" data-open-edit-plan>修改</button><button class="danger-button" data-open-delete-confirm>删除</button></td></tr>
                 </tbody>
               </table>
             </div>
@@ -266,20 +251,56 @@
         <section id="settings" class="page">
           <div class="settings-console">
             <section class="settings-detail is-active" id="settings-ai">
-              <div class="settings-detail-head">
-                <h2>AI 模型配置</h2>
-                <p>配置底层语言模型及接口参数</p>
+              <div class="model-settings">
+                <section class="settings-inner-card">
+                  <div class="settings-detail-head">
+                    <div>
+                      <h2>已接入模型</h2>
+                      <p>管理各提供商的 API Key 和模型版本</p>
+                    </div>
+                    <button class="mini-button" data-open-model type="button">添加</button>
+                  </div>
+                  <div class="model-list">
+                    <article class="model-row">
+                      <span class="model-avatar">An</span>
+                      <div>
+                        <h3>Claude Sonnet 4.5</h3>
+                        <p>Anthropic · 默认模型 · Temperature 0.7</p>
+                      </div>
+                      <span class="status ok">启用</span>
+                      <button class="mini-button" data-open-edit-model type="button">编辑</button>
+                    </article>
+                    <article class="model-row">
+                      <span class="model-avatar openai">OA</span>
+                      <div>
+                        <h3>GPT-4o</h3>
+                        <p>OpenAI · 备用模型</p>
+                      </div>
+                      <span class="status ok">启用</span>
+                      <button class="mini-button" data-open-edit-model type="button">编辑</button>
+                    </article>
+                    <article class="model-row">
+                      <span class="model-avatar openai">AZ</span>
+                      <div>
+                        <h3>Azure GPT-4.1</h3>
+                        <p>Azure OpenAI · 长文本模型</p>
+                      </div>
+                      <span class="status pending">停用</span>
+                      <div class="action-group"><button class="mini-button" data-open-edit-model type="button">编辑</button><button class="danger-button" data-delete-model type="button">删除</button></div>
+                    </article>
+                  </div>
+                </section>
+                <section class="settings-inner-card">
+                  <div class="settings-detail-head">
+                    <h2>全局 System Prompt</h2>
+                  </div>
+                  <form class="settings-form model-prompt-form">
+                    <label class="wide"><span>Prompt 内容</span><textarea placeholder="输入全局 system prompt，作用于所有 Skill..."></textarea></label>
+                    <p class="prompt-priority">优先级：Skill 专属 Prompt > 模型专属 Prompt > 此全局 Prompt</p>
+                    <button class="primary-button settings-action wide" type="button">保存</button>
+                  </form>
+                </section>
               </div>
-              <form class="settings-form settings-form-compact">
-                <label><span>模型提供商</span><select><option>Anthropic Claude</option><option>OpenAI</option><option>Azure OpenAI</option></select></label>
-                <label><span>模型版本</span><select><option>claude-sonnet</option><option>gpt-4.1</option><option>gpt-4o</option></select></label>
-                <label class="wide"><span>API Key</span><div class="input-action"><input type="password" value="sk-demo-token" /><button class="mini-button" type="button">查看</button><button class="mini-button" type="button">测试</button></div></label>
-                <label><span>最大回复 Token</span><input type="number" value="2000" /></label>
-                <label><span>Temperature</span><input type="number" step="0.1" value="0.7" /></label>
-                <label><span>超时时间（秒）</span><input type="number" value="30" /></label>
-                <label class="wide"><span>System Prompt（全局）</span><textarea placeholder="输入全局 system prompt，作用于所有 Skill..."></textarea></label>
-                <button class="primary-button settings-action" type="button">保存配置</button>
-              </form>
             </section>
 
             <section class="settings-detail" id="settings-notify">
@@ -318,16 +339,12 @@
 
             <section class="settings-detail" id="settings-appearance">
               <div class="settings-detail-head">
-                <h2>外观与语言</h2>
-                <p>系统展示名称、语言及界面偏好</p>
+                <h2>基本信息</h2>
+                <p>系统展示名称和语言设置</p>
               </div>
               <form class="settings-form settings-form-compact">
-                <label><span>系统名称</span><input value="WinWise 专家系统" /></label>
-                <label><span>系统语言</span><select><option>简体中文</option><option>English</option></select></label>
-                <label class="wide"><span>系统描述（显示在登录页）</span><textarea placeholder="输入系统介绍，展示给用户看..."></textarea></label>
-                <label><span>时区</span><select><option>Asia/Shanghai</option><option>UTC</option></select></label>
-                <label><span>日期格式</span><select><option>YYYY/MM/DD</option><option>YYYY-MM-DD</option></select></label>
-                <label class="setting-check wide"><span><strong>侧边栏默认折叠</strong><small>进入系统时自动收起导航</small></span><input type="checkbox" /></label>
+                <label class="wide"><span>系统名称</span><input value="WinWise 专家系统" /></label>
+                <label class="wide"><span>系统语言</span><select><option>自动检测</option><option>简体中文</option><option>English</option></select></label>
                 <button class="primary-button settings-action" type="button">保存</button>
               </form>
             </section>
@@ -450,8 +467,8 @@
         <form class="data-form">
           <label><span>套餐名称</span><input placeholder="例如：企业增长版" /></label>
           <label><span>月费</span><input type="number" placeholder="7" /></label>
-          <label><span>知识库数量</span><input type="number" placeholder="10" /></label>
-          <label><span>Skill 数量</span><input type="number" placeholder="20" /></label>
+          <label><span>问答数量</span><input type="number" placeholder="1000" /></label>
+          <label><span>Token 数量</span><input type="number" placeholder="50万" /></label>
           <label class="wide"><span>权益说明</span><input placeholder="向量额度、账号数量、服务等级等" /></label>
           <button class="primary-button wide" data-close-plan type="button">保存套餐</button>
         </form>
@@ -470,8 +487,8 @@
         <form class="data-form">
           <label><span>套餐名称</span><input id="editPlanName" value="专业版" /></label>
           <label><span>价格</span><input id="editPlanPrice" value="20元" /></label>
-          <label><span>知识库数量</span><input id="editPlanKb" type="number" value="5" /></label>
-          <label><span>Skill 数量</span><input id="editPlanSkill" type="number" value="10" /></label>
+          <label><span>问答数量</span><input id="editPlanKb" value="1,000" /></label>
+          <label><span>Token 数量</span><input id="editPlanSkill" value="50万" /></label>
           <label><span>状态</span><select id="editPlanStatus"><option>已上架</option><option>审核中</option><option>已下架</option></select></label>
           <label class="wide"><span>权益说明</span><input placeholder="向量额度、账号数量、服务等级等" /></label>
           <button class="primary-button wide" data-close-edit-plan type="button">保存修改</button>
@@ -490,6 +507,55 @@
             <button class="danger-button" data-close-delete-confirm type="button">确认删除</button>
           </div>
         </div>
+      </section>
+    </div>
+
+    <div id="modelModal" class="modal-backdrop is-hidden" role="dialog" aria-modal="true" aria-labelledby="modelModalTitle">
+      <section class="modal-panel modal-panel-wide">
+        <button class="modal-close" data-close-model type="button" aria-label="关闭添加模型弹窗">×</button>
+        <div class="panel-head">
+          <div>
+            <h2 id="modelModalTitle">添加模型</h2>
+            <p>接入新的模型提供商，配置 API Key 和调用参数。</p>
+          </div>
+        </div>
+        <form class="data-form">
+          <label><span>模型提供商</span><select><option>Anthropic</option><option>OpenAI</option><option>Azure OpenAI</option></select></label>
+          <label><span>模型名称</span><input placeholder="例如：Claude Sonnet 4.5" /></label>
+          <label class="wide"><span>API Key</span><div class="input-action"><input type="password" placeholder="输入 API Key" /><button class="mini-button" type="button">测试</button></div></label>
+          <label><span>最大回复 Token</span><input type="number" value="2000" /></label>
+          <label><span>Temperature</span><input class="temperature-field" type="number" min="0" step="0.1" value="0.7" /></label>
+          <label><span>超时时间（秒）</span><input type="number" value="30" /></label>
+          <label><span>状态</span><select><option>启用</option><option>停用</option></select></label>
+          <label class="wide"><span>模型用途</span><input placeholder="例如：默认模型、备用模型、长文本模型" /></label>
+          <button class="primary-button wide" data-close-model type="button">保存模型</button>
+        </form>
+      </section>
+    </div>
+
+    <div id="editModelModal" class="modal-backdrop is-hidden" role="dialog" aria-modal="true" aria-labelledby="editModelModalTitle">
+      <section class="modal-panel modal-panel-wide">
+        <button class="modal-close" data-close-edit-model type="button" aria-label="关闭编辑模型弹窗">×</button>
+        <div class="panel-head">
+          <div>
+            <h2 id="editModelModalTitle">编辑模型</h2>
+            <p>调整已接入模型的状态、密钥和调用参数。</p>
+          </div>
+        </div>
+        <form class="data-form">
+          <label><span>模型提供商</span><input id="editModelProvider" class="readonly-input" value="Anthropic" readonly /></label>
+          <label><span>模型名称</span><input id="editModelName" value="Claude Sonnet 4.5" /></label>
+          <label class="wide"><span>API Key</span><div class="input-action"><input type="password" value="sk-demo-token" /><button class="mini-button" type="button">查看</button><button class="mini-button" type="button">测试</button></div></label>
+          <label><span>最大回复 Token</span><input type="number" value="2000" /></label>
+          <label><span>Temperature</span><input class="temperature-field" type="number" min="0" step="0.1" value="0.7" /></label>
+          <label><span>超时时间（秒）</span><input type="number" value="30" /></label>
+          <label><span>状态</span><select id="editModelStatus"><option>启用</option><option>停用</option></select></label>
+          <label class="wide"><span>模型用途</span><input id="editModelPurpose" value="默认模型" /></label>
+          <div class="modal-actions wide">
+            <button class="mini-button" data-close-edit-model type="button">取消</button>
+            <button class="primary-button" data-close-edit-model type="button">保存修改</button>
+          </div>
+        </form>
       </section>
     </div>
 
@@ -595,6 +661,120 @@
       </section>
     </div>
 
+    <div id="noChunksIssueModal" class="modal-backdrop is-hidden" role="dialog" aria-modal="true" aria-labelledby="noChunksIssueTitle">
+      <section class="modal-panel modal-panel-wide">
+        <button class="modal-close" data-close-issue type="button" aria-label="关闭无分块文档弹窗">×</button>
+        <div class="panel-head">
+          <div>
+            <h2 id="noChunksIssueTitle">无分块文档</h2>
+            <p>解析成功但分块为 0 的文档需要重新切分或重析。</p>
+          </div>
+        </div>
+        <div class="issue-detail">
+          <div class="issue-grid">
+            <div><span>影响知识库</span><p>patent</p></div>
+            <div><span>异常文档</span><p>2 个</p></div>
+            <div><span>当前状态</span><p>待处理</p></div>
+            <div><span>发现时间</span><p>2026/06/01 15:20</p></div>
+          </div>
+          <div class="table-wrap compact-table">
+            <table>
+              <thead><tr><th>文档标题</th><th>解析状态</th><th>分块数</th><th>建议操作</th></tr></thead>
+              <tbody>
+                <tr><td>宠物智能产品专利检索报告.pdf</td><td>ready</td><td>0</td><td>重新切分</td></tr>
+                <tr><td>知识产权的辨认、查询与侵权规避.pdf</td><td>processing</td><td>0</td><td>等待解析完成</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="mini-button" data-close-issue type="button">关闭</button>
+          <div>
+            <button class="mini-button" type="button">导出列表</button>
+            <button class="primary-button" data-close-issue type="button">批量重析</button>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div id="missedAnswersIssueModal" class="modal-backdrop is-hidden" role="dialog" aria-modal="true" aria-labelledby="missedAnswersIssueTitle">
+      <section class="modal-panel modal-panel-wide">
+        <button class="modal-close" data-close-issue type="button" aria-label="关闭未命中文档弹窗">×</button>
+        <div class="panel-head">
+          <div>
+            <h2 id="missedAnswersIssueTitle">问答未命中文档</h2>
+            <p>定位未命中文档的问题类型，补充知识库或调整 Skill。</p>
+          </div>
+        </div>
+        <div class="issue-detail">
+          <div class="issue-grid">
+            <div><span>未命中数量</span><p>5 条</p></div>
+            <div><span>集中场景</span><p>售后政策</p></div>
+            <div><span>关联知识库</span><p>after_sales</p></div>
+            <div><span>建议优先级</span><p>高</p></div>
+          </div>
+          <div class="table-wrap compact-table">
+            <table>
+              <thead><tr><th>用户问题</th><th>未命中原因</th><th>建议补充内容</th></tr></thead>
+              <tbody>
+                <tr><td>退货超期如何处理？</td><td>缺少售后时效文档</td><td>补充退货周期规则</td></tr>
+                <tr><td>海外仓破损件怎么补发？</td><td>未命中赔付流程</td><td>补充破损件 SOP</td></tr>
+                <tr><td>部分退款审批标准是什么？</td><td>政策条款覆盖不足</td><td>补充退款审批模板</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="mini-button" data-close-issue type="button">关闭</button>
+          <div>
+            <button class="mini-button" type="button">生成补充清单</button>
+            <button class="primary-button" data-close-issue type="button">标记已定位</button>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div id="syncDelayIssueModal" class="modal-backdrop is-hidden" role="dialog" aria-modal="true" aria-labelledby="syncDelayIssueTitle">
+      <section class="modal-panel modal-panel-wide">
+        <button class="modal-close" data-close-issue type="button" aria-label="关闭同步延迟详情弹窗">×</button>
+        <div class="panel-head">
+          <div>
+            <h2 id="syncDelayIssueTitle">向量同步延迟</h2>
+            <p>查看同步队列延迟、吞吐和当前处理状态。</p>
+          </div>
+        </div>
+        <div class="issue-detail">
+          <div class="issue-grid">
+            <div><span>当前延迟</span><p>42 秒</p></div>
+            <div><span>阈值</span><p>60 秒</p></div>
+            <div><span>队列长度</span><p>18</p></div>
+            <div><span>同步状态</span><p>正常</p></div>
+          </div>
+          <div class="readonly-box">
+            <span>同步说明</span>
+            <p>当前延迟仍在阈值内，主要由 patent 知识库批量重析任务造成。系统会优先处理已解析完成的文档，并在队列超过阈值时触发告警。</p>
+          </div>
+          <div class="table-wrap compact-table">
+            <table>
+              <thead><tr><th>知识库</th><th>待同步</th><th>最近完成</th><th>状态</th></tr></thead>
+              <tbody>
+                <tr><td>patent</td><td>11</td><td>16:38</td><td><span class="status ok">处理中</span></td></tr>
+                <tr><td>expert</td><td>5</td><td>16:39</td><td><span class="status ok">正常</span></td></tr>
+                <tr><td>faq</td><td>2</td><td>16:40</td><td><span class="status ok">正常</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="mini-button" data-close-issue type="button">关闭</button>
+          <div>
+            <button class="mini-button" type="button">刷新队列</button>
+            <button class="primary-button" data-close-issue type="button">确认正常</button>
+          </div>
+        </div>
+      </section>
+    </div>
+
     <div id="userModal" class="modal-backdrop is-hidden" role="dialog" aria-modal="true" aria-labelledby="userModalTitle">
       <section class="modal-panel modal-panel-wide">
         <button class="modal-close" data-close-user type="button" aria-label="关闭添加用户弹窗">×</button>
@@ -678,8 +858,7 @@
           </div>
         </div>
         <form class="data-form">
-          <label><span>知识库名称</span><input placeholder="例如：售后专家库" /></label>
-          <label><span>范围</span><select><option>official</option><option>team</option><option>private</option></select></label>
+          <label class="wide"><span>知识库名称</span><input placeholder="例如：售后专家库" /></label>
           <label class="wide"><span>描述</span><input placeholder="说明知识库的业务范围和适用角色" /></label>
           <button class="primary-button wide" data-close-knowledge type="button">创建知识库</button>
         </form>
@@ -689,22 +868,38 @@
     <div id="skillModal" class="modal-backdrop is-hidden" role="dialog" aria-modal="true" aria-labelledby="skillModalTitle">
       <section class="modal-panel modal-panel-wide">
         <button class="modal-close" data-close-skill type="button" aria-label="关闭添加 Skill 弹窗">×</button>
-        <div class="skill-upload-head">
-          <h2 id="skillModalTitle">上传技能</h2>
+        <div class="panel-head">
+          <div>
+            <h2 id="skillModalTitle">上传技能</h2>
+            <p>选择 Skill 类型后上传文件，系统将读取文件中的技能名称和描述。</p>
+          </div>
         </div>
-        <label class="skill-drop">
-          <input type="file" accept=".zip,.md" />
-          <span>拖拽文件或点击上传</span>
-        </label>
-        <label class="check-line skill-auto-install">
-          <input type="checkbox" />
-          <span>非高风险自动安装</span>
-        </label>
-        <div class="skill-requirements">
-          <h3>文件要求</h3>
-          <p>文件夹或者 .zip 需要包含 SKILL.md 文件</p>
-          <p>.md 文件需包含 YAML 格式的技能名称和描述</p>
-        </div>
+        <form class="data-form skill-upload-form">
+          <label class="wide skill-type-field">
+            <span>Skill 类型</span>
+            <select>
+              <option>运营诊断</option>
+              <option>文档分析</option>
+              <option>问答增强</option>
+              <option>数据分析</option>
+            </select>
+            <small>类型用于归类列表中的 Skill，上传后不可自动变更。</small>
+          </label>
+          <label class="skill-drop wide">
+            <input type="file" accept=".zip,.md" />
+            <span>拖拽文件或点击上传</span>
+          </label>
+          <label class="check-line skill-auto-install wide">
+            <input type="checkbox" />
+            <span>非高风险自动安装</span>
+          </label>
+          <div class="skill-requirements wide">
+            <h3>文件要求</h3>
+            <p>文件夹或者 .zip 需要包含 SKILL.md 文件</p>
+            <p>.md 文件需包含 YAML 格式的技能名称和描述</p>
+          </div>
+          <button class="primary-button wide" data-close-skill type="button">确认上传</button>
+        </form>
       </section>
     </div>
 
@@ -794,20 +989,35 @@
             </div>
           </section>
         </div>
-        <section class="chunk-preview">
-          <h3>分块预览</h3>
-          <div class="chunk-list">
-            <article><span>#001</span><p>文档标题、目录和摘要信息已被识别，可作为问答引用来源。</p></article>
-            <article><span>#002</span><p>正文内容按章节拆分，保留页码与原始文件位置。</p></article>
-            <article><span>#003</span><p>关键术语、产品名和政策条款已进入向量索引。</p></article>
-          </div>
-        </section>
-        <div class="modal-footer">
-          <button class="mini-button" type="button">下载解析报告</button>
-          <div>
-            <button class="mini-button" type="button">重新解析</button>
-            <button class="primary-button" data-close-doc-detail type="button">关闭</button>
-          </div>
+        <div class="document-preview-grid">
+          <section class="original-preview">
+            <h3>原文预览</h3>
+            <div class="original-list">
+              <article>
+                <span>第 1 页</span>
+                <p>防窜息标签适用于宠物用品包装和仓储流转场景，需在入库、出库和售后核验环节保持标签信息一致。</p>
+              </article>
+              <article>
+                <span>第 2 页</span>
+                <p>系统应识别产品名称、批次编号、渠道来源和责任人字段，并保留原始页码作为后续问答引用依据。</p>
+              </article>
+              <article>
+                <span>第 3 页</span>
+                <p>当标签缺失或内容不一致时，应记录异常原因并触发复核流程，避免低质量文档进入知识库。</p>
+              </article>
+            </div>
+          </section>
+          <section class="chunk-preview">
+            <h3>分块预览</h3>
+            <div class="chunk-list">
+              <article><span>#001</span><p>文档标题、目录和摘要信息已被识别，可作为问答引用来源。</p></article>
+              <article><span>#002</span><p>正文内容按章节拆分，保留页码与原始文件位置。</p></article>
+              <article><span>#003</span><p>关键术语、产品名和政策条款已进入向量索引。</p></article>
+            </div>
+          </section>
+        </div>
+        <div class="modal-footer modal-footer-end">
+          <button class="primary-button" data-close-doc-detail type="button">关闭</button>
         </div>
       </section>
     </div>
@@ -822,8 +1032,8 @@
           </div>
         </div>
         <form class="data-form upload-form">
-          <label><span>目标知识库</span><select><option>expert</option><option>patent</option><option>faq</option><option>after_sales</option><option>ops_runbook</option><option>pricing_policy</option></select></label>
-          <label><span>文档标题</span><input placeholder="默认使用文件名" /></label>
+          <label class="wide"><span>目标知识库</span><select><option>expert</option><option>patent</option><option>faq</option><option>after_sales</option><option>ops_runbook</option><option>pricing_policy</option></select></label>
+          <label class="wide"><span>文档标题</span><input placeholder="默认使用文件名" /></label>
           <label class="file-drop wide"><input id="fileInput" type="file" multiple /><span id="fileLabel">选择或拖入文档</span></label>
           <button class="primary-button wide" data-close-upload type="button">上传文档</button>
         </form>

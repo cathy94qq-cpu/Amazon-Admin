@@ -413,6 +413,10 @@ textarea:focus {
   margin-left: 0;
 }
 
+.empty-action {
+  color: var(--muted);
+}
+
 .admin-shell {
   min-height: 100vh;
   display: grid;
@@ -497,7 +501,7 @@ textarea:focus {
 
 .metric-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(160px, 1fr));
+  grid-template-columns: repeat(3, minmax(180px, 1fr));
   gap: 14px;
 }
 
@@ -679,7 +683,7 @@ progress::-webkit-progress-value {
 }
 
 .skill-drop {
-  min-height: 150px;
+  min-height: 132px;
   border: 1px dashed var(--line-dark);
   border-radius: 8px;
   display: grid;
@@ -695,7 +699,23 @@ progress::-webkit-progress-value {
 }
 
 .skill-auto-install {
-  margin: 14px 0;
+  margin: 0;
+}
+
+.skill-upload-form {
+  gap: 14px;
+}
+
+.skill-type-field {
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fafafa;
+}
+
+.skill-type-field small {
+  margin-top: 8px;
+  color: var(--muted);
 }
 
 .skill-requirements h3 {
@@ -831,6 +851,10 @@ progress::-webkit-progress-value {
   background: #fff;
 }
 
+.modal-footer-end {
+  justify-content: flex-end;
+}
+
 .confirm-panel {
   width: min(420px, 100%);
 }
@@ -955,20 +979,20 @@ progress::-webkit-progress-value {
 
 .document-detail-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(260px, 0.85fr);
+  grid-template-columns: 1fr;
   gap: 16px;
   padding: 18px 22px;
 }
 
 .document-detail-grid section,
-.chunk-preview {
+.document-preview-grid section {
   border: 1px solid var(--line);
   border-radius: 8px;
   padding: 14px;
 }
 
 .document-detail-grid h3,
-.chunk-preview h3 {
+.document-preview-grid h3 {
   margin: 0 0 10px;
   font-size: 15px;
   font-weight: 400;
@@ -991,26 +1015,44 @@ progress::-webkit-progress-value {
   margin: 0;
 }
 
-.chunk-preview {
+.document-preview-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 16px;
   margin: 0 22px 18px;
 }
 
-.chunk-list {
+.chunk-list,
+.original-list {
   display: grid;
   gap: 10px;
 }
 
-.chunk-list article {
+.chunk-list article,
+.original-list article {
   display: grid;
-  grid-template-columns: 56px 1fr;
   gap: 10px;
   border-radius: 8px;
   padding: 10px;
   background: #f6f6f4;
 }
 
-.chunk-list p {
+.chunk-list article {
+  grid-template-columns: 56px 1fr;
+}
+
+.original-list article {
+  grid-template-columns: 64px 1fr;
+}
+
+.chunk-list p,
+.original-list p {
   margin: 0;
+}
+
+.chunk-list span,
+.original-list span {
+  color: var(--text);
 }
 
 .modal-close {
@@ -1028,7 +1070,7 @@ progress::-webkit-progress-value {
 }
 
 .upload-form {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: 1fr;
 }
 
 .toolbar {
@@ -1138,7 +1180,7 @@ progress::-webkit-progress-value {
 
 table {
   width: 100%;
-  min-width: 860px;
+  min-width: 720px;
   border-collapse: collapse;
   background: #fff;
 }
@@ -1272,6 +1314,88 @@ td:first-child {
 
 .settings-detail.is-active {
   display: block;
+}
+
+.model-settings {
+  display: grid;
+  gap: 16px;
+  padding: 18px;
+}
+
+.settings-inner-card {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.settings-inner-card .settings-detail-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.model-list {
+  display: grid;
+  gap: 10px;
+  padding: 16px;
+}
+
+.model-row {
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 8px;
+  background: #f7f7f2;
+}
+
+.model-row h3,
+.model-row p {
+  margin: 0;
+}
+
+.model-row h3 {
+  font-size: 15px;
+}
+
+.model-row p {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.model-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  background: #dcecff;
+  color: #2f65a7;
+  font-size: 12px;
+}
+
+.model-avatar.openai {
+  background: #eaf4de;
+  color: #4f7b2b;
+}
+
+.model-prompt-form {
+  padding: 16px;
+  grid-template-columns: 1fr;
+}
+
+.prompt-priority {
+  grid-column: 1 / -1;
+  margin: -4px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.model-prompt-form .settings-action {
+  justify-self: start;
 }
 
 .settings-form {
@@ -1630,6 +1754,7 @@ td:first-child {
   .skill-stats,
   .document-metrics,
   .document-detail-grid,
+  .document-preview-grid,
   .issue-grid,
   .user-edit-meta,
   .profile-layout,

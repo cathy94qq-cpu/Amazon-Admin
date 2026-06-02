@@ -15,6 +15,8 @@ const editUserModal = document.querySelector("#editUserModal");
 const planModal = document.querySelector("#planModal");
 const editPlanModal = document.querySelector("#editPlanModal");
 const deleteConfirmModal = document.querySelector("#deleteConfirmModal");
+const modelModal = document.querySelector("#modelModal");
+const editModelModal = document.querySelector("#editModelModal");
 const knowledgeModal = document.querySelector("#knowledgeModal");
 const skillModal = document.querySelector("#skillModal");
 const addSkillModal = document.querySelector("#addSkillModal");
@@ -24,6 +26,9 @@ const issueModals = {
   parse: document.querySelector("#parseIssueModal"),
   rating: document.querySelector("#ratingIssueModal"),
   plan: document.querySelector("#planIssueModal"),
+  noChunks: document.querySelector("#noChunksIssueModal"),
+  missedAnswers: document.querySelector("#missedAnswersIssueModal"),
+  syncDelay: document.querySelector("#syncDelayIssueModal"),
 };
 
 const rolePermissions = {
@@ -143,6 +148,71 @@ document.querySelectorAll("[data-settings-tab]").forEach((button) => {
   button.addEventListener("click", () => {
     selectSettingsTab(button.dataset.settingsTab);
   });
+});
+
+document.querySelectorAll(".temperature-field").forEach((input) => {
+  input.addEventListener("input", (event) => {
+    if (Number(event.target.value) < 0) {
+      event.target.value = 0;
+    }
+  });
+});
+
+document.querySelectorAll("[data-open-model]").forEach((button) => {
+  button.addEventListener("click", () => {
+    modelModal.classList.remove("is-hidden");
+  });
+});
+
+document.querySelectorAll("[data-close-model]").forEach((button) => {
+  button.addEventListener("click", () => {
+    modelModal.classList.add("is-hidden");
+    if (button.classList.contains("primary-button")) {
+      showToast("模型已添加");
+    }
+  });
+});
+
+modelModal.addEventListener("click", (event) => {
+  if (event.target === modelModal) {
+    modelModal.classList.add("is-hidden");
+  }
+});
+
+document.querySelectorAll("[data-open-edit-model]").forEach((button) => {
+  button.addEventListener("click", () => {
+    const row = button.closest(".model-row");
+    const name = row.querySelector("h3").textContent;
+    const detail = row.querySelector("p").textContent;
+    const [provider = "", purpose = ""] = detail.split("·").map((item) => item.trim());
+
+    document.querySelector("#editModelName").value = name;
+    document.querySelector("#editModelProvider").value = provider;
+    document.querySelector("#editModelPurpose").value = purpose.replace("Temperature 0.7", "").trim() || "备用模型";
+    document.querySelector("#editModelStatus").value = row.querySelector(".status").textContent.trim();
+    editModelModal.classList.remove("is-hidden");
+  });
+});
+
+document.querySelectorAll("[data-delete-model]").forEach((button) => {
+  button.addEventListener("click", () => {
+    showToast("停用模型已删除");
+  });
+});
+
+document.querySelectorAll("[data-close-edit-model]").forEach((button) => {
+  button.addEventListener("click", () => {
+    editModelModal.classList.add("is-hidden");
+    if (button.classList.contains("primary-button")) {
+      showToast("模型配置已保存");
+    }
+  });
+});
+
+editModelModal.addEventListener("click", (event) => {
+  if (event.target === editModelModal) {
+    editModelModal.classList.add("is-hidden");
+  }
 });
 
 document.querySelectorAll("[data-open-user]").forEach((button) => {
@@ -363,7 +433,7 @@ document.querySelectorAll("[data-close-skill]").forEach((button) => {
   button.addEventListener("click", () => {
     skillModal.classList.add("is-hidden");
     if (button.classList.contains("primary-button")) {
-      showToast("Skill 已添加");
+      showToast("Skill 已上传");
     }
   });
 });
