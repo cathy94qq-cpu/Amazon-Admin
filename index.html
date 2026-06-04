@@ -46,13 +46,17 @@
         <nav class="side-nav" aria-label="管理员导航">
           <button class="nav-item is-active" data-page="dashboard" type="button">控制台</button>
           <button class="nav-item" data-page="knowledge" type="button">知识库管理</button>
-          <button class="nav-item" data-page="documents" type="button">文档管理</button>
+          <button class="nav-item" data-page="experts" type="button">专家管理</button>
           <button class="nav-item" data-page="skills" type="button">Skill 管理</button>
-          <button class="nav-item" data-page="users" type="button">用户管理</button>
+          <button class="nav-item nav-parent" data-page="users" data-users-toggle type="button" aria-expanded="false">用户管理</button>
+          <div class="nav-submenu users-submenu is-collapsed" aria-label="用户管理子目录">
+            <button class="nav-subitem" data-users-tab="team" data-page-link="users" type="button">团队成员管理</button>
+            <button class="nav-subitem" data-users-tab="customers" data-page-link="users" type="button">客户管理</button>
+          </div>
           <button class="nav-item" data-page="ops" type="button">运维指标</button>
           <button class="nav-item" data-page="plans" type="button">套餐管理</button>
           <button class="nav-item nav-parent" data-page="settings" data-settings-toggle type="button" aria-expanded="false">系统设置</button>
-          <div class="nav-submenu is-collapsed" aria-label="系统设置子目录">
+          <div class="nav-submenu settings-submenu is-collapsed" aria-label="系统设置子目录">
             <button class="nav-subitem" data-settings-tab="appearance" data-page-link="settings" type="button">基本信息</button>
             <button class="nav-subitem is-active" data-settings-tab="ai" data-page-link="settings" type="button">AI 模型</button>
             <button class="nav-subitem" data-settings-tab="notify" data-page-link="settings" type="button">通知告警</button>
@@ -108,21 +112,154 @@
         </section>
 
         <section id="knowledge" class="page">
+          <div class="knowledge-stats">
+            <article><span>知识库总数</span><strong>4</strong></article>
+            <article><span>文档总数</span><strong>50</strong></article>
+            <article><span>已同步</span><strong class="text-ok">45</strong></article>
+            <article><span>同步异常</span><strong class="text-danger">3</strong></article>
+            <article><span>处理中</span><strong class="text-warn">2</strong></article>
+          </div>
           <section class="panel">
             <div class="panel-head">
               <div>
                 <h2>知识库列表</h2>
                 <p>支持删除、停用、上传文档和查看同步状态。</p>
               </div>
-              <button class="primary-button compact" data-open-knowledge type="button">添加知识库</button>
+              <button class="primary-button compact" data-open-knowledge type="button">创建知识库</button>
             </div>
-            <input class="search-input knowledge-search" data-filter="kbTable" placeholder="搜索知识库" />
+            <input class="search-input knowledge-search" data-filter="kbList" placeholder="搜索知识库" />
+            <div id="kbList" class="knowledge-list">
+              <article class="kb-card" data-kb-card>
+                <div class="kb-row" data-kb-name="expert">
+                  <button class="icon-button row-toggle" data-toggle-kb type="button" aria-label="展开 expert 文档">›</button>
+                  <div class="kb-card-main">
+                    <div class="kb-card-title"><span class="kb-icon">▣</span><strong>expert</strong><span class="status ok">生效中</span><span class="kb-count">50 份文档</span></div>
+                    <p>专家问答核心资料库，覆盖运营、售后和平台规则。</p>
+                  </div>
+                  <div class="action-group"><button class="mini-button" data-open-upload>上传文档</button><button class="mini-button" data-open-disable-kb>停用</button></div>
+                </div>
+                <div class="kb-doc-panel is-hidden-row" data-doc-panel>
+                  <div class="kb-doc-head"><span>文档名称</span><span>更新时间</span><span>KB 状态</span><span>分块</span><span>操作</span></div>
+                  <div class="kb-doc-row" data-parent-kb="expert">
+                    <div class="kb-doc-title"><span class="doc-file pdf">P</span><strong>防窜息标签.pdf</strong></div>
+                    <span>2026/05/29 09:12</span><span class="status ok">已同步</span><span>18 块</span>
+                    <div class="doc-actions"><button class="icon-mini icon-view" data-open-kb-doc type="button" aria-label="查看文档"></button><button class="icon-mini icon-download" data-download-doc type="button" aria-label="下载文档"></button><button class="icon-mini icon-delete danger-button" type="button" aria-label="删除文档"></button></div>
+                  </div>
+                  <div class="kb-doc-row" data-parent-kb="expert">
+                    <div class="kb-doc-title"><span class="doc-file doc">P</span><strong>亚马逊最新选品方案.pptx</strong></div>
+                    <span>2026/05/29 08:57</span><span class="status ok">已同步</span><span>42 块</span>
+                    <div class="doc-actions"><button class="icon-mini icon-view" data-open-kb-doc type="button" aria-label="查看文档"></button><button class="icon-mini icon-download" data-download-doc type="button" aria-label="下载文档"></button><button class="icon-mini icon-delete danger-button" type="button" aria-label="删除文档"></button></div>
+                  </div>
+                </div>
+              </article>
+
+              <article class="kb-card" data-kb-card>
+                <div class="kb-row" data-kb-name="faq">
+                  <button class="icon-button row-toggle" data-toggle-kb type="button" aria-label="展开 faq 文档">›</button>
+                  <div class="kb-card-main">
+                    <div class="kb-card-title"><span class="kb-icon">▣</span><strong>faq</strong><span class="status ok">生效中</span><span class="kb-count">8 份文档</span></div>
+                    <p>常见问题解答库，包含用户常问问题和解决方案。</p>
+                  </div>
+                  <div class="action-group"><button class="mini-button" data-open-upload>上传文档</button><button class="mini-button" data-open-disable-kb>停用</button></div>
+                </div>
+                <div class="kb-doc-panel is-hidden-row" data-doc-panel>
+                  <div class="kb-doc-head"><span>文档名称</span><span>更新时间</span><span>KB 状态</span><span>分块</span><span>操作</span></div>
+                  <div class="kb-doc-row" data-parent-kb="faq">
+                    <div class="kb-doc-title"><span class="doc-file pdf">P</span><strong>注销店铺流程步骤.pdf</strong></div>
+                    <span>2026/05/27 16:40</span><span class="status ok">已同步</span><span>12 块</span>
+                    <div class="doc-actions"><button class="icon-mini icon-view" data-open-kb-doc type="button" aria-label="查看文档"></button><button class="icon-mini icon-download" data-download-doc type="button" aria-label="下载文档"></button><button class="icon-mini icon-delete danger-button" type="button" aria-label="删除文档"></button></div>
+                  </div>
+                  <div class="kb-doc-row" data-parent-kb="faq">
+                    <div class="kb-doc-title"><span class="doc-file doc">D</span><strong>账号申诉指引.docx</strong></div>
+                    <span>2026/05/26 11:00</span><span class="status ok">已同步</span><span>9 块</span>
+                    <div class="doc-actions"><button class="icon-mini icon-view" data-open-kb-doc type="button" aria-label="查看文档"></button><button class="icon-mini icon-download" data-download-doc type="button" aria-label="下载文档"></button><button class="icon-mini icon-delete danger-button" type="button" aria-label="删除文档"></button></div>
+                  </div>
+                  <div class="kb-doc-row" data-parent-kb="faq">
+                    <div class="kb-doc-title"><span class="doc-file pdf">P</span><strong>常见报错汇总.pdf</strong></div>
+                    <span>2026/05/28 08:30</span><span class="status warn">同步中</span><span>—</span>
+                    <div class="doc-actions"><button class="icon-mini icon-view" data-open-kb-doc type="button" aria-label="查看文档"></button><button class="icon-mini icon-download" data-download-doc type="button" aria-label="下载文档"></button><button class="icon-mini icon-delete danger-button" type="button" aria-label="删除文档"></button></div>
+                  </div>
+                  <p class="kb-doc-foot">共 8 份文档，第 1 / 1 页</p>
+                </div>
+              </article>
+
+              <article class="kb-card" data-kb-card>
+                <div class="kb-row" data-kb-name="patent">
+                  <button class="icon-button row-toggle" data-toggle-kb type="button" aria-label="展开 patent 文档">›</button>
+                  <div class="kb-card-main">
+                    <div class="kb-card-title"><span class="kb-icon">▣</span><strong>patent</strong><span class="status ok">生效中</span><span class="kb-count">15 份文档</span></div>
+                    <p>专利知识产权库，存储专利文档和法律资料。</p>
+                  </div>
+                  <div class="action-group"><button class="mini-button" data-open-upload>上传文档</button><button class="mini-button" data-open-disable-kb>停用</button></div>
+                </div>
+                <div class="kb-doc-panel is-hidden-row" data-doc-panel>
+                  <div class="kb-doc-head"><span>文档名称</span><span>更新时间</span><span>KB 状态</span><span>分块</span><span>操作</span></div>
+                  <div class="kb-doc-row" data-parent-kb="patent">
+                    <div class="kb-doc-title"><span class="doc-file pdf">P</span><strong>知识产权的辨认、查询与侵权规避.pdf</strong></div>
+                    <span>2026/05/29 08:20</span><span class="status warn">同步中</span><span>0 块</span>
+                    <div class="doc-actions"><button class="icon-mini icon-view" data-open-kb-doc type="button" aria-label="查看文档"></button><button class="icon-mini icon-download" data-download-doc type="button" aria-label="下载文档"></button><button class="icon-mini icon-delete danger-button" type="button" aria-label="删除文档"></button></div>
+                  </div>
+                  <div class="kb-doc-row" data-parent-kb="patent">
+                    <div class="kb-doc-title"><span class="doc-file pdf">P</span><strong>宠物智能产品专利检索报告.pdf</strong></div>
+                    <span>2026/05/25 13:09</span><span class="status danger">失败</span><span>0 块</span>
+                    <div class="doc-actions"><button class="icon-mini icon-view" data-open-kb-doc type="button" aria-label="查看文档"></button><button class="icon-mini icon-download" data-download-doc type="button" aria-label="下载文档"></button><button class="icon-mini icon-delete danger-button" type="button" aria-label="删除文档"></button></div>
+                  </div>
+                </div>
+              </article>
+
+              <article class="kb-card" data-kb-card>
+                <div class="kb-row" data-kb-name="ops_runbook">
+                  <button class="icon-button row-toggle" data-toggle-kb type="button" aria-label="展开 ops_runbook 文档">›</button>
+                  <div class="kb-card-main">
+                    <div class="kb-card-title"><span class="kb-icon muted">▣</span><strong>ops_runbook</strong><span class="status pending">已停用</span><span class="kb-count">8 份文档</span></div>
+                    <p>运维排障手册，记录异常数据、同步延迟和任务处理流程。</p>
+                  </div>
+                  <div class="action-group"><button class="mini-button" data-open-upload>上传文档</button><button class="mini-button">启用</button><button class="danger-button" data-open-delete-kb>删除</button></div>
+                </div>
+                <div class="kb-doc-panel is-hidden-row" data-doc-panel>
+                  <div class="kb-doc-head"><span>文档名称</span><span>更新时间</span><span>KB 状态</span><span>分块</span><span>操作</span></div>
+                  <div class="kb-doc-row" data-parent-kb="ops_runbook">
+                    <div class="kb-doc-title"><span class="doc-file pdf">P</span><strong>同步延迟排查手册.pdf</strong></div>
+                    <span>2026/05/29 10:42</span><span class="status ok">已同步</span><span>8 块</span>
+                    <div class="doc-actions"><button class="icon-mini icon-view" data-open-kb-doc type="button" aria-label="查看文档"></button><button class="icon-mini icon-download" data-download-doc type="button" aria-label="下载文档"></button><button class="icon-mini icon-delete danger-button" type="button" aria-label="删除文档"></button></div>
+                  </div>
+                </div>
+              </article>
+            </div>
+          </section>
+        </section>
+
+        <section id="experts" class="page">
+          <div class="expert-stats">
+            <article><span>专家总数</span><strong>6</strong></article>
+            <article><span>已上架</span><strong>5</strong></article>
+            <article><span>草稿</span><strong>1</strong></article>
+            <article><span>今日召唤总次数</span><strong>9,542</strong></article>
+          </div>
+
+          <section class="panel">
+            <div class="panel-head">
+              <div>
+                <h2>专家列表</h2>
+                <p>配置专家分类、绑定 Skill 与知识库，并管理上架状态。</p>
+              </div>
+              <button class="primary-button compact" data-open-expert type="button">新建专家</button>
+            </div>
+            <div class="expert-filters">
+              <input class="search-input expert-search" data-filter="expertTable" placeholder="搜索专家名称或描述..." />
+              <select><option>全部分类</option><option>店铺运营</option><option>选品开发</option><option>广告投放</option><option>Listing 优化</option><option>合规法务</option><option>数据分析</option></select>
+              <select><option>全部状态</option><option>已上架</option><option>草稿</option><option>已下架</option></select>
+            </div>
             <div class="table-wrap">
-              <table id="kbTable">
-                <thead><tr><th>名称</th><th>描述</th><th>文档数</th><th>状态</th><th>更新时间</th><th>操作</th></tr></thead>
+              <table id="expertTable" class="expert-table">
+                <thead><tr><th>专家名称</th><th>分类</th><th>绑定 Skill</th><th>绑定知识库</th><th>引导问题</th><th>召唤次数</th><th>状态</th><th>操作</th></tr></thead>
                 <tbody>
-                  <tr><td>expert</td><td>专家问答核心资料库，覆盖运营、售后和平台规则。</td><td>50</td><td><span class="status ok">生效中</span></td><td>2026/05/22 16:14</td><td><button class="mini-button" data-open-upload>上传文档</button><button class="mini-button">停用</button></td></tr>
-                  <tr><td>ops_runbook</td><td>运维排障手册，记录异常数据、同步延迟和任务处理流程。</td><td>8</td><td><span class="status warn">维护中</span></td><td>2026/05/29 10:58</td><td><button class="mini-button" data-open-upload>上传文档</button><button class="mini-button">启用</button><button class="danger-button">删除</button></td></tr>
+                  <tr><td><div class="expert-name"><span class="expert-avatar blue"></span><strong>店铺运营顾问</strong></div></td><td>店铺运营</td><td><span class="skill-chip">广告 ACOS 诊断</span></td><td><span class="kb-chip">expert</span></td><td>3</td><td>3,218</td><td><span class="status ok">已上架</span></td><td><div class="action-group"><button class="mini-button" data-open-edit-expert type="button">编辑</button><button class="mini-button">下架</button></div></td></tr>
+                  <tr><td><div class="expert-name"><span class="expert-avatar green"></span><strong>选品分析专家</strong></div></td><td>选品开发</td><td><span class="skill-chip">选品机会分析</span></td><td><span class="kb-chip">expert</span></td><td>3</td><td>2,045</td><td><span class="status ok">已上架</span></td><td><div class="action-group"><button class="mini-button" data-open-edit-expert type="button">编辑</button><button class="mini-button">下架</button></div></td></tr>
+                  <tr><td><div class="expert-name"><span class="expert-avatar yellow"></span><strong>广告投放专家</strong></div></td><td>广告投放</td><td><span class="skill-chip">广告 ACOS 诊断</span></td><td><span class="kb-chip">expert</span></td><td>3</td><td>1,892</td><td><span class="status ok">已上架</span></td><td><div class="action-group"><button class="mini-button" data-open-edit-expert type="button">编辑</button><button class="mini-button">下架</button></div></td></tr>
+                  <tr><td><div class="expert-name"><span class="expert-avatar gray"></span><strong>Listing 优化师</strong></div></td><td>Listing 优化</td><td><span class="skill-chip">Listing 优化助手</span></td><td><span class="kb-chip">expert</span></td><td>2</td><td>1,563</td><td><span class="status ok">已上架</span></td><td><div class="action-group"><button class="mini-button" data-open-edit-expert type="button">编辑</button><button class="mini-button">下架</button></div></td></tr>
+                  <tr><td><div class="expert-name"><span class="expert-avatar red"></span><strong>合规法务顾问</strong></div></td><td>合规法务</td><td><span class="skill-chip">专利侵权规避</span></td><td><span class="kb-chip">patent</span><span class="kb-chip">expert</span></td><td>2</td><td>824</td><td><span class="status ok">已上架</span></td><td><div class="action-group"><button class="mini-button" data-open-edit-expert type="button">编辑</button><button class="mini-button">下架</button></div></td></tr>
+                  <tr><td><div class="expert-name"><span class="expert-avatar teal"></span><strong>数据分析师</strong></div></td><td>数据分析</td><td><span class="skill-chip">数据报告解读</span></td><td><span class="kb-chip">expert</span></td><td>0</td><td>0</td><td><span class="status warn">草稿</span></td><td><div class="action-group"><button class="mini-button" data-open-edit-expert type="button">编辑</button><button class="mini-button">上架</button><button class="danger-button" type="button">删除</button></div></td></tr>
                 </tbody>
               </table>
             </div>
@@ -183,25 +320,77 @@
         </section>
 
         <section id="users" class="page">
-          <section class="panel">
-            <div class="panel-head">
-              <div>
-                <h2>用户列表</h2>
-                <p>按角色分配后台权限，减少越权操作。</p>
+          <section id="users-team" class="user-detail is-active">
+            <div class="user-stats">
+              <article><span>成员总数</span><strong>4</strong></article>
+              <article><span>管理员</span><strong class="text-blue">2</strong></article>
+              <article><span>专家</span><strong class="text-ok">1</strong></article>
+              <article><span>待激活</span><strong class="text-warn">1</strong></article>
+            </div>
+            <section class="panel user-management-panel">
+              <div class="panel-head">
+                <div>
+                  <h2>团队成员列表</h2>
+                  <p>管理后台操作人员的角色与权限，按角色分配访问范围。</p>
+                </div>
+                <button class="primary-button compact" data-open-user type="button">添加成员</button>
               </div>
-              <button class="primary-button compact" data-open-user type="button">添加用户</button>
+              <div class="user-filters team-filters">
+                <input class="search-input user-search" data-filter="userTable" placeholder="搜索成员姓名或邮箱..." />
+                <select><option>全部角色</option><option>超级管理员</option><option>专家</option><option>运维人员</option><option>管理员</option></select>
+                <select><option>全部状态</option><option>启用</option><option>停用</option><option>待激活</option></select>
+              </div>
+              <div class="table-wrap">
+                <table id="userTable" class="member-table">
+                  <thead><tr><th>成员</th><th>邮箱</th><th>角色</th><th>权限摘要</th><th>状态</th><th>更新时间</th><th>操作</th></tr></thead>
+                  <tbody>
+                    <tr><td><div class="member-cell"><span class="member-avatar green">超</span><strong>超级管理员</strong></div></td><td>admin@winwise.ai</td><td><span class="soft-label">超级管理员</span></td><td>全部权限</td><td><span class="status ok">启用</span></td><td>2026/06/04</td><td><div class="action-group"><button class="mini-button" data-open-edit-user data-user-status="启用">编辑</button><button class="mini-button">停用</button></div></td></tr>
+                    <tr><td><div class="member-cell"><span class="member-avatar yellow">李</span><strong>李明</strong></div></td><td>expert@winwise.ai</td><td><span class="soft-label">专家</span></td><td>知识库、专家配置</td><td><span class="status ok">启用</span></td><td>2026/06/03</td><td><div class="action-group"><button class="mini-button" data-open-edit-user data-user-status="启用">编辑</button><button class="mini-button">停用</button></div></td></tr>
+                    <tr><td><div class="member-cell"><span class="member-avatar teal">周</span><strong>周岚</strong></div></td><td>ops@winwise.ai</td><td><span class="soft-label">运维人员</span></td><td>运维指标</td><td><span class="status ok">启用</span></td><td>2026/06/02</td><td><div class="action-group"><button class="mini-button" data-open-edit-user data-user-status="启用">编辑</button><button class="mini-button">停用</button></div></td></tr>
+                    <tr><td><div class="member-cell"><span class="member-avatar red">陈</span><strong>陈洁</strong></div></td><td>plan@winwise.ai</td><td><span class="soft-label">管理员</span></td><td>知识库、专家、Skill、客户</td><td><span class="status warn">待激活</span></td><td>2026/05/30</td><td><div class="action-group"><button class="mini-button" data-open-edit-user data-user-status="停用">编辑</button><button class="mini-button">激活</button><button class="danger-button" data-delete-user>删除</button></div></td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="table-summary"><span>共 4 位成员</span><span>最近更新：2026/06/04</span></div>
+            </section>
+          </section>
+
+          <section id="users-customers" class="user-detail">
+            <div class="user-stats customer-stats">
+              <article><span>客户总数</span><strong>6</strong></article>
+              <article><span>免费用户</span><strong>1</strong></article>
+              <article><span>专业版</span><strong class="text-blue">2</strong></article>
+              <article><span>Max 版</span><strong class="text-warn">1</strong></article>
+              <article><span>Business</span><strong class="text-ok">2</strong></article>
             </div>
-            <input class="search-input user-search" data-filter="userTable" placeholder="搜索用户" />
-            <div class="table-wrap">
-              <table id="userTable">
-                <thead><tr><th>姓名</th><th>邮箱</th><th>角色</th><th>权限摘要</th><th>账号状态</th><th>操作</th></tr></thead>
-                <tbody>
-                  <tr><td>李明</td><td>expert@winwise.ai</td><td>专家角色</td><td>文档删除、文档上传</td><td><span class="status ok">启用</span></td><td><button class="mini-button" data-open-edit-user data-user-status="启用">编辑</button></td></tr>
-                  <tr><td>周岚</td><td>ops@winwise.ai</td><td>运维人员</td><td>异常数据、性能指标、评分</td><td><span class="status ok">启用</span></td><td><button class="mini-button" data-open-edit-user data-user-status="启用">编辑</button></td></tr>
-                  <tr><td>陈洁</td><td>plan@winwise.ai</td><td>套餐管理员</td><td>新增、修改、删除套餐</td><td><span class="status pending">停用</span></td><td><div class="action-group"><button class="mini-button" data-open-edit-user data-user-status="停用">编辑</button><button class="danger-button" data-delete-user>删除</button></div></td></tr>
-                </tbody>
-              </table>
-            </div>
+            <section class="panel user-management-panel">
+              <div class="panel-head">
+                <div>
+                  <h2>客户列表</h2>
+                  <p>管理所有使用 WinWise 的外部用户，按套餐分层。</p>
+                </div>
+                <button class="mini-button compact" type="button">导出数据</button>
+              </div>
+              <div class="user-filters customer-filters">
+                <input class="search-input user-search" data-filter="customerTable" placeholder="搜索名称、邮箱或公司..." />
+                <select><option>全部套餐</option><option>免费</option><option>专业版</option><option>Max 版</option><option>Business</option></select>
+                <select><option>全部状态</option><option>正常</option><option>已过期</option></select>
+              </div>
+              <div class="table-wrap">
+                <table id="customerTable" class="customer-table">
+                  <thead><tr><th>客户</th><th>邮箱 / 公司</th><th>套餐</th><th>到期时间</th><th>本月用量</th><th>注册时间</th><th>状态</th><th>操作</th></tr></thead>
+                  <tbody>
+                    <tr><td><div class="member-cell"><span class="member-avatar blue">张</span><strong>张伟</strong></div></td><td>zhangwei@shop.c...</td><td><span class="soft-label">免费</span></td><td>—</td><td>12</td><td>2026/05/01</td><td><span class="status ok">正常</span></td><td><button class="mini-button" data-open-customer>查看</button></td></tr>
+                    <tr><td><div class="member-cell"><span class="member-avatar green">王</span><strong>王芳</strong></div></td><td>wangfang@amz.cn</td><td><span class="kb-chip">专业版</span></td><td>2026/07/03</td><td>245</td><td>2026/03/15</td><td><span class="status ok">正常</span></td><td><button class="mini-button" data-open-customer>查看</button></td></tr>
+                    <tr><td><div class="member-cell"><span class="member-avatar yellow">刘</span><strong>刘洋</strong></div></td><td>liuyang@trader.com</td><td><span class="soft-label warn-label">Max 版</span></td><td>2027/02/18</td><td>892</td><td>2025/12/20</td><td><span class="status ok">正常</span></td><td><button class="mini-button" data-open-customer>查看</button></td></tr>
+                    <tr><td><div class="member-cell"><span class="member-avatar teal">A</span><strong>Amazon Solutions Ltd</strong></div></td><td>Amazon Solutions ...</td><td><span class="skill-chip">Business</span></td><td>2027/01/10</td><td>3,201</td><td>2025/08/05</td><td><span class="status ok">正常</span></td><td><button class="mini-button" data-open-customer>查看</button></td></tr>
+                    <tr><td><div class="member-cell"><span class="member-avatar red">赵</span><strong>赵敏</strong></div></td><td>zhaomin@seller.net</td><td><span class="kb-chip">专业版</span></td><td class="text-danger">2026/06/01</td><td>88</td><td>2026/04/22</td><td><span class="status pending">已过期</span></td><td><button class="mini-button" data-open-customer>查看</button></td></tr>
+                    <tr><td><div class="member-cell"><span class="member-avatar gray">C</span><strong>CrossBorder Co.</strong></div></td><td>CrossBorder Co.</td><td><span class="skill-chip">Business</span></td><td>2026/06/20</td><td>1,540</td><td>2026/01/15</td><td><span class="status ok">正常</span></td><td><button class="mini-button" data-open-customer>查看</button></td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="table-summary"><span>共 6 位客户</span></div>
+            </section>
           </section>
         </section>
 
@@ -224,6 +413,12 @@
         </section>
 
         <section id="plans" class="page">
+          <div class="plan-stats">
+            <article><span>套餐总数</span><strong>5</strong></article>
+            <article><span>已上架</span><strong class="text-ok">4</strong></article>
+            <article><span>付费套餐</span><strong class="text-blue">3</strong></article>
+            <article><span>审核中</span><strong class="text-warn">1</strong></article>
+          </div>
           <section class="panel">
             <div class="panel-head">
               <div>
@@ -235,13 +430,13 @@
             <input class="search-input plan-search" data-filter="planTable" placeholder="搜索套餐" />
             <div class="table-wrap">
               <table id="planTable">
-                <thead><tr><th>套餐</th><th>价格</th><th>问答数量</th><th>Token 数量</th><th>状态</th><th>操作</th></tr></thead>
+                <thead><tr><th>套餐</th><th>类型</th><th>月付价格</th><th>年付价格</th><th>问答次数</th><th>Token 额度</th><th>席位</th><th>更新时间</th><th>状态</th><th>操作</th></tr></thead>
                 <tbody>
-                  <tr><td>免费版</td><td>0元</td><td>100</td><td>5万</td><td><span class="status ok">已上架</span></td><td><button class="mini-button" data-open-edit-plan>修改</button><button class="danger-button" data-open-delete-confirm>删除</button></td></tr>
-                  <tr><td>专业版</td><td>20元</td><td>1,000</td><td>50万</td><td><span class="status ok">已上架</span></td><td><button class="mini-button" data-open-edit-plan>修改</button><button class="danger-button" data-open-delete-confirm>删除</button></td></tr>
-                  <tr><td>Max版</td><td>100元</td><td>5,000</td><td>300万</td><td><span class="status ok">已上架</span></td><td><button class="mini-button" data-open-edit-plan>修改</button><button class="danger-button" data-open-delete-confirm>删除</button></td></tr>
-                  <tr><td>Business版</td><td>200元</td><td>10,000</td><td>800万</td><td><span class="status ok">已上架</span></td><td><button class="mini-button" data-open-edit-plan>修改</button><button class="danger-button" data-open-delete-confirm>删除</button></td></tr>
-                  <tr><td>Enterprise版</td><td>80元</td><td>3,000</td><td>200万</td><td><span class="status warn">审核中</span></td><td><button class="mini-button" data-open-edit-plan>修改</button><button class="danger-button" data-open-delete-confirm>删除</button></td></tr>
+                  <tr><td><div class="plan-name-cell"><span class="plan-icon">🐧</span><div><strong>免费版</strong><small>入门级运营助手</small></div></div></td><td><span class="soft-label">免费版</span></td><td>免费</td><td>—</td><td>100</td><td>5万</td><td>1</td><td>2026/06/04</td><td><span class="status ok">已上架</span></td><td><div class="action-group"><button class="mini-button" data-open-edit-plan>修改</button><button class="mini-button">下架</button></div></td></tr>
+                  <tr><td><div class="plan-name-cell"><span class="plan-icon accent">⚡</span><div><strong>专业版</strong><small>进阶级效率专家</small></div></div></td><td><span class="soft-label">个人付费</span></td><td>¥106/月</td><td>¥88/月</td><td>1,000</td><td>50万</td><td>1</td><td>2026/06/04</td><td><span class="status ok">已上架</span></td><td><div class="action-group"><button class="mini-button" data-open-edit-plan>修改</button><button class="mini-button">下架</button></div></td></tr>
+                  <tr><td><div class="plan-name-cell"><span class="plan-icon accent">⚡</span><div><strong>Max版</strong><small>战略级决策顾问</small></div></div></td><td><span class="soft-label">个人付费</span></td><td>¥625/月</td><td>¥520/月</td><td>5,000</td><td>300万</td><td>1</td><td>2026/06/03</td><td><span class="status ok">已上架</span></td><td><div class="action-group"><button class="mini-button" data-open-edit-plan>修改</button><button class="mini-button">下架</button></div></td></tr>
+                  <tr><td><div class="plan-name-cell"><span class="plan-icon business">▦</span><div><strong>Business版</strong><small>团队协作·企业级</small></div></div></td><td><span class="soft-label">团队 / Business</span></td><td>¥200/月</td><td>¥166/月</td><td>不限量</td><td>不限量</td><td>2+</td><td>2026/06/02</td><td><span class="status ok">已上架</span></td><td><div class="action-group"><button class="mini-button" data-open-edit-plan>修改</button><button class="mini-button">下架</button></div></td></tr>
+                  <tr><td><div class="plan-name-cell"><span class="plan-icon business">▦</span><div><strong>Enterprise版</strong><small>旗舰企业定制方案</small></div></div></td><td><span class="soft-label">团队 / Business</span></td><td>定制</td><td>—</td><td>定制</td><td>定制</td><td>custom</td><td>2026/06/01</td><td><span class="status warn">审核中</span></td><td><div class="action-group"><button class="mini-button" data-open-edit-plan>修改</button><button class="mini-button">上架</button><button class="danger-button" data-open-delete-confirm>删除</button></div></td></tr>
                 </tbody>
               </table>
             </div>
@@ -456,43 +651,189 @@
     </section>
 
     <div id="planModal" class="modal-backdrop is-hidden" role="dialog" aria-modal="true" aria-labelledby="planModalTitle">
-      <section class="modal-panel modal-panel-wide">
+      <section class="modal-panel plan-modal-panel">
         <button class="modal-close" data-close-plan type="button" aria-label="关闭新增套餐弹窗">×</button>
-        <div class="panel-head">
+        <div class="plan-modal-head">
+          <span class="plan-icon">🐧</span>
           <div>
             <h2 id="planModalTitle">新增套餐</h2>
-            <p>套餐管理员可新增、修改、删除套餐。</p>
+            <p>配置完成后可预览用户端展示效果</p>
           </div>
         </div>
-        <form class="data-form">
-          <label><span>套餐名称</span><input placeholder="例如：企业增长版" /></label>
-          <label><span>月费</span><input type="number" placeholder="7" /></label>
-          <label><span>问答数量</span><input type="number" placeholder="1000" /></label>
-          <label><span>Token 数量</span><input type="number" placeholder="50万" /></label>
-          <label class="wide"><span>权益说明</span><input placeholder="向量额度、账号数量、服务等级等" /></label>
-          <button class="primary-button wide" data-close-plan type="button">保存套餐</button>
+        <form class="plan-config-form">
+          <section class="form-section">
+            <h3>① 基本信息</h3>
+            <div class="data-form">
+              <label><span>套餐名称 *</span><input placeholder="例：专业版" /></label>
+              <label><span>套餐类型</span><select><option>免费版</option><option>个人付费</option><option>团队 / Business</option><option>企业定制</option></select></label>
+              <label><span>用户端副标题</span><input placeholder="例：进阶级效率专家" /><small>展示在套餐卡片名称下方</small></label>
+              <label><span>上架状态</span><select><option>草稿（不对用户展示）</option><option>已上架</option><option>审核中</option></select></label>
+              <label class="inline-check wide"><input type="checkbox" /><span>标记为推荐，展示「最受欢迎」标签</span></label>
+            </div>
+          </section>
+
+          <section class="form-section">
+            <h3>② 定价配置</h3>
+            <div class="data-form three-columns">
+              <label><span>月付价格（元）</span><input placeholder="0 表示免费" /></label>
+              <label class="field-with-note"><span>年付价格（元/月）</span><input placeholder="年付折算月均价" /><small>留空表示不提供年付</small></label>
+              <label><span>席位配置</span><select><option>1 人（个人版）</option><option>2+（团队版）</option><option>custom</option></select></label>
+              <label><span>问答次数 / 月</span><input placeholder="例：1000 或 不限量" /></label>
+              <label><span>Token 额度 / 月</span><input placeholder="例：50万 或 不限量" /></label>
+              <label><span>可用 AI 模型</span><select><option>基础模型</option><option>高级模型</option><option>全部模型</option></select></label>
+            </div>
+          </section>
+
+          <section class="form-section">
+            <h3>③ 功能权益开关</h3>
+            <p class="section-helper">配置该套餐包含的功能，直接影响用户端功能列表展示</p>
+            <div class="feature-matrix">
+              <div class="feature-group-title">专家与知识</div>
+              <label><span><strong>召唤全部 AI 专家</strong><small>解锁所有专家类型</small></span><input type="checkbox" /></label>
+              <label><span><strong>品牌记忆库</strong><small>专属知识记忆</small></span><input type="checkbox" /></label>
+              <label><span><strong>跨平台知识图谱</strong><small>多平台数据整合</small></span><input type="checkbox" /></label>
+              <label><span><strong>专属运营大脑</strong><small>个性化策略引擎</small></span><input type="checkbox" /></label>
+
+              <div class="feature-group-title">内容能力</div>
+              <label><span><strong>基础文案润色</strong><small>基础文字优化</small></span><input type="checkbox" /></label>
+              <label><span><strong>深度评论拆解</strong><small>Review 深度分析</small></span><input type="checkbox" /></label>
+              <label><span><strong>精准申诉顾问</strong><small>申诉信撰写辅助</small></span><input type="checkbox" /></label>
+              <label><span><strong>地道客服话术</strong><small>本地化客服内容</small></span><input type="checkbox" /></label>
+              <label><span><strong>行业动态资讯</strong><small>实时行业信息</small></span><input type="checkbox" /></label>
+              <label><span><strong>通用运营模板</strong><small>标准化内容模板</small></span><input type="checkbox" /></label>
+              <label><span><strong>长文输出能力</strong><small>无字数限制输出</small></span><input type="checkbox" /></label>
+              <label><span><strong>高频使用权限</strong><small>提升调用频率上限</small></span><input type="checkbox" /></label>
+
+              <div class="feature-group-title">团队与安全</div>
+              <label><span><strong>团队知识共享</strong><small>成员间知识同步</small></span><input type="checkbox" /></label>
+              <label><span><strong>团队管理后台</strong><small>成员权限管理</small></span><input type="checkbox" /></label>
+              <label><span><strong>数据隐私保护</strong><small>数据不用训练</small></span><input type="checkbox" /></label>
+              <label><span><strong>SSO / MFA 安全</strong><small>企业级安全认证</small></span><input type="checkbox" /></label>
+            </div>
+          </section>
+
+          <section class="form-section">
+            <h3>④ 用户端展示文案</h3>
+            <label class="wide"><span>功能亮点列表（每行一条，展示在套餐卡片上）</span><textarea rows="4" placeholder="深度评论拆解&#10;精准申诉顾问&#10;地道客服话术&#10;高频使用权限"></textarea><small>建议 4-6 条，简洁有力，前缀文字写在第一行</small></label>
+            <label class="wide"><span>购买按钮文案</span><input placeholder="例：获取专业版" /></label>
+            <div class="plan-preview">
+              <span>用户端卡片预览</span>
+              <article>
+                <div class="plan-preview-head">
+                  <span class="plan-icon">🐧</span>
+                  <div><strong>套餐名称</strong><small>副标题</small></div>
+                </div>
+                <strong>¥—</strong>
+                <ul>
+                  <li>深度评论拆解</li>
+                  <li>精准申诉顾问</li>
+                  <li>地道客服话术</li>
+                </ul>
+                <button class="mini-button" type="button">购买按钮文案</button>
+              </article>
+            </div>
+          </section>
         </form>
+        <div class="modal-footer modal-footer-end">
+          <button class="mini-button" data-close-plan type="button">取消</button>
+          <button class="mini-button" data-close-plan type="button">保存草稿</button>
+          <button class="primary-button" data-close-plan type="button">保存并上架</button>
+        </div>
       </section>
     </div>
 
     <div id="editPlanModal" class="modal-backdrop is-hidden" role="dialog" aria-modal="true" aria-labelledby="editPlanModalTitle">
-      <section class="modal-panel modal-panel-wide">
+      <section class="modal-panel plan-modal-panel">
         <button class="modal-close" data-close-edit-plan type="button" aria-label="关闭修改套餐弹窗">×</button>
-        <div class="panel-head">
+        <div class="plan-modal-head">
+          <span class="plan-icon accent">⚡</span>
           <div>
             <h2 id="editPlanModalTitle">修改套餐</h2>
-            <p>调整套餐价格、额度和上下架状态。</p>
+            <p>调整套餐配置后可同步更新用户端展示效果</p>
           </div>
         </div>
-        <form class="data-form">
-          <label><span>套餐名称</span><input id="editPlanName" value="专业版" /></label>
-          <label><span>价格</span><input id="editPlanPrice" value="20元" /></label>
-          <label><span>问答数量</span><input id="editPlanKb" value="1,000" /></label>
-          <label><span>Token 数量</span><input id="editPlanSkill" value="50万" /></label>
-          <label><span>状态</span><select id="editPlanStatus"><option>已上架</option><option>审核中</option><option>已下架</option></select></label>
-          <label class="wide"><span>权益说明</span><input placeholder="向量额度、账号数量、服务等级等" /></label>
-          <button class="primary-button wide" data-close-edit-plan type="button">保存修改</button>
+        <form class="plan-config-form">
+          <section class="form-section">
+            <h3>① 基本信息</h3>
+            <div class="data-form">
+              <label><span>套餐名称 *</span><input id="editPlanName" value="专业版" /></label>
+              <label><span>套餐类型</span><select><option>个人付费</option><option>免费版</option><option>团队 / Business</option><option>企业定制</option></select></label>
+              <label><span>用户端副标题</span><input value="进阶级效率专家" /><small>展示在套餐卡片名称下方</small></label>
+              <label><span>上架状态</span><select id="editPlanStatus"><option>已上架</option><option>审核中</option><option>已下架</option></select></label>
+              <label class="inline-check wide"><input type="checkbox" checked /><span>标记为推荐，展示「最受欢迎」标签</span></label>
+            </div>
+          </section>
+
+          <section class="form-section">
+            <h3>② 定价配置</h3>
+            <div class="data-form three-columns">
+              <label><span>月付价格（元）</span><input id="editPlanPrice" value="¥106/月" /></label>
+              <label class="field-with-note"><span>年付价格（元/月）</span><input value="¥88/月" /><small>留空表示不提供年付</small></label>
+              <label><span>席位配置</span><select><option>1 人（个人版）</option><option>2+（团队版）</option><option>custom</option></select></label>
+              <label><span>问答次数 / 月</span><input id="editPlanKb" value="1,000" /></label>
+              <label><span>Token 额度 / 月</span><input id="editPlanSkill" value="50万" /></label>
+              <label><span>可用 AI 模型</span><select><option>基础模型</option><option>高级模型</option><option>全部模型</option></select></label>
+            </div>
+          </section>
+
+          <section class="form-section">
+            <h3>③ 功能权益开关</h3>
+            <p class="section-helper">配置该套餐包含的功能，直接影响用户端功能列表展示</p>
+            <div class="feature-matrix">
+              <div class="feature-group-title">专家与知识</div>
+              <label><span><strong>召唤全部 AI 专家</strong><small>解锁所有专家类型</small></span><input type="checkbox" checked /></label>
+              <label><span><strong>品牌记忆库</strong><small>专属知识记忆</small></span><input type="checkbox" checked /></label>
+              <label><span><strong>跨平台知识图谱</strong><small>多平台数据整合</small></span><input type="checkbox" /></label>
+              <label><span><strong>专属运营大脑</strong><small>个性化策略引擎</small></span><input type="checkbox" /></label>
+
+              <div class="feature-group-title">内容能力</div>
+              <label><span><strong>基础文案润色</strong><small>基础文字优化</small></span><input type="checkbox" checked /></label>
+              <label><span><strong>深度评论拆解</strong><small>Review 深度分析</small></span><input type="checkbox" checked /></label>
+              <label><span><strong>精准申诉顾问</strong><small>申诉信撰写辅助</small></span><input type="checkbox" checked /></label>
+              <label><span><strong>地道客服话术</strong><small>本地化客服内容</small></span><input type="checkbox" /></label>
+              <label><span><strong>行业动态资讯</strong><small>实时行业信息</small></span><input type="checkbox" /></label>
+              <label><span><strong>通用运营模板</strong><small>标准化内容模板</small></span><input type="checkbox" checked /></label>
+              <label><span><strong>长文输出能力</strong><small>无字数限制输出</small></span><input type="checkbox" /></label>
+              <label><span><strong>高频使用权限</strong><small>提升调用频率上限</small></span><input type="checkbox" checked /></label>
+
+              <div class="feature-group-title">团队与安全</div>
+              <label><span><strong>团队知识共享</strong><small>成员间知识同步</small></span><input type="checkbox" /></label>
+              <label><span><strong>团队管理后台</strong><small>成员权限管理</small></span><input type="checkbox" /></label>
+              <label><span><strong>数据隐私保护</strong><small>数据不用训练</small></span><input type="checkbox" checked /></label>
+              <label><span><strong>SSO / MFA 安全</strong><small>企业级安全认证</small></span><input type="checkbox" /></label>
+            </div>
+          </section>
+
+          <section class="form-section">
+            <h3>④ 用户端展示文案</h3>
+            <label class="wide"><span>功能亮点列表（每行一条，展示在套餐卡片上）</span><textarea rows="4">深度评论拆解
+精准申诉顾问
+通用运营模板
+高频使用权限</textarea><small>建议 4-6 条，简洁有力，前缀文字写在第一行</small></label>
+            <label class="wide"><span>购买按钮文案</span><input value="获取专业版" /></label>
+            <div class="plan-preview">
+              <span>用户端卡片预览</span>
+              <article>
+                <div class="plan-preview-head">
+                  <span class="plan-icon accent">⚡</span>
+                  <div><strong>专业版</strong><small>进阶级效率专家</small></div>
+                </div>
+                <strong>¥106/月</strong>
+                <ul>
+                  <li>深度评论拆解</li>
+                  <li>精准申诉顾问</li>
+                  <li>通用运营模板</li>
+                </ul>
+                <button class="mini-button" type="button">获取专业版</button>
+              </article>
+            </div>
+          </section>
         </form>
+        <div class="modal-footer modal-footer-end">
+          <button class="mini-button" data-close-edit-plan type="button">取消</button>
+          <button class="mini-button" data-close-edit-plan type="button">保存草稿</button>
+          <button class="primary-button" data-close-edit-plan type="button">保存修改</button>
+        </div>
       </section>
     </div>
 
@@ -505,6 +846,34 @@
           <div class="confirm-actions">
             <button class="mini-button" data-close-delete-confirm type="button">取消</button>
             <button class="danger-button" data-close-delete-confirm type="button">确认删除</button>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div id="kbDisableConfirmModal" class="modal-backdrop is-hidden" role="dialog" aria-modal="true" aria-labelledby="kbDisableConfirmTitle">
+      <section class="modal-panel confirm-panel">
+        <button class="modal-close" data-close-disable-kb type="button" aria-label="关闭停用知识库确认弹窗">×</button>
+        <div class="confirm-content">
+          <h2 id="kbDisableConfirmTitle">确认停用知识库</h2>
+          <p>停用后该知识库将暂停参与问答检索，但已上传文档会保留。确定要停用 <span id="disableKbName">当前知识库</span> 吗？</p>
+          <div class="confirm-actions">
+            <button class="mini-button" data-close-disable-kb type="button">取消</button>
+            <button class="primary-button" data-confirm-disable-kb type="button">确认停用</button>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div id="kbDeleteConfirmModal" class="modal-backdrop is-hidden" role="dialog" aria-modal="true" aria-labelledby="kbDeleteConfirmTitle">
+      <section class="modal-panel confirm-panel">
+        <button class="modal-close" data-close-delete-kb type="button" aria-label="关闭删除知识库确认弹窗">×</button>
+        <div class="confirm-content">
+          <h2 id="kbDeleteConfirmTitle">确认删除知识库</h2>
+          <p>删除后知识库和关联文档记录将无法恢复。只有停用状态的知识库可以删除。确定要删除 <span id="deleteKbName">当前知识库</span> 吗？</p>
+          <div class="confirm-actions">
+            <button class="mini-button" data-close-delete-kb type="button">取消</button>
+            <button class="danger-button" data-confirm-delete-kb type="button">确认删除</button>
           </div>
         </div>
       </section>
@@ -530,6 +899,56 @@
           <label class="wide"><span>模型用途</span><input placeholder="例如：默认模型、备用模型、长文本模型" /></label>
           <button class="primary-button wide" data-close-model type="button">保存模型</button>
         </form>
+      </section>
+    </div>
+
+    <div id="expertModal" class="modal-backdrop is-hidden" role="dialog" aria-modal="true" aria-labelledby="expertModalTitle">
+      <section class="modal-panel expert-modal-panel">
+        <button class="modal-close" data-close-expert type="button" aria-label="关闭专家弹窗">×</button>
+        <div class="expert-modal-head">
+          <span class="expert-avatar blue"></span>
+          <div>
+            <h2 id="expertModalTitle">新建专家</h2>
+          </div>
+        </div>
+        <form class="expert-form">
+          <section class="form-section">
+            <h3>① 基本信息</h3>
+            <div class="data-form">
+              <label><span>专家名称 *</span><input id="expertNameInput" /></label>
+              <label><span>所属分类 *</span><select id="expertCategoryInput"><option value="">请选择分类</option><option>店铺运营</option><option>选品开发</option><option>广告投放</option><option>Listing 优化</option><option>合规法务</option><option>数据分析</option></select></label>
+              <label class="wide"><span>能力介绍 *</span><textarea id="expertIntroInput" placeholder="请输入专家能力介绍"></textarea></label>
+              <label><span>擅长领域标签</span><input id="expertTagsInput" placeholder="例如：账号健康, BSR 优化, FBA 库存管理" /></label>
+              <label><span>初始状态</span><select id="expertStatusInput"><option value="">请选择状态</option><option>上架（立即展示）</option><option>草稿</option><option>下架</option></select></label>
+            </div>
+          </section>
+          <section class="form-section">
+            <h3>② 绑定 Skill（主能力）</h3>
+            <label class="wide"><span>选择 Skill *</span><div id="expertSkillPicker" class="kb-picker"><button class="link-button" data-add-expert-skill type="button">+ 添加 Skill</button></div></label>
+            <div id="expertSkillPreview" class="skill-preview-box">
+              <strong>广告 ACOS 诊断 <span class="status ok">启用</span></strong>
+              <p>分析广告数据，诊断 ACOS 异常并给出降本建议，支持多轮追问。</p>
+              <small>已绑定知识库：<span class="kb-chip">expert</span></small>
+            </div>
+          </section>
+          <section class="form-section">
+            <h3>③ 绑定知识库（检索来源）</h3>
+            <label class="wide"><span>选择知识库 *</span><div id="expertKbPicker" class="kb-picker"><button class="link-button" data-add-expert-kb type="button">+ 添加知识库</button></div></label>
+            <p class="form-hint">已选知识库会与 Skill 原有知识库合并检索，Skill 专属 Prompt 优先级更高。</p>
+          </section>
+          <section class="form-section">
+            <h3>④ 引导问题（用户端“试试这样问我”）</h3>
+            <p class="form-hint compact-hint">最多添加 3 个引导问题，每个问题建议控制在 20 字以内。</p>
+            <div id="expertGuideList" class="guide-list">
+            </div>
+            <button class="mini-button" data-add-guide-question type="button">+ 添加引导问题</button>
+            <label class="wide"><span>召唤按钮文案</span><input id="expertCtaInput" placeholder="留空则自动生成「召唤 + 专家名称」" /></label>
+          </section>
+        </form>
+        <div class="modal-footer modal-footer-end">
+          <button class="mini-button" data-close-expert type="button">取消</button>
+          <button class="primary-button" data-close-expert type="button">保存</button>
+        </div>
       </section>
     </div>
 
@@ -848,12 +1267,65 @@
       </section>
     </div>
 
+    <div id="customerModal" class="modal-backdrop is-hidden" role="dialog" aria-modal="true" aria-labelledby="customerModalTitle">
+      <section class="modal-panel modal-panel-wide customer-modal-panel">
+        <button class="modal-close" data-close-customer type="button" aria-label="关闭客户详情弹窗">×</button>
+        <div class="customer-modal-head">
+          <span id="customerAvatar" class="member-avatar gray">C</span>
+          <div>
+            <h2 id="customerModalTitle">CrossBorder Co. · CrossBorder Co.</h2>
+            <p id="customerModalEmail">admin@crossborder.io</p>
+          </div>
+        </div>
+        <div class="customer-modal-body">
+          <section class="form-section">
+            <h3>套餐信息</h3>
+            <div class="customer-info-grid">
+              <article><span>当前套餐</span><strong id="customerPlanBadge"><span class="skill-chip">Business</span></strong></article>
+              <article><span>计费周期</span><strong>月付</strong></article>
+              <article><span>到期时间</span><strong id="customerExpire">2026/06/20</strong></article>
+              <article><span>账号状态</span><strong id="customerStatusBadge"><span class="status ok">正常</span></strong></article>
+            </div>
+            <label class="wide"><span>调整套餐</span><select id="customerPlanSelect"><option>免费</option><option>专业版</option><option>Max 版</option><option selected>Business</option></select></label>
+          </section>
+          <section class="form-section">
+            <h3>用量统计</h3>
+            <div class="customer-usage-grid">
+              <article><span>本月对话次数</span><strong id="customerUsageCount">1,540</strong></article>
+              <article><span>累计召唤专家</span><strong>720</strong></article>
+              <article><span>注册时间</span><strong id="customerRegisterDate">2026/01/15</strong></article>
+            </div>
+          </section>
+          <section class="form-section">
+            <h3>Business 团队成员</h3>
+            <div class="customer-team-list">
+              <article><span>成员 A (admin@amazonsol.com)</span><button class="mini-button" type="button">移除</button></article>
+              <article><span>成员 B (ops@amazonsol.com)</span><button class="mini-button" type="button">移除</button></article>
+              <article><span>成员 C (user@amazonsol.com)</span><button class="mini-button" type="button">移除</button></article>
+            </div>
+            <button class="mini-button compact" type="button">+ 添加成员</button>
+          </section>
+          <section class="form-section">
+            <h3>备注</h3>
+            <label class="wide"><textarea placeholder="添加内部备注..."></textarea></label>
+          </section>
+        </div>
+        <div class="modal-footer modal-footer-end">
+          <button class="danger-button muted-danger" type="button">停用账号</button>
+          <div class="action-group">
+            <button class="mini-button" data-close-customer type="button">取消</button>
+            <button class="primary-button" data-close-customer type="button">保存修改</button>
+          </div>
+        </div>
+      </section>
+    </div>
+
     <div id="knowledgeModal" class="modal-backdrop is-hidden" role="dialog" aria-modal="true" aria-labelledby="knowledgeModalTitle">
       <section class="modal-panel modal-panel-wide">
-        <button class="modal-close" data-close-knowledge type="button" aria-label="关闭添加知识库弹窗">×</button>
+        <button class="modal-close" data-close-knowledge type="button" aria-label="关闭创建知识库弹窗">×</button>
         <div class="panel-head">
           <div>
-            <h2 id="knowledgeModalTitle">添加知识库</h2>
+            <h2 id="knowledgeModalTitle">创建知识库</h2>
             <p>专家角色可管理知识库，包括删除文档和上传文档。</p>
           </div>
         </div>
