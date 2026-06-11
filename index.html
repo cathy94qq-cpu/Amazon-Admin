@@ -50,8 +50,8 @@
           <button class="nav-item" data-page="skills" type="button">Skill 管理</button>
           <button class="nav-item nav-parent" data-page="users" data-users-toggle type="button" aria-expanded="false">用户管理</button>
           <div class="nav-submenu users-submenu is-collapsed" aria-label="用户管理子目录">
-            <button class="nav-subitem" data-users-tab="team" data-page-link="users" type="button">团队成员管理</button>
-            <button class="nav-subitem" data-users-tab="customers" data-page-link="users" type="button">客户管理</button>
+            <button class="nav-subitem" data-users-tab="team" data-page-link="users" type="button">成员管理</button>
+            <button class="nav-subitem" data-users-tab="roles" data-page-link="users" type="button">角色管理</button>
           </div>
           <button class="nav-item" data-page="ops" type="button">运维指标</button>
           <button class="nav-item" data-page="plans" type="button">套餐管理</button>
@@ -136,7 +136,7 @@
                     <div class="kb-card-title"><span class="kb-icon">▣</span><strong>expert</strong><span class="status ok">生效中</span><span class="kb-count">50 份文档</span></div>
                     <p>专家问答核心资料库，覆盖运营、售后和平台规则。</p>
                   </div>
-                  <div class="action-group"><button class="mini-button" data-open-upload>上传文档</button><button class="mini-button" data-open-disable-kb>停用</button></div>
+                  <div class="action-group"><button class="mini-button" data-open-edit-kb>编辑</button><button class="mini-button" data-open-upload>上传文档</button><button class="mini-button" data-open-disable-kb>停用</button></div>
                 </div>
                 <div class="kb-doc-panel is-hidden-row" data-doc-panel>
                   <div class="kb-doc-head"><span>文档名称</span><span>更新时间</span><span>KB 状态</span><span>分块</span><span>操作</span></div>
@@ -160,7 +160,7 @@
                     <div class="kb-card-title"><span class="kb-icon">▣</span><strong>faq</strong><span class="status ok">生效中</span><span class="kb-count">8 份文档</span></div>
                     <p>常见问题解答库，包含用户常问问题和解决方案。</p>
                   </div>
-                  <div class="action-group"><button class="mini-button" data-open-upload>上传文档</button><button class="mini-button" data-open-disable-kb>停用</button></div>
+                  <div class="action-group"><button class="mini-button" data-open-edit-kb>编辑</button><button class="mini-button" data-open-upload>上传文档</button><button class="mini-button" data-open-disable-kb>停用</button></div>
                 </div>
                 <div class="kb-doc-panel is-hidden-row" data-doc-panel>
                   <div class="kb-doc-head"><span>文档名称</span><span>更新时间</span><span>KB 状态</span><span>分块</span><span>操作</span></div>
@@ -190,7 +190,7 @@
                     <div class="kb-card-title"><span class="kb-icon">▣</span><strong>patent</strong><span class="status ok">生效中</span><span class="kb-count">15 份文档</span></div>
                     <p>专利知识产权库，存储专利文档和法律资料。</p>
                   </div>
-                  <div class="action-group"><button class="mini-button" data-open-upload>上传文档</button><button class="mini-button" data-open-disable-kb>停用</button></div>
+                  <div class="action-group"><button class="mini-button" data-open-edit-kb>编辑</button><button class="mini-button" data-open-upload>上传文档</button><button class="mini-button" data-open-disable-kb>停用</button></div>
                 </div>
                 <div class="kb-doc-panel is-hidden-row" data-doc-panel>
                   <div class="kb-doc-head"><span>文档名称</span><span>更新时间</span><span>KB 状态</span><span>分块</span><span>操作</span></div>
@@ -214,7 +214,7 @@
                     <div class="kb-card-title"><span class="kb-icon muted">▣</span><strong>ops_runbook</strong><span class="status pending">已停用</span><span class="kb-count">8 份文档</span></div>
                     <p>运维排障手册，记录异常数据、同步延迟和任务处理流程。</p>
                   </div>
-                  <div class="action-group"><button class="mini-button" data-open-upload>上传文档</button><button class="mini-button">启用</button><button class="danger-button" data-open-delete-kb>删除</button></div>
+                  <div class="action-group"><button class="mini-button" data-open-edit-kb>编辑</button><button class="mini-button" data-open-upload>上传文档</button><button class="mini-button">启用</button><button class="danger-button" data-open-delete-kb>删除</button></div>
                 </div>
                 <div class="kb-doc-panel is-hidden-row" data-doc-panel>
                   <div class="kb-doc-head"><span>文档名称</span><span>更新时间</span><span>KB 状态</span><span>分块</span><span>操作</span></div>
@@ -252,14 +252,14 @@
             </div>
             <div class="table-wrap">
               <table id="expertTable" class="expert-table">
-                <thead><tr><th>专家名称</th><th>分类</th><th>绑定 Skill</th><th>绑定知识库</th><th>引导问题</th><th>召唤次数</th><th>状态</th><th>操作</th></tr></thead>
+                <thead><tr><th>专家名称</th><th>分类</th><th>专家分组</th><th>绑定 Skill</th><th>绑定知识库</th><th>引导问题</th><th>召唤次数</th><th>状态</th><th>操作</th></tr></thead>
                 <tbody>
-                  <tr><td><div class="expert-name"><span class="expert-avatar blue"></span><strong>店铺运营顾问</strong></div></td><td>店铺运营</td><td><span class="skill-chip">广告 ACOS 诊断</span></td><td><span class="kb-chip">expert</span></td><td>3</td><td>3,218</td><td><span class="status ok">已上架</span></td><td><div class="action-group"><button class="mini-button" data-open-edit-expert type="button">编辑</button><button class="mini-button">下架</button></div></td></tr>
-                  <tr><td><div class="expert-name"><span class="expert-avatar green"></span><strong>选品分析专家</strong></div></td><td>选品开发</td><td><span class="skill-chip">选品机会分析</span></td><td><span class="kb-chip">expert</span></td><td>3</td><td>2,045</td><td><span class="status ok">已上架</span></td><td><div class="action-group"><button class="mini-button" data-open-edit-expert type="button">编辑</button><button class="mini-button">下架</button></div></td></tr>
-                  <tr><td><div class="expert-name"><span class="expert-avatar yellow"></span><strong>广告投放专家</strong></div></td><td>广告投放</td><td><span class="skill-chip">广告 ACOS 诊断</span></td><td><span class="kb-chip">expert</span></td><td>3</td><td>1,892</td><td><span class="status ok">已上架</span></td><td><div class="action-group"><button class="mini-button" data-open-edit-expert type="button">编辑</button><button class="mini-button">下架</button></div></td></tr>
-                  <tr><td><div class="expert-name"><span class="expert-avatar gray"></span><strong>Listing 优化师</strong></div></td><td>Listing 优化</td><td><span class="skill-chip">Listing 优化助手</span></td><td><span class="kb-chip">expert</span></td><td>2</td><td>1,563</td><td><span class="status ok">已上架</span></td><td><div class="action-group"><button class="mini-button" data-open-edit-expert type="button">编辑</button><button class="mini-button">下架</button></div></td></tr>
-                  <tr><td><div class="expert-name"><span class="expert-avatar red"></span><strong>合规法务顾问</strong></div></td><td>合规法务</td><td><span class="skill-chip">专利侵权规避</span></td><td><span class="kb-chip">patent</span><span class="kb-chip">expert</span></td><td>2</td><td>824</td><td><span class="status ok">已上架</span></td><td><div class="action-group"><button class="mini-button" data-open-edit-expert type="button">编辑</button><button class="mini-button">下架</button></div></td></tr>
-                  <tr><td><div class="expert-name"><span class="expert-avatar teal"></span><strong>数据分析师</strong></div></td><td>数据分析</td><td><span class="skill-chip">数据报告解读</span></td><td><span class="kb-chip">expert</span></td><td>0</td><td>0</td><td><span class="status warn">草稿</span></td><td><div class="action-group"><button class="mini-button" data-open-edit-expert type="button">编辑</button><button class="mini-button">上架</button><button class="danger-button" type="button">删除</button></div></td></tr>
+                  <tr><td><div class="expert-name"><span class="expert-avatar blue"></span><strong>店铺运营顾问</strong></div></td><td>店铺运营</td><td><div class="expert-group-tags"><span class="soft-label">基础专家组</span></div></td><td><span class="skill-chip">广告 ACOS 诊断</span></td><td><span class="kb-chip">expert</span></td><td>3</td><td>3,218</td><td><span class="status ok">已上架</span></td><td><div class="action-group"><button class="mini-button" data-open-edit-expert type="button">编辑</button><button class="mini-button">下架</button></div></td></tr>
+                  <tr><td><div class="expert-name"><span class="expert-avatar green"></span><strong>选品分析专家</strong></div></td><td>选品开发</td><td><div class="expert-group-tags"><span class="soft-label">专业专家组</span></div></td><td><span class="skill-chip">选品机会分析</span></td><td><span class="kb-chip">expert</span></td><td>3</td><td>2,045</td><td><span class="status ok">已上架</span></td><td><div class="action-group"><button class="mini-button" data-open-edit-expert type="button">编辑</button><button class="mini-button">下架</button></div></td></tr>
+                  <tr><td><div class="expert-name"><span class="expert-avatar yellow"></span><strong>广告投放专家</strong></div></td><td>广告投放</td><td><div class="expert-group-tags"><span class="soft-label">专业专家组</span></div></td><td><span class="skill-chip">广告 ACOS 诊断</span></td><td><span class="kb-chip">expert</span></td><td>3</td><td>1,892</td><td><span class="status ok">已上架</span></td><td><div class="action-group"><button class="mini-button" data-open-edit-expert type="button">编辑</button><button class="mini-button">下架</button></div></td></tr>
+                  <tr><td><div class="expert-name"><span class="expert-avatar gray"></span><strong>Listing 优化师</strong></div></td><td>Listing 优化</td><td><div class="expert-group-tags"><span class="soft-label">基础专家组</span></div></td><td><span class="skill-chip">Listing 优化助手</span></td><td><span class="kb-chip">expert</span></td><td>2</td><td>1,563</td><td><span class="status ok">已上架</span></td><td><div class="action-group"><button class="mini-button" data-open-edit-expert type="button">编辑</button><button class="mini-button">下架</button></div></td></tr>
+                  <tr><td><div class="expert-name"><span class="expert-avatar red"></span><strong>合规法务顾问</strong></div></td><td>合规法务</td><td><div class="expert-group-tags"><span class="soft-label">高级专家组</span></div></td><td><span class="skill-chip">专利侵权规避</span></td><td><span class="kb-chip">patent</span><span class="kb-chip">expert</span></td><td>2</td><td>824</td><td><span class="status ok">已上架</span></td><td><div class="action-group"><button class="mini-button" data-open-edit-expert type="button">编辑</button><button class="mini-button">下架</button></div></td></tr>
+                  <tr><td><div class="expert-name"><span class="expert-avatar teal"></span><strong>数据分析师</strong></div></td><td>数据分析</td><td><div class="expert-group-tags"><span class="soft-label">基础专家组</span></div></td><td><span class="skill-chip">数据报告解读</span></td><td><span class="kb-chip">expert</span></td><td>0</td><td>0</td><td><span class="status warn">草稿</span></td><td><div class="action-group"><button class="mini-button" data-open-edit-expert type="button">编辑</button><button class="mini-button">上架</button><button class="danger-button" type="button">删除</button></div></td></tr>
                 </tbody>
               </table>
             </div>
@@ -294,6 +294,11 @@
         </section>
 
         <section id="skills" class="page">
+          <div class="metric-grid skill-overview">
+            <article class="metric-card"><span>Skill 总数</span><strong>4</strong></article>
+            <article class="metric-card"><span>已启用</span><strong class="text-ok">2</strong></article>
+            <article class="metric-card"><span>已停用</span><strong>2</strong></article>
+          </div>
           <section class="panel">
             <div class="panel-head">
               <div>
@@ -330,7 +335,7 @@
             <section class="panel user-management-panel">
               <div class="panel-head">
                 <div>
-                  <h2>团队成员列表</h2>
+                  <h2>成员列表</h2>
                   <p>管理后台操作人员的角色与权限，按角色分配访问范围。</p>
                 </div>
                 <button class="primary-button compact" data-open-user type="button">添加成员</button>
@@ -355,41 +360,47 @@
             </section>
           </section>
 
-          <section id="users-customers" class="user-detail">
-            <div class="user-stats customer-stats">
-              <article><span>客户总数</span><strong>6</strong></article>
-              <article><span>免费用户</span><strong>1</strong></article>
-              <article><span>专业版</span><strong class="text-blue">2</strong></article>
-              <article><span>Max 版</span><strong class="text-warn">1</strong></article>
-              <article><span>Business</span><strong class="text-ok">2</strong></article>
+          <section id="users-roles" class="user-detail">
+            <div class="user-stats role-stats">
+              <article><span>角色总数</span><strong>4</strong></article>
+              <article><span>启用角色</span><strong class="text-ok">4</strong></article>
+              <article><span>系统角色</span><strong class="text-blue">1</strong></article>
+              <article><span>自定义角色</span><strong class="text-warn">3</strong></article>
             </div>
             <section class="panel user-management-panel">
               <div class="panel-head">
                 <div>
-                  <h2>客户列表</h2>
-                  <p>管理所有使用 WinWise 的外部用户，按套餐分层。</p>
+                  <h2>角色列表</h2>
+                  <p>按角色配置后台访问权限，控制成员可管理的功能范围。</p>
                 </div>
-                <button class="mini-button compact" type="button">导出数据</button>
+                <button class="primary-button compact" data-open-role type="button">新增角色</button>
               </div>
-              <div class="user-filters customer-filters">
-                <input class="search-input user-search" data-filter="customerTable" placeholder="搜索名称、邮箱或公司..." />
-                <select><option>全部套餐</option><option>免费</option><option>专业版</option><option>Max 版</option><option>Business</option></select>
-                <select><option>全部状态</option><option>正常</option><option>已过期</option></select>
+              <div class="user-filters role-filters">
+                <input class="search-input user-search" data-filter="roleTable" placeholder="搜索角色名称或权限..." />
+                <select><option>全部类型</option><option>系统角色</option><option>自定义角色</option></select>
+                <select><option>全部状态</option><option>启用</option><option>停用</option></select>
               </div>
               <div class="table-wrap">
-                <table id="customerTable" class="customer-table">
-                  <thead><tr><th>客户</th><th>邮箱 / 公司</th><th>套餐</th><th>到期时间</th><th>本月用量</th><th>注册时间</th><th>状态</th><th>操作</th></tr></thead>
+                <table id="roleTable" class="member-table role-table">
+                  <thead><tr><th>角色名称</th><th>类型</th><th>权限范围</th><th>成员数</th><th>状态</th><th>更新时间</th><th>操作</th></tr></thead>
                   <tbody>
-                    <tr><td><div class="member-cell"><span class="member-avatar blue">张</span><strong>张伟</strong></div></td><td>zhangwei@shop.c...</td><td><span class="soft-label">免费</span></td><td>—</td><td>12</td><td>2026/05/01</td><td><span class="status ok">正常</span></td><td><button class="mini-button" data-open-customer>查看</button></td></tr>
-                    <tr><td><div class="member-cell"><span class="member-avatar green">王</span><strong>王芳</strong></div></td><td>wangfang@amz.cn</td><td><span class="kb-chip">专业版</span></td><td>2026/07/03</td><td>245</td><td>2026/03/15</td><td><span class="status ok">正常</span></td><td><button class="mini-button" data-open-customer>查看</button></td></tr>
-                    <tr><td><div class="member-cell"><span class="member-avatar yellow">刘</span><strong>刘洋</strong></div></td><td>liuyang@trader.com</td><td><span class="soft-label warn-label">Max 版</span></td><td>2027/02/18</td><td>892</td><td>2025/12/20</td><td><span class="status ok">正常</span></td><td><button class="mini-button" data-open-customer>查看</button></td></tr>
-                    <tr><td><div class="member-cell"><span class="member-avatar teal">A</span><strong>Amazon Solutions Ltd</strong></div></td><td>Amazon Solutions ...</td><td><span class="skill-chip">Business</span></td><td>2027/01/10</td><td>3,201</td><td>2025/08/05</td><td><span class="status ok">正常</span></td><td><button class="mini-button" data-open-customer>查看</button></td></tr>
-                    <tr><td><div class="member-cell"><span class="member-avatar red">赵</span><strong>赵敏</strong></div></td><td>zhaomin@seller.net</td><td><span class="kb-chip">专业版</span></td><td class="text-danger">2026/06/01</td><td>88</td><td>2026/04/22</td><td><span class="status pending">已过期</span></td><td><button class="mini-button" data-open-customer>查看</button></td></tr>
-                    <tr><td><div class="member-cell"><span class="member-avatar gray">C</span><strong>CrossBorder Co.</strong></div></td><td>CrossBorder Co.</td><td><span class="skill-chip">Business</span></td><td>2026/06/20</td><td>1,540</td><td>2026/01/15</td><td><span class="status ok">正常</span></td><td><button class="mini-button" data-open-customer>查看</button></td></tr>
+                    <tr><td><div class="member-cell"><span class="member-avatar green">超</span><strong>超级管理员</strong></div></td><td><span class="soft-label">系统角色</span></td><td>全部权限，包含系统设置、套餐、成员与角色管理</td><td>1</td><td><span class="status ok">启用</span></td><td>2026/06/04</td><td><button class="mini-button" data-open-role>查看</button></td></tr>
+                    <tr><td><div class="member-cell"><span class="member-avatar yellow">专</span><strong>专家</strong></div></td><td><span class="soft-label">自定义角色</span></td><td>知识库、专家配置、文档上传与删除</td><td>1</td><td><span class="status ok">启用</span></td><td>2026/06/03</td><td><div class="action-group"><button class="mini-button" data-open-role>编辑</button><button class="mini-button">停用</button><button class="danger-button">删除</button></div></td></tr>
+                    <tr><td><div class="member-cell"><span class="member-avatar teal">运</span><strong>运维人员</strong></div></td><td><span class="soft-label">自定义角色</span></td><td>运维指标、异常数据、性能指标与问答评分</td><td>1</td><td><span class="status ok">启用</span></td><td>2026/06/02</td><td><div class="action-group"><button class="mini-button" data-open-role>编辑</button><button class="mini-button">停用</button><button class="danger-button">删除</button></div></td></tr>
+                    <tr><td><div class="member-cell"><span class="member-avatar blue">套</span><strong>套餐管理员</strong></div></td><td><span class="soft-label">自定义角色</span></td><td>套餐新增、修改、上下架、订阅用户查看</td><td>1</td><td><span class="status ok">启用</span></td><td>2026/05/30</td><td><div class="action-group"><button class="mini-button" data-open-role>编辑</button><button class="mini-button">停用</button><button class="danger-button">删除</button></div></td></tr>
                   </tbody>
                 </table>
               </div>
-              <div class="table-summary"><span>共 6 位客户</span></div>
+              <div class="table-summary"><span>共 4 个角色</span><span>最近更新：2026/06/04</span></div>
+            </section>
+            <section class="role-permission-panel">
+              <h2>角色权限说明</h2>
+              <div class="role-permission-grid">
+                <article><strong>超级管理员</strong><p>拥有全部后台权限，可管理系统配置、成员、角色、套餐和数据。</p></article>
+                <article><strong>专家</strong><p>负责知识库和专家能力配置，可上传、删除文档并维护专家内容。</p></article>
+                <article><strong>运维人员</strong><p>关注数据质量、同步异常、性能指标和用户问答反馈。</p></article>
+                <article><strong>套餐管理员</strong><p>维护套餐规则、价格、上下架状态，并查看订阅用户。</p></article>
+              </div>
             </section>
           </section>
         </section>
@@ -417,7 +428,7 @@
             <article><span>套餐总数</span><strong>5</strong></article>
             <article><span>已上架</span><strong class="text-ok">4</strong></article>
             <article><span>付费套餐</span><strong class="text-blue">3</strong></article>
-            <article><span>审核中</span><strong class="text-warn">1</strong></article>
+            <article><span>订阅用户总数</span><strong class="text-warn">5,742</strong></article>
           </div>
           <section class="panel">
             <div class="panel-head">
@@ -430,17 +441,216 @@
             <input class="search-input plan-search" data-filter="planTable" placeholder="搜索套餐" />
             <div class="table-wrap">
               <table id="planTable">
-                <thead><tr><th>套餐</th><th>类型</th><th>月付价格</th><th>年付价格</th><th>问答次数</th><th>Token 额度</th><th>席位</th><th>更新时间</th><th>状态</th><th>操作</th></tr></thead>
+                <thead><tr><th>套餐</th><th>类型</th><th>套餐等级</th><th>月付价格</th><th>年付价格</th><th>问答次数</th><th>Token 额度</th><th>可访问专家范围</th><th>席位</th><th>更新时间</th><th>状态</th><th>订阅用户</th><th>操作</th></tr></thead>
                 <tbody>
-                  <tr><td><div class="plan-name-cell"><span class="plan-icon">🐧</span><div><strong>免费版</strong><small>入门级运营助手</small></div></div></td><td><span class="soft-label">免费版</span></td><td>免费</td><td>—</td><td>100</td><td>5万</td><td>1</td><td>2026/06/04</td><td><span class="status ok">已上架</span></td><td><div class="action-group"><button class="mini-button" data-open-edit-plan>修改</button><button class="mini-button">下架</button></div></td></tr>
-                  <tr><td><div class="plan-name-cell"><span class="plan-icon accent">⚡</span><div><strong>专业版</strong><small>进阶级效率专家</small></div></div></td><td><span class="soft-label">个人付费</span></td><td>¥106/月</td><td>¥88/月</td><td>1,000</td><td>50万</td><td>1</td><td>2026/06/04</td><td><span class="status ok">已上架</span></td><td><div class="action-group"><button class="mini-button" data-open-edit-plan>修改</button><button class="mini-button">下架</button></div></td></tr>
-                  <tr><td><div class="plan-name-cell"><span class="plan-icon accent">⚡</span><div><strong>Max版</strong><small>战略级决策顾问</small></div></div></td><td><span class="soft-label">个人付费</span></td><td>¥625/月</td><td>¥520/月</td><td>5,000</td><td>300万</td><td>1</td><td>2026/06/03</td><td><span class="status ok">已上架</span></td><td><div class="action-group"><button class="mini-button" data-open-edit-plan>修改</button><button class="mini-button">下架</button></div></td></tr>
-                  <tr><td><div class="plan-name-cell"><span class="plan-icon business">▦</span><div><strong>Business版</strong><small>团队协作·企业级</small></div></div></td><td><span class="soft-label">团队 / Business</span></td><td>¥200/月</td><td>¥166/月</td><td>不限量</td><td>不限量</td><td>2+</td><td>2026/06/02</td><td><span class="status ok">已上架</span></td><td><div class="action-group"><button class="mini-button" data-open-edit-plan>修改</button><button class="mini-button">下架</button></div></td></tr>
-                  <tr><td><div class="plan-name-cell"><span class="plan-icon business">▦</span><div><strong>Enterprise版</strong><small>旗舰企业定制方案</small></div></div></td><td><span class="soft-label">团队 / Business</span></td><td>定制</td><td>—</td><td>定制</td><td>定制</td><td>custom</td><td>2026/06/01</td><td><span class="status warn">审核中</span></td><td><div class="action-group"><button class="mini-button" data-open-edit-plan>修改</button><button class="mini-button">上架</button><button class="danger-button" data-open-delete-confirm>删除</button></div></td></tr>
+                  <tr><td><div class="plan-name-cell"><span class="plan-icon">🐧</span><div><strong>免费版</strong><small>入门级运营助手</small></div></div></td><td><span class="soft-label">免费版</span></td><td>1</td><td>免费</td><td>—</td><td>100</td><td>5万</td><td><div class="plan-access-cell"><span class="soft-label">基础体验</span></div></td><td>1</td><td>2026/06/04</td><td><span class="status ok">已上架</span></td><td><button class="text-link" data-open-plan-subscribers type="button">1,024</button></td><td><div class="action-group"><button class="mini-button" data-open-plan-detail>查看</button><button class="mini-button" data-open-edit-plan>修改</button><button class="mini-button">下架</button></div></td></tr>
+                  <tr><td><div class="plan-name-cell"><span class="plan-icon accent">⚡</span><div><strong>专业版</strong><small>进阶级效率专家</small></div></div></td><td><span class="soft-label">个人付费</span></td><td>2</td><td>¥99/月</td><td>¥999/年</td><td>1,000</td><td>50万</td><td><div class="plan-access-cell"><span class="soft-label">基础体验</span><span class="soft-label">专业专家</span></div></td><td>1</td><td>2026/06/04</td><td><span class="status ok">已上架</span></td><td><button class="text-link" data-open-plan-subscribers type="button">2,108</button></td><td><div class="action-group"><button class="mini-button" data-open-plan-detail>查看</button><button class="mini-button" data-open-edit-plan>修改</button><button class="mini-button">下架</button></div></td></tr>
+                  <tr><td><div class="plan-name-cell"><span class="plan-icon accent">⚡</span><div><strong>Max版</strong><small>战略级决策顾问</small></div></div></td><td><span class="soft-label">个人付费</span></td><td>3</td><td>¥299/月</td><td>¥2999/年</td><td>5,000</td><td>300万</td><td><div class="plan-access-cell"><span class="soft-label">基础体验</span><span class="soft-label">专业专家</span><span class="soft-label">高级专家</span></div></td><td>1</td><td>2026/06/03</td><td><span class="status ok">已上架</span></td><td><button class="text-link" data-open-plan-subscribers type="button">1,536</button></td><td><div class="action-group"><button class="mini-button" data-open-plan-detail>查看</button><button class="mini-button" data-open-edit-plan>修改</button><button class="mini-button">下架</button></div></td></tr>
+                  <tr><td><div class="plan-name-cell"><span class="plan-icon business">▦</span><div><strong>Business版</strong><small>团队协作·企业级</small></div></div></td><td><span class="soft-label">团队 / Business</span></td><td>4</td><td>¥999/月</td><td>¥9999/年</td><td>50,000</td><td>3000万</td><td><div class="plan-access-cell"><span class="soft-label">基础体验</span><span class="soft-label">专业专家</span><span class="soft-label">高级专家</span></div></td><td>5</td><td>2026/06/02</td><td><span class="status ok">已上架</span></td><td><button class="text-link" data-open-plan-subscribers type="button">872</button></td><td><div class="action-group"><button class="mini-button" data-open-plan-detail>查看</button><button class="mini-button" data-open-edit-plan>修改</button><button class="mini-button">下架</button></div></td></tr>
+                  <tr><td><div class="plan-name-cell"><span class="plan-icon business">▦</span><div><strong>Enterprise版</strong><small>旗舰企业定制方案</small></div></div></td><td><span class="soft-label">团队 / Business</span></td><td>5</td><td>定制</td><td>—</td><td>定制</td><td>定制</td><td><div class="plan-access-cell"><span class="soft-label">基础体验</span><span class="soft-label">专业专家</span><span class="soft-label">高级专家</span><span class="soft-label">企业定制</span></div></td><td>custom</td><td>2026/06/01</td><td><span class="status warn">草稿</span></td><td><button class="text-link" data-open-plan-subscribers type="button">202</button></td><td><div class="action-group"><button class="mini-button" data-open-plan-detail>查看</button><button class="mini-button" data-open-edit-plan>修改</button><button class="mini-button">上架</button><button class="danger-button" data-open-delete-confirm>删除</button></div></td></tr>
                 </tbody>
               </table>
             </div>
           </section>
+        </section>
+
+        <section id="planDetail" class="page">
+          <button class="back-link" data-plan-detail-back type="button">← 返回套餐管理</button>
+          <section class="plan-detail-hero">
+            <div class="plan-detail-hero-main">
+              <span id="planDetailIcon" class="plan-icon accent">⚡</span>
+              <div>
+                <h2 id="planDetailName">专业版</h2>
+                <p id="planDetailSubtitle">适合个人专业用户，解锁更多专业专家和更高问答额度</p>
+                <div class="plan-detail-tags">
+                  <span id="planDetailStatus" class="status ok">已上架</span>
+                  <span id="planDetailBadge" class="soft-label">最受欢迎</span>
+                  <span id="planDetailCache" class="soft-label">缓存: pro · 套餐 2</span>
+                  <span id="planDetailUpdated" class="soft-label">最后更新 2026/06/04</span>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <div class="plan-detail-metrics">
+            <article class="metric-link-card" data-open-current-plan-subscribers role="button" tabindex="0"><span>订阅用户</span><strong id="planDetailSubscribers">2,108</strong><small id="planDetailGrowth">+134</small></article>
+            <article><span>月付用户</span><strong id="planDetailMonthlyUsers">856</strong><small id="planDetailMonthlyPrice">¥99/月</small></article>
+            <article><span>年付用户</span><strong id="planDetailYearlyUsers">1,252</strong><small id="planDetailYearlyPrice">¥999/年</small></article>
+            <article><span>本月预计收入</span><strong id="planDetailRevenue">¥ 309,444</strong><small id="planDetailPayMode">含年付</small></article>
+          </div>
+
+          <div class="plan-detail-layout">
+            <div class="plan-detail-main">
+              <section class="detail-card">
+                <div class="detail-card-title"><span>📋</span><h2>基本信息</h2></div>
+                <div class="detail-info-grid">
+                  <div><span>套餐名称</span><strong id="planInfoName">专业版</strong></div>
+                  <div><span>套餐编码</span><strong id="planInfoCode" class="soft-label">pro</strong></div>
+                  <div><span>用户标签</span><strong id="planInfoLabel">进阶级效率专家</strong></div>
+                  <div><span>套餐等级</span><strong><mark id="planInfoLevel">2</mark> 等级 <span id="planInfoLevelText">2</span></strong></div>
+                </div>
+                <div class="detail-divider"></div>
+                <div class="detail-description">
+                  <span>套餐介绍</span>
+                  <p id="planInfoDescription">适合个人专业用户，解锁更多专业专家和更高问答题库。支持核心模型与增强模型，每月 1,000 次问答额度。</p>
+                </div>
+              </section>
+
+              <section class="detail-card">
+                <div class="detail-card-title"><span>💰</span><h2>定价配置</h2></div>
+                <div class="price-grid">
+                  <article><span>月付价格</span><strong id="planPriceMonthly">¥99</strong><small>/ 月</small></article>
+                  <article><span>年付价格</span><strong id="planPriceYearly">¥999</strong><small>/ 年</small><em id="planYearlySaving">省¥189</em></article>
+                </div>
+                <div class="payment-grid">
+                  <article><span>支持月付</span><strong class="status ok">已开启</strong></article>
+                  <article><span>支持年付</span><strong class="status ok">已开启</strong></article>
+                  <article><span>联系销售</span><strong id="planSalesStatus" class="status pending">未开启</strong></article>
+                  <article><span>席位</span><strong id="planSeatUnit">1人</strong></article>
+                </div>
+              </section>
+
+              <section class="detail-card">
+                <div class="detail-card-title"><span>↗</span><h2>用户增长趋势</h2><small id="planTrendSummary">当前用户 2,108 · +6.4%</small></div>
+                <div class="trend-chart" aria-label="用户增长趋势图">
+                  <div class="trend-line"></div>
+                  <span>1月</span><span>2月</span><span>3月</span><span>4月</span><span>5月</span><span>6月</span>
+                </div>
+              </section>
+
+              <section class="detail-card">
+                <div class="detail-card-title"><span>🔁</span><h2>升级规则</h2></div>
+                <div class="upgrade-detail-grid">
+                  <div><span>可升级来源</span><div id="planUpgradeFrom"></div></div>
+                  <div><span>可升级目标</span><div id="planUpgradeTo"></div></div>
+                  <div><span>规则说明</span><div id="planUpgradeRules"></div></div>
+                </div>
+              </section>
+            </div>
+
+            <aside class="plan-detail-side">
+              <section class="detail-card">
+                <div class="detail-card-title"><span>📊</span><h2>本月用量概览</h2><small id="planUsageDate">截至 2026/06/08</small></div>
+                <div class="usage-card blue">
+                  <div><span>问答总用量</span><strong id="planQaUsage">738,220 次</strong></div>
+                  <div class="usage-bar"><i id="planQaBar" style="width: 35%"></i></div>
+                  <small id="planQaRate">已使用 35%</small>
+                </div>
+                <div class="usage-card purple">
+                  <div><span>Token 总用量</span><strong id="planTokenUsage">8.4 亿</strong></div>
+                  <div class="usage-bar"><i id="planTokenBar" style="width: 20%"></i></div>
+                  <small id="planTokenRate">已使用 20%</small>
+                </div>
+              </section>
+
+              <section class="detail-card">
+                <div class="detail-card-title"><span>✦</span><h2>权益配置</h2></div>
+                <div class="benefit-list">
+                  <h3>使用额度</h3>
+                  <article><span>问答次数</span><strong id="planQaQuota">1,000</strong><small>次 / 月</small></article>
+                  <article><span>Token 配额</span><strong id="planTokenQuota">50万</strong><small>tokens / 月</small></article>
+                  <h3>可用功能</h3>
+                  <span>专家组团</span>
+                  <div id="planExpertGroups"></div>
+                  <span>AI 模型</span>
+                  <div id="planAiModels"></div>
+                </div>
+              </section>
+            </aside>
+          </div>
+        </section>
+
+        <section id="planSubscribers" class="page">
+          <button class="back-link" data-plan-subscribers-back type="button">← 返回套餐管理</button>
+          <section class="panel subscriber-page-panel">
+            <div class="panel-head">
+              <div>
+                <h2 id="planSubscribersTitle">订阅用户列表</h2>
+                <p id="planSubscribersSubtitle">查看当前套餐的订阅用户、周期、到期时间与用量。</p>
+              </div>
+              <button class="primary-button compact" type="button">导出</button>
+            </div>
+            <div class="subscriber-page-filters">
+              <input class="search-input" placeholder="搜索用户" />
+              <select><option>全部状态</option><option>订阅中</option><option>本周到期</option><option>已过期</option></select>
+              <select><option>全部周期</option><option>月付</option><option>年付</option></select>
+              <select><option>到期时间排序</option><option>本月用量排序</option><option>订阅开始排序</option></select>
+            </div>
+            <div class="subscriber-page-list" id="planSubscribersList"></div>
+            <div class="subscriber-page-footer">
+              <span id="planSubscribersSummary">共 0 条，每页 20 条</span>
+              <div>
+                <button class="mini-button" type="button">‹</button>
+                <button class="mini-button is-active" type="button">1</button>
+                <button class="mini-button" type="button">2</button>
+                <button class="mini-button" type="button">3</button>
+                <span>...</span>
+                <button class="mini-button" type="button">106</button>
+                <button class="mini-button" type="button">›</button>
+              </div>
+            </div>
+          </section>
+        </section>
+
+        <section id="subscriberDetail" class="page">
+          <button class="back-link" data-subscriber-detail-back type="button">← 返回订阅用户列表</button>
+          <section class="subscriber-detail-overview">
+            <div class="subscriber-detail-head">
+              <div class="subscriber-detail-title">
+                <span id="subscriberDetailAvatar" class="member-avatar yellow">陈七</span>
+                <div>
+                  <h2 id="subscriberDetailName">陈七</h2>
+                  <div class="subscriber-detail-tags">
+                    <span id="subscriberDetailPlan" class="soft-label">专业版 · 月付</span>
+                    <span id="subscriberDetailRisk" class="status danger">用量已锁定</span>
+                    <span id="subscriberDetailStatus" class="status ok">订阅中</span>
+                  </div>
+                  <p id="subscriberDetailMeta">UID: U-20250801-0214 · 注册 2025/08/01 · 邮箱 chen7@biz.io</p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <div class="subscriber-detail-metrics">
+            <article><span>累计消费金额</span><strong id="subscriberMetricSpend">¥ 990</strong><small id="subscriberMetricOrders">共 10 笔订单</small></article>
+            <article><span>本月问答用量</span><strong id="subscriberMetricQa">43 / 100 次</strong><small id="subscriberMetricQaNote">剩余 57 次</small></article>
+            <article><span>本月 Token 用量</span><strong id="subscriberMetricToken">10万 / 10万</strong><small id="subscriberMetricTokenNote">Token 使用正常</small></article>
+            <article><span>累计使用天数</span><strong id="subscriberMetricDays">313 天</strong><small id="subscriberMetricSince">自 2025/08/01 起</small></article>
+          </div>
+
+          <div class="subscriber-detail-grid">
+            <section class="detail-card">
+              <div class="detail-card-title"><span>▣</span><h2>当前订阅</h2><button class="text-link" type="button">调整</button></div>
+              <div class="subscriber-current-grid">
+                <div><span>套餐 / 周期</span><strong id="subscriberCurrentPlan">专业版 · 月付</strong></div>
+                <div><span>月付价格</span><strong id="subscriberCurrentPrice">¥99 / 月</strong></div>
+                <div><span>订阅周期</span><strong id="subscriberCurrentRange">2026/06/01 - 2026/07/01</strong></div>
+                <div><span>自动续费</span><strong id="subscriberCurrentRenew">已开启</strong></div>
+                <div><span>订单号</span><strong id="subscriberCurrentOrder">ORD-2026-060188</strong></div>
+                <div><span>支付方式</span><strong id="subscriberCurrentPay">微信支付</strong></div>
+              </div>
+            </section>
+
+            <section class="detail-card">
+              <div class="detail-card-title"><span>▦</span><h2>订单历史</h2><button class="mini-button export-button" type="button">导出</button></div>
+              <table class="compact-table">
+                <thead><tr><th>订单</th><th>金额</th><th>时间</th><th>状态</th></tr></thead>
+                <tbody id="subscriberOrderRows"></tbody>
+              </table>
+              <p class="subscriber-card-foot">共 10 笔订单　<a href="#">查看全部</a></p>
+            </section>
+
+            <section class="detail-card">
+              <div class="detail-card-title"><span>↺</span><h2>操作记录</h2></div>
+              <div class="activity-tabs">
+                <button class="is-active" type="button">全部</button>
+                <button type="button">用户操作</button>
+                <button type="button">系统自动</button>
+                <button type="button">管理员操作</button>
+              </div>
+              <div id="subscriberLogs" class="activity-timeline"></div>
+            </section>
+          </div>
         </section>
 
         <section id="settings" class="page">
@@ -666,8 +876,10 @@
             <div class="data-form">
               <label><span>套餐名称 *</span><input placeholder="例：专业版" /></label>
               <label><span>套餐类型</span><select><option>免费版</option><option>个人付费</option><option>团队 / Business</option><option>企业定制</option></select></label>
+              <label><span>套餐编码 *</span><input placeholder="Pro" /><small>小写英文，唯一标识</small></label>
+              <label><span>套餐等级 *</span><select><option>1</option><option>2</option><option>3</option><option>4</option></select><small>用于判断升级顺序</small></label>
               <label><span>用户端副标题</span><input placeholder="例：进阶级效率专家" /><small>展示在套餐卡片名称下方</small></label>
-              <label><span>上架状态</span><select><option>草稿（不对用户展示）</option><option>已上架</option><option>审核中</option></select></label>
+              <label class="plan-status-field"><span>上架状态</span><select disabled><option selected>草稿（不对用户展示）</option><option>已上架</option><option>审核中</option></select></label>
               <label class="inline-check wide"><input type="checkbox" /><span>标记为推荐，展示「最受欢迎」标签</span></label>
             </div>
           </section>
@@ -675,45 +887,58 @@
           <section class="form-section">
             <h3>② 定价配置</h3>
             <div class="data-form three-columns">
-              <label><span>月付价格（元）</span><input placeholder="0 表示免费" /></label>
-              <label class="field-with-note"><span>年付价格（元/月）</span><input placeholder="年付折算月均价" /><small>留空表示不提供年付</small></label>
-              <label><span>席位配置</span><select><option>1 人（个人版）</option><option>2+（团队版）</option><option>custom</option></select></label>
-              <label><span>问答次数 / 月</span><input placeholder="例：1000 或 不限量" /></label>
-              <label><span>Token 额度 / 月</span><input placeholder="例：50万 或 不限量" /></label>
-              <label><span>可用 AI 模型</span><select><option>基础模型</option><option>高级模型</option><option>全部模型</option></select></label>
+              <label><span>月付价格（元）*</span><input placeholder="0 表示免费" /></label>
+              <label class="field-with-note"><span>年付价格（元/年）</span><input placeholder="留空表示不提供年付" /></label>
+              <label><span>席位配置 *</span><select><option>1 人（个人版）</option><option>5 人（团队版）</option><option>custom</option></select></label>
+              <label><span>问答次数 / 月 *</span><input placeholder="例：1000 或 不限量" /></label>
+              <label><span>Token 额度 / 月 *</span><input placeholder="例：50万 或 不限量" /></label>
+              <label><span>货币单位</span><select><option>CNY ¥</option><option>USD $</option></select></label>
+              <label class="wide"><span>年付优惠说明</span><input placeholder="例：年付可节省 20%，相当于 ¥83/月" /></label>
+            </div>
+            <div class="plan-switch-list">
+              <label><span>支持联系销售（Enterprise 专用）</span><input type="checkbox" role="switch" /></label>
+              <label><span>支持月付</span><input type="checkbox" role="switch" checked /></label>
+              <label><span>支持年付</span><input type="checkbox" role="switch" checked /></label>
             </div>
           </section>
 
           <section class="form-section">
-            <h3>③ 功能权益开关</h3>
-            <p class="section-helper">配置该套餐包含的功能，直接影响用户端功能列表展示</p>
-            <div class="feature-matrix">
-              <div class="feature-group-title">专家与知识</div>
-              <label><span><strong>召唤全部 AI 专家</strong><small>解锁所有专家类型</small></span><input type="checkbox" /></label>
-              <label><span><strong>品牌记忆库</strong><small>专属知识记忆</small></span><input type="checkbox" /></label>
-              <label><span><strong>跨平台知识图谱</strong><small>多平台数据整合</small></span><input type="checkbox" /></label>
-              <label><span><strong>专属运营大脑</strong><small>个性化策略引擎</small></span><input type="checkbox" /></label>
-
-              <div class="feature-group-title">内容能力</div>
-              <label><span><strong>基础文案润色</strong><small>基础文字优化</small></span><input type="checkbox" /></label>
-              <label><span><strong>深度评论拆解</strong><small>Review 深度分析</small></span><input type="checkbox" /></label>
-              <label><span><strong>精准申诉顾问</strong><small>申诉信撰写辅助</small></span><input type="checkbox" /></label>
-              <label><span><strong>地道客服话术</strong><small>本地化客服内容</small></span><input type="checkbox" /></label>
-              <label><span><strong>行业动态资讯</strong><small>实时行业信息</small></span><input type="checkbox" /></label>
-              <label><span><strong>通用运营模板</strong><small>标准化内容模板</small></span><input type="checkbox" /></label>
-              <label><span><strong>长文输出能力</strong><small>无字数限制输出</small></span><input type="checkbox" /></label>
-              <label><span><strong>高频使用权限</strong><small>提升调用频率上限</small></span><input type="checkbox" /></label>
-
-              <div class="feature-group-title">团队与安全</div>
-              <label><span><strong>团队知识共享</strong><small>成员间知识同步</small></span><input type="checkbox" /></label>
-              <label><span><strong>团队管理后台</strong><small>成员权限管理</small></span><input type="checkbox" /></label>
-              <label><span><strong>数据隐私保护</strong><small>数据不用训练</small></span><input type="checkbox" /></label>
-              <label><span><strong>SSO / MFA 安全</strong><small>企业级安全认证</small></span><input type="checkbox" /></label>
+            <h3>③ 可访问专家范围</h3>
+            <div class="expert-range-grid">
+              <label><input type="checkbox" /><span><strong>基础体验专家组</strong><small>通用问答专家，适合初级版</small></span></label>
+              <label><input type="checkbox" /><span><strong>专业专家组</strong><small>行业深度专家，深度运营分析</small></span></label>
+              <label><input type="checkbox" /><span><strong>高级专家组</strong><small>高级模型，复杂决策指导</small></span></label>
+              <label><input type="checkbox" /><span><strong>企业定制专家组</strong><small>企业私有专家，定制知识库</small></span></label>
             </div>
           </section>
 
           <section class="form-section">
-            <h3>④ 用户端展示文案</h3>
+            <h3>④ 可用 AI 模型</h3>
+            <div class="model-pills">
+              <button class="is-active" type="button">核心模型</button>
+              <button type="button">增强模型</button>
+              <button type="button">高级模型</button>
+              <button type="button">全部模型</button>
+            </div>
+          </section>
+
+          <section class="form-section">
+            <h3>⑤ 升级规则</h3>
+            <div class="upgrade-path-table">
+              <div><span>当前套餐</span><span>可升级套餐</span></div>
+              <div><strong>免费版</strong><p>专业版、Max版、Business版</p></div>
+              <div><strong>专业版</strong><p>Max版、Business版</p></div>
+              <div><strong>Max版</strong><p>Business版</p></div>
+              <div><strong>Business版</strong><p>无更高套餐</p></div>
+            </div>
+            <div class="plan-switch-list compact-switches">
+              <label><span>升级立即生效</span><input type="checkbox" role="switch" checked /></label>
+              <label><span>升级按差价补款</span><input type="checkbox" role="switch" checked /></label>
+            </div>
+          </section>
+
+          <section class="form-section">
+            <h3>⑥ 用户端展示文案</h3>
             <label class="wide"><span>功能亮点列表（每行一条，展示在套餐卡片上）</span><textarea rows="4" placeholder="深度评论拆解&#10;精准申诉顾问&#10;地道客服话术&#10;高频使用权限"></textarea><small>建议 4-6 条，简洁有力，前缀文字写在第一行</small></label>
             <label class="wide"><span>购买按钮文案</span><input placeholder="例：获取专业版" /></label>
             <div class="plan-preview">
@@ -735,9 +960,9 @@
           </section>
         </form>
         <div class="modal-footer modal-footer-end">
+          <p class="modal-footer-note">保存后可在套餐列表页面手动点击上架</p>
           <button class="mini-button" data-close-plan type="button">取消</button>
-          <button class="mini-button" data-close-plan type="button">保存草稿</button>
-          <button class="primary-button" data-close-plan type="button">保存并上架</button>
+          <button class="primary-button" data-close-plan type="button">保存草稿</button>
         </div>
       </section>
     </div>
@@ -758,8 +983,10 @@
             <div class="data-form">
               <label><span>套餐名称 *</span><input id="editPlanName" value="专业版" /></label>
               <label><span>套餐类型</span><select><option>个人付费</option><option>免费版</option><option>团队 / Business</option><option>企业定制</option></select></label>
+              <label><span>套餐编码 *</span><input value="Pro" /><small>小写英文，唯一标识</small></label>
+              <label><span>套餐等级 *</span><select><option>1</option><option selected>2</option><option>3</option><option>4</option></select><small>用于判断升级顺序</small></label>
               <label><span>用户端副标题</span><input value="进阶级效率专家" /><small>展示在套餐卡片名称下方</small></label>
-              <label><span>上架状态</span><select id="editPlanStatus"><option>已上架</option><option>审核中</option><option>已下架</option></select></label>
+              <label class="plan-status-field"><span>上架状态</span><select id="editPlanStatus" disabled><option>已上架</option><option>草稿</option><option>已下架</option></select></label>
               <label class="inline-check wide"><input type="checkbox" checked /><span>标记为推荐，展示「最受欢迎」标签</span></label>
             </div>
           </section>
@@ -767,45 +994,58 @@
           <section class="form-section">
             <h3>② 定价配置</h3>
             <div class="data-form three-columns">
-              <label><span>月付价格（元）</span><input id="editPlanPrice" value="¥106/月" /></label>
-              <label class="field-with-note"><span>年付价格（元/月）</span><input value="¥88/月" /><small>留空表示不提供年付</small></label>
-              <label><span>席位配置</span><select><option>1 人（个人版）</option><option>2+（团队版）</option><option>custom</option></select></label>
-              <label><span>问答次数 / 月</span><input id="editPlanKb" value="1,000" /></label>
-              <label><span>Token 额度 / 月</span><input id="editPlanSkill" value="50万" /></label>
-              <label><span>可用 AI 模型</span><select><option>基础模型</option><option>高级模型</option><option>全部模型</option></select></label>
+              <label><span>月付价格（元）*</span><input id="editPlanPrice" value="¥99/月" /></label>
+              <label class="field-with-note"><span>年付价格（元/年）</span><input value="¥999/年" /></label>
+              <label><span>席位配置 *</span><select><option selected>1 人（个人版）</option><option>5 人（团队版）</option><option>custom</option></select></label>
+              <label><span>问答次数 / 月 *</span><input id="editPlanKb" value="1,000" /></label>
+              <label><span>Token 额度 / 月 *</span><input id="editPlanSkill" value="50万" /></label>
+              <label><span>货币单位</span><select><option>CNY ¥</option><option>USD $</option></select></label>
+              <label class="wide"><span>年付优惠说明</span><input value="年付可节省约 17%，适合持续运营团队" /></label>
+            </div>
+            <div class="plan-switch-list">
+              <label><span>支持联系销售（Enterprise 专用）</span><input type="checkbox" role="switch" /></label>
+              <label><span>支持月付</span><input type="checkbox" role="switch" checked /></label>
+              <label><span>支持年付</span><input type="checkbox" role="switch" checked /></label>
             </div>
           </section>
 
           <section class="form-section">
-            <h3>③ 功能权益开关</h3>
-            <p class="section-helper">配置该套餐包含的功能，直接影响用户端功能列表展示</p>
-            <div class="feature-matrix">
-              <div class="feature-group-title">专家与知识</div>
-              <label><span><strong>召唤全部 AI 专家</strong><small>解锁所有专家类型</small></span><input type="checkbox" checked /></label>
-              <label><span><strong>品牌记忆库</strong><small>专属知识记忆</small></span><input type="checkbox" checked /></label>
-              <label><span><strong>跨平台知识图谱</strong><small>多平台数据整合</small></span><input type="checkbox" /></label>
-              <label><span><strong>专属运营大脑</strong><small>个性化策略引擎</small></span><input type="checkbox" /></label>
-
-              <div class="feature-group-title">内容能力</div>
-              <label><span><strong>基础文案润色</strong><small>基础文字优化</small></span><input type="checkbox" checked /></label>
-              <label><span><strong>深度评论拆解</strong><small>Review 深度分析</small></span><input type="checkbox" checked /></label>
-              <label><span><strong>精准申诉顾问</strong><small>申诉信撰写辅助</small></span><input type="checkbox" checked /></label>
-              <label><span><strong>地道客服话术</strong><small>本地化客服内容</small></span><input type="checkbox" /></label>
-              <label><span><strong>行业动态资讯</strong><small>实时行业信息</small></span><input type="checkbox" /></label>
-              <label><span><strong>通用运营模板</strong><small>标准化内容模板</small></span><input type="checkbox" checked /></label>
-              <label><span><strong>长文输出能力</strong><small>无字数限制输出</small></span><input type="checkbox" /></label>
-              <label><span><strong>高频使用权限</strong><small>提升调用频率上限</small></span><input type="checkbox" checked /></label>
-
-              <div class="feature-group-title">团队与安全</div>
-              <label><span><strong>团队知识共享</strong><small>成员间知识同步</small></span><input type="checkbox" /></label>
-              <label><span><strong>团队管理后台</strong><small>成员权限管理</small></span><input type="checkbox" /></label>
-              <label><span><strong>数据隐私保护</strong><small>数据不用训练</small></span><input type="checkbox" checked /></label>
-              <label><span><strong>SSO / MFA 安全</strong><small>企业级安全认证</small></span><input type="checkbox" /></label>
+            <h3>③ 可访问专家范围</h3>
+            <div class="expert-range-grid">
+              <label><input type="checkbox" checked /><span><strong>基础体验专家组</strong><small>通用问答专家，适合初级版</small></span></label>
+              <label><input type="checkbox" checked /><span><strong>专业专家组</strong><small>行业深度专家，深度运营分析</small></span></label>
+              <label><input type="checkbox" /><span><strong>高级专家组</strong><small>高级模型，复杂决策指导</small></span></label>
+              <label><input type="checkbox" /><span><strong>企业定制专家组</strong><small>企业私有专家，定制知识库</small></span></label>
             </div>
           </section>
 
           <section class="form-section">
-            <h3>④ 用户端展示文案</h3>
+            <h3>④ 可用 AI 模型</h3>
+            <div class="model-pills">
+              <button class="is-active" type="button">核心模型</button>
+              <button type="button">增强模型</button>
+              <button type="button">高级模型</button>
+              <button type="button">全部模型</button>
+            </div>
+          </section>
+
+          <section class="form-section">
+            <h3>⑤ 升级规则</h3>
+            <div class="upgrade-path-table">
+              <div><span>当前套餐</span><span>可升级套餐</span></div>
+              <div><strong>免费版</strong><p>专业版、Max版、Business版</p></div>
+              <div><strong>专业版</strong><p>Max版、Business版</p></div>
+              <div><strong>Max版</strong><p>Business版</p></div>
+              <div><strong>Business版</strong><p>无更高套餐</p></div>
+            </div>
+            <div class="plan-switch-list compact-switches">
+              <label><span>升级立即生效</span><input type="checkbox" role="switch" checked /></label>
+              <label><span>升级按差价补款</span><input type="checkbox" role="switch" checked /></label>
+            </div>
+          </section>
+
+          <section class="form-section">
+            <h3>⑥ 用户端展示文案</h3>
             <label class="wide"><span>功能亮点列表（每行一条，展示在套餐卡片上）</span><textarea rows="4">深度评论拆解
 精准申诉顾问
 通用运营模板
@@ -818,7 +1058,7 @@
                   <span class="plan-icon accent">⚡</span>
                   <div><strong>专业版</strong><small>进阶级效率专家</small></div>
                 </div>
-                <strong>¥106/月</strong>
+                <strong>¥99/月</strong>
                 <ul>
                   <li>深度评论拆解</li>
                   <li>精准申诉顾问</li>
@@ -830,9 +1070,9 @@
           </section>
         </form>
         <div class="modal-footer modal-footer-end">
+          <p class="modal-footer-note">保存后将同步更新套餐列表页面展示</p>
           <button class="mini-button" data-close-edit-plan type="button">取消</button>
-          <button class="mini-button" data-close-edit-plan type="button">保存草稿</button>
-          <button class="primary-button" data-close-edit-plan type="button">保存修改</button>
+          <button class="primary-button" data-close-edit-plan type="button">保存</button>
         </div>
       </section>
     </div>
@@ -846,6 +1086,52 @@
           <div class="confirm-actions">
             <button class="mini-button" data-close-delete-confirm type="button">取消</button>
             <button class="danger-button" data-close-delete-confirm type="button">确认删除</button>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div id="planUsersModal" class="modal-backdrop is-hidden" role="dialog" aria-modal="true" aria-labelledby="planUsersTitle">
+      <section class="modal-panel plan-users-panel">
+        <button class="modal-close" data-close-plan-users type="button" aria-label="关闭订阅用户弹窗">×</button>
+        <div class="panel-head plan-users-head">
+          <div>
+            <h2 id="planUsersTitle">订阅用户</h2>
+            <p id="planUsersSubtitle">查看当前套餐的订阅用户列表。</p>
+          </div>
+          <button class="mini-button" type="button">导出</button>
+        </div>
+        <div class="subscriber-tabs">
+          <button class="is-active" type="button">全部 <span>(2,108)</span></button>
+          <button type="button">月付 <span>(856)</span></button>
+          <button type="button">年付 <span>(1,252)</span></button>
+          <button type="button">即将到期 <span>(38)</span></button>
+          <button type="button">已过期 <span>(24)</span></button>
+        </div>
+        <div class="subscriber-filters">
+          <button class="mini-button select-all-box" type="button" aria-label="全选订阅用户"></button>
+          <select><option>全部状态</option><option>订阅中</option><option>即将到期</option><option>已过期</option></select>
+          <select><option>全部周期</option><option>月付</option><option>年付</option></select>
+          <select><option>到期时间排序</option><option>本月用量排序</option><option>订阅开始排序</option></select>
+        </div>
+        <div class="table-wrap">
+          <table id="planUsersTable">
+            <thead><tr><th>用户</th><th>订阅类型</th><th>订阅开始</th><th>到期时间</th><th>本月用量</th><th>状态</th><th>操作</th></tr></thead>
+            <tbody id="planUsersTableBody">
+              <tr><td colspan="7">请选择套餐查看订阅用户。</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="subscriber-pagination">
+          <span id="planUsersSummary">共 0 条，每页 20 条</span>
+          <div>
+            <button class="mini-button" type="button">上一页</button>
+            <button class="mini-button is-active" type="button">1</button>
+            <button class="mini-button" type="button">2</button>
+            <button class="mini-button" type="button">3</button>
+            <span>...</span>
+            <button class="mini-button" type="button">106</button>
+            <button class="mini-button" type="button">下一页</button>
           </div>
         </div>
       </section>
@@ -937,7 +1223,17 @@
             <p class="form-hint">已选知识库会与 Skill 原有知识库合并检索，Skill 专属 Prompt 优先级更高。</p>
           </section>
           <section class="form-section">
-            <h3>④ 引导问题（用户端“试试这样问我”）</h3>
+            <h3>④ 专家分组</h3>
+            <p class="form-hint compact-hint">专家通过加入分组与套餐绑定，分组决定哪些套餐可以访问该专家。</p>
+            <div id="expertGroupPicker" class="expert-range-grid expert-group-grid">
+              <label><input type="radio" name="expertGroup" value="基础专家组" /><span><strong>基础专家组</strong><small>Free 版及以上可访问</small></span></label>
+              <label><input type="radio" name="expertGroup" value="专业专家组" /><span><strong>专业专家组</strong><small>Pro 版及以上可访问</small></span></label>
+              <label><input type="radio" name="expertGroup" value="高级专家组" /><span><strong>高级专家组</strong><small>Max 版及以上可访问</small></span></label>
+              <label><input type="radio" name="expertGroup" value="企业定制专家组" /><span><strong>企业定制专家组</strong><small>Business 版专属访问</small></span></label>
+            </div>
+          </section>
+          <section class="form-section">
+            <h3>⑤ 引导问题（用户端“试试这样问我”）</h3>
             <p class="form-hint compact-hint">最多添加 3 个引导问题，每个问题建议控制在 20 字以内。</p>
             <div id="expertGuideList" class="guide-list">
             </div>
@@ -1194,6 +1490,46 @@
       </section>
     </div>
 
+    <div id="roleModal" class="modal-backdrop is-hidden" role="dialog" aria-modal="true" aria-labelledby="roleModalTitle">
+      <section class="modal-panel role-modal-panel">
+        <button class="modal-close" data-close-role type="button" aria-label="关闭角色配置弹窗">×</button>
+        <div class="modal-head">
+          <span class="modal-avatar blue">权</span>
+          <div>
+            <h2 id="roleModalTitle">新增角色</h2>
+            <p>配置角色名称、状态和可访问的后台功能。</p>
+          </div>
+        </div>
+        <form class="modal-form">
+          <section class="form-section">
+            <h3>基本信息</h3>
+          <div class="form-grid two role-basic-grid">
+            <label><span>角色名称</span><input value="专家" placeholder="例如：专家" /></label>
+            <label><span>角色类型</span><select><option>自定义角色</option><option>系统角色</option></select></label>
+            <label><span>角色状态</span><select><option>启用</option><option>停用</option></select></label>
+            <label><span>可见范围</span><select><option>全部后台成员</option><option>仅管理员可见</option></select></label>
+          </div>
+          <label class="wide"><span>权限摘要</span><textarea rows="3" placeholder="描述该角色可访问或管理的功能">知识库、专家配置、文档上传与删除</textarea></label>
+          </section>
+          <section class="form-section">
+            <h3>权限范围</h3>
+            <div class="role-check-grid">
+              <label><input type="checkbox" checked /><span><strong>知识库管理</strong><small>上传、停用、编辑和删除知识库内容</small></span></label>
+              <label><input type="checkbox" checked /><span><strong>专家管理</strong><small>维护专家、专家分组与引导问题</small></span></label>
+              <label><input type="checkbox" /><span><strong>Skill 管理</strong><small>上传、查看和删除停用 Skill</small></span></label>
+              <label><input type="checkbox" /><span><strong>用户管理</strong><small>管理团队成员、角色和账号状态</small></span></label>
+              <label><input type="checkbox" /><span><strong>套餐管理</strong><small>配置套餐、订阅用户和上下架状态</small></span></label>
+              <label><input type="checkbox" /><span><strong>系统设置</strong><small>维护模型、通知、安全和操作日志</small></span></label>
+            </div>
+          </section>
+        </form>
+        <div class="modal-footer modal-footer-end">
+          <button class="mini-button" data-close-role type="button">取消</button>
+          <button class="primary-button" data-close-role type="button">保存</button>
+        </div>
+      </section>
+    </div>
+
     <div id="userModal" class="modal-backdrop is-hidden" role="dialog" aria-modal="true" aria-labelledby="userModalTitle">
       <section class="modal-panel modal-panel-wide">
         <button class="modal-close" data-close-user type="button" aria-label="关闭添加用户弹窗">×</button>
@@ -1333,6 +1669,23 @@
           <label class="wide"><span>知识库名称</span><input placeholder="例如：售后专家库" /></label>
           <label class="wide"><span>描述</span><input placeholder="说明知识库的业务范围和适用角色" /></label>
           <button class="primary-button wide" data-close-knowledge type="button">创建知识库</button>
+        </form>
+      </section>
+    </div>
+
+    <div id="editKnowledgeModal" class="modal-backdrop is-hidden" role="dialog" aria-modal="true" aria-labelledby="editKnowledgeModalTitle">
+      <section class="modal-panel modal-panel-wide">
+        <button class="modal-close" data-close-edit-kb type="button" aria-label="关闭编辑知识库弹窗">×</button>
+        <div class="panel-head">
+          <div>
+            <h2 id="editKnowledgeModalTitle">编辑知识库</h2>
+            <p>修改知识库名称和描述，保存后同步更新列表展示。</p>
+          </div>
+        </div>
+        <form class="data-form">
+          <label class="wide"><span>知识库名称</span><input id="editKbName" placeholder="例如：expert" /></label>
+          <label class="wide"><span>描述</span><input id="editKbDescription" placeholder="说明知识库的业务范围和适用角色" /></label>
+          <button class="primary-button wide" data-close-edit-kb type="button">保存</button>
         </form>
       </section>
     </div>

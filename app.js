@@ -5,6 +5,7 @@ const logoutButton = document.querySelector("#logoutButton");
 const userAvatarButton = document.querySelector("#userAvatarButton");
 const userMenu = document.querySelector("#userMenu");
 const pageTitle = document.querySelector("#pageTitle");
+const topbar = document.querySelector(".topbar");
 const toast = document.querySelector("#toast");
 const settingsToggle = document.querySelector("[data-settings-toggle]");
 const settingsSubmenu = document.querySelector(".settings-submenu");
@@ -12,11 +13,13 @@ const usersToggle = document.querySelector("[data-users-toggle]");
 const usersSubmenu = document.querySelector(".users-submenu");
 const docKbFilter = document.querySelector("#docKbFilter");
 const uploadModal = document.querySelector("#uploadModal");
+const roleModal = document.querySelector("#roleModal");
 const userModal = document.querySelector("#userModal");
 const editUserModal = document.querySelector("#editUserModal");
 const customerModal = document.querySelector("#customerModal");
 const planModal = document.querySelector("#planModal");
 const editPlanModal = document.querySelector("#editPlanModal");
+const planUsersModal = document.querySelector("#planUsersModal");
 const deleteConfirmModal = document.querySelector("#deleteConfirmModal");
 const kbDisableConfirmModal = document.querySelector("#kbDisableConfirmModal");
 const kbDeleteConfirmModal = document.querySelector("#kbDeleteConfirmModal");
@@ -24,6 +27,7 @@ const modelModal = document.querySelector("#modelModal");
 const editModelModal = document.querySelector("#editModelModal");
 const expertModal = document.querySelector("#expertModal");
 const knowledgeModal = document.querySelector("#knowledgeModal");
+const editKnowledgeModal = document.querySelector("#editKnowledgeModal");
 const skillModal = document.querySelector("#skillModal");
 const addSkillModal = document.querySelector("#addSkillModal");
 const editSkillModal = document.querySelector("#editSkillModal");
@@ -58,8 +62,287 @@ const pageNames = {
   users: "用户管理",
   ops: "运维指标",
   plans: "套餐管理",
+  planDetail: "",
+  planSubscribers: "",
+  subscriberDetail: "",
   settings: "系统设置",
   profile: "个人中心",
+};
+
+const navPageMap = {
+  planDetail: "plans",
+  planSubscribers: "plans",
+  subscriberDetail: "plans",
+};
+
+const planUserData = {
+  免费版: [
+    { avatar: "张三", avatarClass: "blue", name: "张三", email: "zhangsan@corp.com", type: "免费", start: "2026/01/15", expires: "—", usage: 623, limit: 1000, tokenUsage: "10万", tokenLimit: "10万", status: "订阅中", statusClass: "ok" },
+  ],
+  专业版: [
+    { avatar: "张三", avatarClass: "blue", name: "张三", email: "zhangsan@corp.com", type: "年付", start: "2026/01/15", expires: "2027/01/15", usage: 623, limit: 1000, tokenUsage: "5.8万", tokenLimit: "10万", status: "订阅中", statusClass: "ok" },
+    { avatar: "李四", avatarClass: "purple", name: "李四", email: "lisi@example.com", type: "月付", start: "2025/11/03", expires: "2026/07/03", usage: 91, limit: 1000, tokenUsage: "0.8万", tokenLimit: "10万", status: "订阅中", statusClass: "ok" },
+    { avatar: "王五", avatarClass: "teal", name: "王五", email: "wangwu@mail.cn", type: "年付", start: "2025/06/10", expires: "2026/06/10", expiresNote: "2天后", usage: 988, limit: 1000, tokenUsage: "9.1万", tokenLimit: "10万", status: "订阅中", statusClass: "ok", usageTone: "warn" },
+    { avatar: "陈七", avatarClass: "yellow", name: "陈七", email: "chen7@biz.io", type: "月付", start: "2025/08/01", expires: "2026/07/01", usage: 43, limit: 1000, tokenUsage: "10万", tokenLimit: "10万", status: "订阅中", statusClass: "ok", usageAlert: "Token 已耗尽", usageTone: "danger", pending: true },
+    { avatar: "林八", avatarClass: "purple", name: "林八", email: "lin8@startup.cn", type: "月付", start: "2026/03/15", expires: "2026/07/15", usage: 1000, limit: 1000, tokenUsage: "6.2万", tokenLimit: "10万", status: "订阅中", statusClass: "ok", usageAlert: "问答已耗尽", usageTone: "danger", pending: true },
+    { avatar: "赵六", avatarClass: "red", name: "赵六", email: "zhaoliu@biz.io", type: "月付", start: "2025/03/22", expires: "2026/05/22", usage: null, limit: null, status: "已过期", statusClass: "warn" },
+  ],
+  Max版: [
+    { avatar: "刘洋", avatarClass: "yellow", name: "刘洋", email: "liuyang@trader.com", type: "年付", start: "2025/12/20", expires: "2027/02/18", usage: 892, limit: 5000, status: "订阅中", statusClass: "ok" },
+    { avatar: "陈", avatarClass: "green", name: "陈洁", email: "chenjie@market.cn", type: "月付", start: "2026/02/11", expires: "2026/07/11", usage: 1310, limit: 5000, status: "订阅中", statusClass: "ok" },
+  ],
+  Business版: [
+    { avatar: "A", avatarClass: "teal", name: "Amazon Solutions Ltd", email: "Amazon Solutions Co.", type: "年付", start: "2025/08/05", expires: "2027/01/10", usage: 3201, limit: 50000, status: "订阅中", statusClass: "ok" },
+    { avatar: "C", avatarClass: "gray", name: "CrossBorder Co.", email: "CrossBorder Co.", type: "月付", start: "2026/01/15", expires: "2026/06/20", usage: 1540, limit: 50000, status: "订阅中", statusClass: "ok" },
+  ],
+  Enterprise版: [
+    { avatar: "企", avatarClass: "teal", name: "Global Seller Group", email: "enterprise@global-seller.com", type: "年付", start: "2026/01/02", expires: "2027/01/02", usage: 0, limit: null, status: "订阅中", statusClass: "ok" },
+  ],
+};
+
+const subscriberSeedRows = [
+  { avatar: "孙", avatarClass: "green", name: "孙九", email: "sunjiu@store.cn", type: "年付", start: "2025/09/18", expires: "2026/09/18", usage: 318, limit: 1000, tokenUsage: "2.4万", tokenLimit: "10万", status: "订阅中", statusClass: "ok" },
+  { avatar: "吴", avatarClass: "blue", name: "吴十", email: "wushi@amazoner.cn", type: "月付", start: "2026/02/02", expires: "2026/07/02", usage: 742, limit: 1000, tokenUsage: "4.2万", tokenLimit: "10万", status: "订阅中", statusClass: "ok" },
+  { avatar: "周", avatarClass: "teal", name: "周青", email: "zhouqing@seller.net", type: "年付", start: "2025/07/08", expires: "2026/06/18", expiresNote: "9天后", usage: 821, limit: 1000, tokenUsage: "7.6万", tokenLimit: "10万", status: "即将到期", statusClass: "warn", usageTone: "warn" },
+  { avatar: "郑", avatarClass: "yellow", name: "郑敏", email: "zhengmin@cross.cn", type: "月付", start: "2026/04/12", expires: "2026/07/12", usage: 112, limit: 1000, tokenUsage: "1.1万", tokenLimit: "10万", status: "订阅中", statusClass: "ok" },
+  { avatar: "冯", avatarClass: "purple", name: "冯可", email: "fengke@brand.io", type: "年付", start: "2025/10/20", expires: "2026/10/20", usage: 956, limit: 1000, tokenUsage: "8.9万", tokenLimit: "10万", status: "订阅中", statusClass: "ok", usageTone: "warn" },
+  { avatar: "曹", avatarClass: "red", name: "曹然", email: "caoran@shop.cn", type: "月付", start: "2025/12/01", expires: "2026/05/31", usage: null, limit: null, status: "已过期", statusClass: "warn" },
+  { avatar: "蒋", avatarClass: "green", name: "蒋一", email: "jiangyi@ops.cn", type: "月付", start: "2026/01/08", expires: "2026/06/08", usage: 64, limit: 1000, tokenUsage: "10万", tokenLimit: "10万", status: "订阅中", statusClass: "ok", usageAlert: "Token 已耗尽", usageTone: "danger", pending: true },
+  { avatar: "沈", avatarClass: "blue", name: "沈二", email: "shener@trade.cn", type: "年付", start: "2025/11/11", expires: "2026/11/11", usage: 1000, limit: 1000, tokenUsage: "6.4万", tokenLimit: "10万", status: "订阅中", statusClass: "ok", usageAlert: "问答已耗尽", usageTone: "danger", pending: true },
+  { avatar: "韩", avatarClass: "teal", name: "韩三", email: "hansan@corp.cn", type: "月付", start: "2026/03/21", expires: "2026/06/21", expiresNote: "12天后", usage: 407, limit: 1000, tokenUsage: "3.3万", tokenLimit: "10万", status: "即将到期", statusClass: "warn" },
+  { avatar: "杨", avatarClass: "yellow", name: "杨四", email: "yangsi@example.com", type: "年付", start: "2026/01/01", expires: "2027/01/01", usage: 514, limit: 1000, tokenUsage: "5.0万", tokenLimit: "10万", status: "订阅中", statusClass: "ok" },
+  { avatar: "朱", avatarClass: "purple", name: "朱五", email: "zhuwu@mall.cn", type: "月付", start: "2026/05/06", expires: "2026/07/06", usage: 22, limit: 1000, tokenUsage: "0.3万", tokenLimit: "10万", status: "暂停中", statusClass: "pending" },
+  { avatar: "秦", avatarClass: "green", name: "秦六", email: "qinliu@sales.cn", type: "年付", start: "2025/06/30", expires: "2026/06/30", expiresNote: "21天后", usage: 679, limit: 1000, tokenUsage: "6.1万", tokenLimit: "10万", status: "即将到期", statusClass: "warn" },
+  { avatar: "许", avatarClass: "blue", name: "许七", email: "xuqi@brand.cn", type: "月付", start: "2026/02/17", expires: "2026/07/17", usage: 235, limit: 1000, tokenUsage: "2.2万", tokenLimit: "10万", status: "订阅中", statusClass: "ok" },
+  { avatar: "何", avatarClass: "red", name: "何八", email: "heba@expired.cn", type: "月付", start: "2025/10/03", expires: "2026/04/03", usage: null, limit: null, status: "已过期", statusClass: "warn" },
+  { avatar: "吕", avatarClass: "teal", name: "吕九", email: "lvjiu@amazon.cn", type: "年付", start: "2025/12/24", expires: "2026/12/24", usage: 734, limit: 1000, tokenUsage: "7.9万", tokenLimit: "10万", status: "订阅中", statusClass: "ok" },
+  { avatar: "施", avatarClass: "yellow", name: "施十", email: "shishi@team.cn", type: "月付", start: "2026/04/01", expires: "2026/07/01", usage: 486, limit: 1000, tokenUsage: "4.8万", tokenLimit: "10万", status: "订阅中", statusClass: "ok" },
+  { avatar: "唐", avatarClass: "purple", name: "唐一", email: "tangyi@global.cn", type: "年付", start: "2025/08/15", expires: "2026/08/15", usage: 907, limit: 1000, tokenUsage: "9.5万", tokenLimit: "10万", status: "订阅中", statusClass: "ok", usageTone: "warn" },
+  { avatar: "马", avatarClass: "green", name: "马二", email: "maer@biz.cn", type: "月付", start: "2026/03/02", expires: "2026/06/02", usage: null, limit: null, status: "已过期", statusClass: "warn" },
+  { avatar: "罗", avatarClass: "blue", name: "罗三", email: "luosan@store.cn", type: "年付", start: "2026/02/28", expires: "2027/02/28", usage: 128, limit: 1000, tokenUsage: "1.7万", tokenLimit: "10万", status: "订阅中", statusClass: "ok" },
+  { avatar: "梁", avatarClass: "teal", name: "梁四", email: "liangsi@seller.cn", type: "月付", start: "2026/05/15", expires: "2026/07/15", usage: 58, limit: 1000, tokenUsage: "0.9万", tokenLimit: "10万", status: "暂停中", statusClass: "pending" },
+];
+
+function getPlanSubscriberRows(planName) {
+  const users = planUserData[planName] || [];
+  if (users.length >= 20) return users;
+  const existingEmails = new Set(users.map((user) => user.email));
+  const fillers = subscriberSeedRows.filter((user) => !existingEmails.has(user.email));
+  const rows = [...users, ...fillers].slice(0, 20);
+  if (planName !== "免费版") return rows;
+  return rows.map((user) => ({
+    ...user,
+    type: "免费版",
+    expires: "—",
+    expiresNote: "",
+  }));
+}
+
+const planModelAccess = {
+  专业版: ["核心模型", "增强模型"],
+  Max版: ["核心模型", "增强模型", "高级模型"],
+  Business版: ["全部模型"],
+};
+
+let currentPlanDetailName = "专业版";
+let currentSubscriberPlanName = "专业版";
+
+const planDetails = {
+  免费版: {
+    icon: "🐧",
+    iconClass: "",
+    subtitle: "入门级运营助手，适合初步体验专家问答与基础运营支持",
+    status: "已上架",
+    statusClass: "ok",
+    badge: "入门体验",
+    code: "free",
+    level: "1",
+    label: "入门级运营助手",
+    description: "适合新用户体验基础专家能力，提供核心模型和基础体验专家组，每月 100 次问答额度。",
+    monthlyPrice: "免费",
+    yearlyPrice: "—",
+    yearlySaving: "",
+    qaQuota: "100",
+    tokenQuota: "5万",
+    seat: "1人",
+    updated: "2026/06/04",
+    subscribers: "1,024",
+    growth: "+42",
+    monthlyUsers: "1,024",
+    yearlyUsers: "0",
+    revenue: "¥ 0",
+    payMode: "免费",
+    qaUsage: "51,320 次",
+    qaRate: "51%",
+    qaBar: "51%",
+    tokenUsage: "1.8 亿",
+    tokenRate: "36%",
+    tokenBar: "36%",
+    trend: "当前用户 1,024 · +4.2%",
+    sales: "未开启",
+    salesClass: "pending",
+    expertGroups: ["基础体验专家组"],
+    aiModels: ["核心模型"],
+    upgradeFrom: ["—"],
+    upgradeTo: ["专业版", "Max版", "Business版"],
+    upgradeRules: ["立即生效", "按差价补款"],
+  },
+  专业版: {
+    icon: "⚡",
+    iconClass: "accent",
+    subtitle: "适合个人专业用户，解锁更多专业专家和更高问答题库",
+    status: "已上架",
+    statusClass: "ok",
+    badge: "最受欢迎",
+    code: "pro",
+    level: "2",
+    label: "进阶级效率专家",
+    description: "适合个人专业用户，解锁更多专业专家和更高问答题库。支持核心模型与增强模型，每月 1,000 次问答额度。",
+    monthlyPrice: "¥99",
+    yearlyPrice: "¥999",
+    yearlySaving: "省¥189",
+    qaQuota: "1,000",
+    tokenQuota: "50万",
+    seat: "1人",
+    updated: "2026/06/04",
+    subscribers: "2,108",
+    growth: "+134",
+    monthlyUsers: "856",
+    yearlyUsers: "1,252",
+    revenue: "¥ 309,444",
+    payMode: "含年付",
+    qaUsage: "738,220 次",
+    qaRate: "已使用 35%",
+    qaBar: "35%",
+    tokenUsage: "8.4 亿",
+    tokenRate: "已使用 20%",
+    tokenBar: "20%",
+    trend: "当前用户 2,108 · +6.4%",
+    sales: "未开启",
+    salesClass: "pending",
+    expertGroups: ["基础体验专家组", "专业专家组"],
+    aiModels: ["核心模型", "增强模型"],
+    upgradeFrom: ["免费版"],
+    upgradeTo: ["Max版", "Business版"],
+    upgradeRules: ["立即生效", "按差价补款"],
+  },
+  Max版: {
+    icon: "⚡",
+    iconClass: "accent",
+    subtitle: "战略级决策顾问，适合高频分析与复杂运营决策",
+    status: "已上架",
+    statusClass: "ok",
+    badge: "高频决策",
+    code: "max",
+    level: "3",
+    label: "战略级决策顾问",
+    description: "适合需要高频咨询、深度诊断和复杂决策支持的专业用户。支持核心模型、增强模型和高级模型。",
+    monthlyPrice: "¥299",
+    yearlyPrice: "¥2999",
+    yearlySaving: "省¥589",
+    qaQuota: "5,000",
+    tokenQuota: "300万",
+    seat: "1人",
+    updated: "2026/06/03",
+    subscribers: "1,536",
+    growth: "+87",
+    monthlyUsers: "642",
+    yearlyUsers: "894",
+    revenue: "¥ 726,662",
+    payMode: "含年付",
+    qaUsage: "1,842,000 次",
+    qaRate: "已使用 37%",
+    qaBar: "37%",
+    tokenUsage: "26.5 亿",
+    tokenRate: "已使用 29%",
+    tokenBar: "29%",
+    trend: "当前用户 1,536 · +5.8%",
+    sales: "未开启",
+    salesClass: "pending",
+    expertGroups: ["基础体验专家组", "专业专家组", "高级专家组"],
+    aiModels: ["核心模型", "增强模型", "高级模型"],
+    upgradeFrom: ["免费版", "专业版"],
+    upgradeTo: ["Business版"],
+    upgradeRules: ["立即生效", "按差价补款"],
+  },
+  Business版: {
+    icon: "▦",
+    iconClass: "business",
+    subtitle: "团队协作与企业级运营，支持多席位和全部模型",
+    status: "已上架",
+    statusClass: "ok",
+    badge: "团队协作",
+    code: "business",
+    level: "4",
+    label: "团队协作·企业级",
+    description: "适合跨部门团队使用，提供 5 个席位、全部模型访问、团队级专家组和更高问答及 Token 配额。",
+    monthlyPrice: "¥999",
+    yearlyPrice: "¥9999",
+    yearlySaving: "省¥1989",
+    qaQuota: "50,000",
+    tokenQuota: "3000万",
+    seat: "5人",
+    updated: "2026/06/02",
+    subscribers: "872",
+    growth: "+51",
+    monthlyUsers: "318",
+    yearlyUsers: "554",
+    revenue: "¥ 1,104,882",
+    payMode: "含年付",
+    qaUsage: "8,962,000 次",
+    qaRate: "已使用 18%",
+    qaBar: "18%",
+    tokenUsage: "112 亿",
+    tokenRate: "已使用 25%",
+    tokenBar: "25%",
+    trend: "当前用户 872 · +7.1%",
+    sales: "未开启",
+    salesClass: "pending",
+    expertGroups: ["基础体验专家组", "专业专家组", "高级专家组"],
+    aiModels: ["全部模型"],
+    upgradeFrom: ["免费版", "专业版", "Max版"],
+    upgradeTo: ["无更高套餐"],
+    upgradeRules: ["立即生效", "按差价补款"],
+  },
+  Enterprise版: {
+    icon: "▦",
+    iconClass: "business",
+    subtitle: "旗舰企业定制方案，适合私有专家、定制知识库和专属服务",
+    status: "草稿",
+    statusClass: "warn",
+    badge: "企业定制",
+    code: "enterprise",
+    level: "5",
+    label: "旗舰企业定制方案",
+    description: "适合大型企业定制，问答次数、Token 额度、席位和专家范围均可按项目配置。",
+    monthlyPrice: "定制",
+    yearlyPrice: "—",
+    yearlySaving: "",
+    qaQuota: "定制",
+    tokenQuota: "定制",
+    seat: "custom",
+    updated: "2026/06/01",
+    subscribers: "202",
+    growth: "+8",
+    monthlyUsers: "0",
+    yearlyUsers: "202",
+    revenue: "定制",
+    payMode: "合同付",
+    qaUsage: "定制",
+    qaRate: "按合同统计",
+    qaBar: "62%",
+    tokenUsage: "定制",
+    tokenRate: "按合同统计",
+    tokenBar: "44%",
+    trend: "当前用户 202 · +3.9%",
+    sales: "已开启",
+    salesClass: "ok",
+    expertGroups: ["基础体验专家组", "专业专家组", "高级专家组", "企业定制专家组"],
+    aiModels: ["全部模型"],
+    upgradeFrom: ["—"],
+    upgradeTo: ["—"],
+    upgradeRules: ["企业定制套餐不参与自助升级路径"],
+  },
 };
 
 function showToast(message) {
@@ -67,6 +350,197 @@ function showToast(message) {
   toast.classList.add("is-visible");
   window.clearTimeout(showToast.timer);
   showToast.timer = window.setTimeout(() => toast.classList.remove("is-visible"), 2200);
+}
+
+function syncPlanModelAccess(planName) {
+  const enabledModels = planModelAccess[planName] || ["核心模型"];
+  editPlanModal.querySelectorAll(".model-pills button").forEach((button) => {
+    button.classList.toggle("is-active", enabledModels.includes(button.textContent.trim()));
+  });
+}
+
+function renderPlanPills(containerId, values, className = "soft-label") {
+  const container = document.querySelector(containerId);
+  if (!container) return;
+  container.innerHTML = values.map((value) => `<span class="${className}">${value}</span>`).join("");
+}
+
+function renderPlanDetail(planName) {
+  const detail = planDetails[planName] || planDetails["专业版"];
+  currentPlanDetailName = planName;
+  const icon = document.querySelector("#planDetailIcon");
+  icon.textContent = detail.icon;
+  icon.className = `plan-icon ${detail.iconClass}`.trim();
+
+  document.querySelector("#planDetailName").textContent = planName;
+  document.querySelector("#planDetailSubtitle").textContent = detail.subtitle;
+  document.querySelector("#planDetailStatus").textContent = detail.status;
+  document.querySelector("#planDetailStatus").className = `status ${detail.statusClass}`;
+  document.querySelector("#planDetailBadge").textContent = detail.badge;
+  document.querySelector("#planDetailCache").textContent = `缓存: ${detail.code} · 套餐 ${detail.level}`;
+  document.querySelector("#planDetailUpdated").textContent = `最后更新 ${detail.updated}`;
+
+  document.querySelector("#planDetailSubscribers").textContent = detail.subscribers;
+  document.querySelector("#planDetailGrowth").textContent = detail.growth;
+  document.querySelector("#planDetailMonthlyUsers").textContent = detail.monthlyUsers;
+  document.querySelector("#planDetailMonthlyPrice").textContent = detail.monthlyPrice === "免费" ? "免费" : `${detail.monthlyPrice}/月`;
+  document.querySelector("#planDetailYearlyUsers").textContent = detail.yearlyUsers;
+  document.querySelector("#planDetailYearlyPrice").textContent = detail.yearlyPrice === "—" ? "不提供年付" : `${detail.yearlyPrice}/年`;
+  document.querySelector("#planDetailRevenue").textContent = detail.revenue;
+  document.querySelector("#planDetailPayMode").textContent = detail.payMode;
+
+  document.querySelector("#planInfoName").textContent = planName;
+  document.querySelector("#planInfoCode").textContent = detail.code;
+  document.querySelector("#planInfoLabel").textContent = detail.label;
+  document.querySelector("#planInfoLevel").textContent = detail.level;
+  document.querySelector("#planInfoLevelText").textContent = detail.level;
+  document.querySelector("#planInfoDescription").textContent = detail.description;
+
+  document.querySelector("#planPriceMonthly").textContent = detail.monthlyPrice;
+  document.querySelector("#planPriceYearly").textContent = detail.yearlyPrice;
+  document.querySelector("#planYearlySaving").textContent = detail.yearlySaving;
+  document.querySelector("#planYearlySaving").hidden = !detail.yearlySaving;
+  document.querySelector("#planSalesStatus").textContent = detail.sales;
+  document.querySelector("#planSalesStatus").className = `status ${detail.salesClass}`;
+  document.querySelector("#planSeatUnit").textContent = detail.seat;
+
+  document.querySelector("#planTrendSummary").textContent = detail.trend;
+  document.querySelector("#planUsageDate").textContent = `截至 ${detail.updated}`;
+  document.querySelector("#planQaUsage").textContent = detail.qaUsage;
+  document.querySelector("#planQaRate").textContent = detail.qaRate;
+  document.querySelector("#planQaBar").style.width = detail.qaBar;
+  document.querySelector("#planTokenUsage").textContent = detail.tokenUsage;
+  document.querySelector("#planTokenRate").textContent = detail.tokenRate;
+  document.querySelector("#planTokenBar").style.width = detail.tokenBar;
+  document.querySelector("#planQaQuota").textContent = detail.qaQuota;
+  document.querySelector("#planTokenQuota").textContent = detail.tokenQuota;
+
+  renderPlanPills("#planExpertGroups", detail.expertGroups, "benefit-chip");
+  renderPlanPills("#planAiModels", detail.aiModels, "benefit-chip model");
+  renderPlanPills("#planUpgradeFrom", detail.upgradeFrom, "upgrade-pill");
+  renderPlanPills("#planUpgradeTo", detail.upgradeTo, "upgrade-pill");
+  renderPlanPills("#planUpgradeRules", detail.upgradeRules, "upgrade-pill rule");
+}
+
+function renderPlanSubscribers(planName, totalText) {
+  const users = getPlanSubscriberRows(planName);
+  currentSubscriberPlanName = planName;
+  const total = totalText || users.length.toLocaleString();
+  const list = document.querySelector("#planSubscribersList");
+  document.querySelector("#planSubscribersTitle").textContent = "订阅用户列表";
+  document.querySelector("#planSubscribersSubtitle").textContent = `查看 ${planName} 的订阅用户、周期、到期时间与用量。`;
+  document.querySelector("#planSubscribersSummary").textContent = `共 ${total} 条，每页 20 条`;
+  list.innerHTML = users.length
+    ? `<div class="subscriber-page-header">
+        <span>用户</span>
+        <span>订阅类型</span>
+        <span>订阅开始</span>
+        <span>到期时间</span>
+        <span>本月用量（问答 · Token）</span>
+        <span>状态</span>
+        <span>操作</span>
+      </div>` + users.map((user) => {
+      const usageText = user.limit ? `${user.usage.toLocaleString()}/${user.limit.toLocaleString()}` : "—";
+      const tokenText = user.tokenUsage && user.tokenLimit ? `${user.tokenUsage}/${user.tokenLimit}` : "—";
+      const isTokenExhausted = user.usageAlert === "Token 已耗尽";
+      const isQaExhausted = user.usageAlert === "问答已耗尽";
+      const progress = isTokenExhausted || isQaExhausted ? 100 : (user.limit ? Math.min(100, Math.round((user.usage / user.limit) * 100)) : 0);
+      const tone = user.usageTone || (progress >= 95 ? "warn" : "");
+      const isMuted = user.status === "已过期";
+      return `
+        <article class="subscriber-page-row ${tone ? `is-${tone}` : ""} ${isMuted ? "is-expired" : ""}">
+          <div class="subscriber-user"><span class="member-avatar ${user.avatarClass}">${user.avatar}</span><div><strong>${user.name}</strong><small>${user.email}</small></div></div>
+          <span>${user.type}</span>
+          <span>${user.start}</span>
+          <span>${user.expires}${user.expiresNote ? `<small class="expire-note">${user.expiresNote}</small>` : ""}</span>
+          <div class="subscriber-page-usage">
+            <strong>${progress}%</strong>
+            <div class="usage-meter"><i style="width: ${progress}%"></i></div>
+            <div class="usage-split">
+              <span class="${isQaExhausted ? "is-exhausted" : ""}">问答 ${usageText}${isQaExhausted ? " 已耗尽" : ""}</span>
+              <span class="${isTokenExhausted ? "is-exhausted" : ""}">Token ${tokenText}${isTokenExhausted ? " 已耗尽" : ""}</span>
+            </div>
+          </div>
+          <span><span class="status ${user.statusClass}">${user.status}</span></span>
+          <button class="mini-button" data-open-subscriber-detail="${user.email}" type="button">查看详情</button>
+        </article>
+      `;
+    }).join("")
+    : `<article class="subscriber-page-row empty-row">暂无订阅用户。</article>`;
+}
+
+function renderSubscriberDetail(userEmail) {
+  const users = getPlanSubscriberRows(currentSubscriberPlanName);
+  const user = users.find((item) => item.email === userEmail) || users[0];
+  if (!user) return;
+
+  const isTokenExhausted = user.usageAlert === "Token 已耗尽";
+  const isQaExhausted = user.usageAlert === "问答已耗尽";
+  const isFreePlan = currentSubscriberPlanName === "免费版";
+  const usage = user.limit ? user.usage : 0;
+  const limit = user.limit || 1000;
+  const tokenDisplay = user.tokenUsage && user.tokenLimit ? `${user.tokenUsage} / ${user.tokenLimit}` : "— / —";
+  const uidDate = user.start.replaceAll("/", "");
+  const planText = isFreePlan ? "免费版" : `${currentSubscriberPlanName} · ${user.type}`;
+  const alertTitle = isTokenExhausted
+    ? "Token 额度已耗尽，本月问答服务已暂停"
+    : isQaExhausted
+      ? "问答次数已耗尽，本月问答服务已暂停"
+      : user.status === "已过期"
+        ? "订阅已过期，请联系用户续费或调整套餐"
+        : user.expiresNote
+          ? "订阅即将到期，建议提前发送续费提醒"
+          : "用户订阅状态正常";
+  const alertBody = isTokenExhausted
+    ? `本月 Token 用量已达上限，问答次数仍有剩余（${usage.toLocaleString()} / ${limit.toLocaleString()} 次），服务已因 Token 耗尽而暂停。`
+    : isQaExhausted
+      ? `本月问答次数已达上限（${usage.toLocaleString()} / ${limit.toLocaleString()} 次），Token 仍有余量，建议赠送问答次数或升级套餐。`
+      : user.status === "已过期"
+        ? `该用户订阅已于 ${user.expires} 到期，目前无法继续使用套餐权益。`
+        : user.expiresNote
+          ? `该用户订阅将在 ${user.expiresNote} 到期，可提前发送续费通知。`
+          : "该用户当前用量与订阅状态正常，可继续跟踪使用情况。";
+
+  document.querySelector("#subscriberDetailAvatar").textContent = user.avatar;
+  document.querySelector("#subscriberDetailAvatar").className = `member-avatar ${user.avatarClass}`;
+  document.querySelector("#subscriberDetailName").textContent = user.name;
+  document.querySelector("#subscriberDetailPlan").textContent = planText;
+  document.querySelector("#subscriberDetailRisk").textContent = user.usageAlert || (user.expiresNote ? "即将到期" : "状态正常");
+  document.querySelector("#subscriberDetailRisk").className = `status ${user.usageAlert ? "danger" : user.expiresNote ? "warn" : "ok"}`;
+  document.querySelector("#subscriberDetailStatus").textContent = user.status;
+  document.querySelector("#subscriberDetailStatus").className = `status ${user.statusClass}`;
+  document.querySelector("#subscriberDetailMeta").textContent = `UID: U-${uidDate}-0214 · 注册 ${user.start} · 邮箱 ${user.email}`;
+
+  document.querySelector("#subscriberMetricSpend").textContent = isFreePlan ? "¥ 0" : user.type === "年付" ? "¥ 999" : "¥ 990";
+  document.querySelector("#subscriberMetricOrders").textContent = isFreePlan ? "免费订阅" : user.type === "年付" ? "共 3 笔订单" : "共 10 笔订单";
+  document.querySelector("#subscriberMetricQa").textContent = `${usage.toLocaleString()} / ${limit.toLocaleString()} 次`;
+  document.querySelector("#subscriberMetricQaNote").textContent = isQaExhausted ? "已耗尽" : `剩余 ${(limit - usage).toLocaleString()} 次`;
+  document.querySelector("#subscriberMetricToken").textContent = tokenDisplay;
+  document.querySelector("#subscriberMetricTokenNote").textContent = isTokenExhausted ? "已耗尽 · 服务暂停原因" : "Token 使用正常";
+  document.querySelector("#subscriberMetricDays").textContent = user.status === "已过期" ? "已停止" : "313 天";
+  document.querySelector("#subscriberMetricSince").textContent = `自 ${user.start} 起`;
+
+  document.querySelector("#subscriberCurrentPlan").textContent = planText;
+  document.querySelector("#subscriberCurrentPrice").textContent = isFreePlan ? "免费" : user.type === "年付" ? "¥999 / 年" : "¥99 / 月";
+  document.querySelector("#subscriberCurrentRange").textContent = isFreePlan ? "—" : `${user.start} - ${user.expires}`;
+  document.querySelector("#subscriberCurrentRenew").textContent = isFreePlan ? "无需续费" : user.status === "已过期" ? "已关闭" : "已开启";
+  document.querySelector("#subscriberCurrentOrder").textContent = isFreePlan ? "—" : `ORD-${uidDate.slice(0, 4)}-${uidDate.slice(4, 8)}`;
+  document.querySelector("#subscriberCurrentPay").textContent = isFreePlan ? "免费开通" : "微信支付";
+
+  document.querySelector("#subscriberOrderRows").innerHTML = [
+    ["ORD-2026-060188", "¥99", "2026/06/01", "已支付", "ok"],
+    ["ORD-2026-050231", "¥99", "2026/05/01", "已支付", "ok"],
+    ["ORD-2026-040187", "¥99", "2026/04/01", "已支付", "ok"],
+    ["REF-2025-110044", "-¥99", "2025/11/08", "已退款", "danger"],
+  ].map(([order, amount, time, status, cls]) => `<tr><td>${order}<br><small>${planText}</small></td><td>${amount}</td><td>${time}</td><td><span class="status ${cls}">${status}</span></td></tr>`).join("");
+
+  document.querySelector("#subscriberLogs").innerHTML = [
+    [user.usageAlert || "管理员查看用户详情", alertBody, "系统", "2026/06/09 10:20", user.usageAlert ? "danger" : "info"],
+    ["Token 用量预警通知已发送", `Token 用量达到 80%，当前 ${tokenDisplay}，自动发送预警邮件。`, "系统", "2026/06/08 16:20", "warn"],
+    ["管理员查看用户详情", "admin@winwise.io 查看了该用户订阅详情，备注建议升级套餐。", "管理员", "2026/05/28 10:15", "info"],
+    ["完成月付续费", "用户通过微信支付完成续费，订阅延续至下一周期。", "用户", "2026/06/01 09:07", "ok"],
+    ["注册并首次订阅", "用户注册账号并订阅当前套餐，来源：微信公众号推广链接。", "用户", `${user.start} 14:30`, "muted"],
+  ].map(([title, body, role, time, tone]) => `<article class="${tone}"><strong>${title}<span>${role}</span></strong><p>${body}</p><small>${time}</small></article>`).join("");
 }
 
 function getKnowledgeDocRows(name) {
@@ -121,14 +595,17 @@ function clearUsersTabSelection() {
 function switchPage(pageId) {
   const targetPage = document.querySelector(`#${pageId}`);
   if (!targetPage) return;
+  const activeNavPage = navPageMap[pageId] || pageId;
 
   document.querySelectorAll(".page").forEach((page) => {
     page.classList.toggle("is-active", page === targetPage);
   });
 
   document.querySelectorAll(".nav-item").forEach((item) => {
-    item.classList.toggle("is-active", item.dataset.page === pageId);
+    item.classList.toggle("is-active", item.dataset.page === activeNavPage);
   });
+
+  topbar.classList.toggle("is-hidden", ["planDetail", "planSubscribers", "subscriberDetail"].includes(pageId));
 
   if (pageId !== "settings") {
     clearSettingsTabSelection();
@@ -310,6 +787,39 @@ editModelModal.addEventListener("click", (event) => {
   }
 });
 
+document.querySelectorAll("[data-open-role]").forEach((button) => {
+  button.addEventListener("click", () => {
+    const row = button.closest("tr");
+    const title = roleModal.querySelector("#roleModalTitle");
+    if (row) {
+      const cells = row.children;
+      title.textContent = button.textContent.trim() === "查看" ? "查看角色" : `编辑角色 · ${cells[0].textContent.trim()}`;
+      roleModal.querySelector("input").value = cells[0].textContent.trim();
+      roleModal.querySelector("textarea").value = cells[2].textContent.trim();
+    } else {
+      title.textContent = "新增角色";
+      roleModal.querySelector("input").value = "";
+      roleModal.querySelector("textarea").value = "";
+    }
+    roleModal.classList.remove("is-hidden");
+  });
+});
+
+document.querySelectorAll("[data-close-role]").forEach((button) => {
+  button.addEventListener("click", () => {
+    roleModal.classList.add("is-hidden");
+    if (button.classList.contains("primary-button")) {
+      showToast("角色配置已保存");
+    }
+  });
+});
+
+roleModal.addEventListener("click", (event) => {
+  if (event.target === roleModal) {
+    roleModal.classList.add("is-hidden");
+  }
+});
+
 document.querySelectorAll("[data-open-user]").forEach((button) => {
   button.addEventListener("click", () => {
     userModal.classList.remove("is-hidden");
@@ -427,10 +937,8 @@ document.querySelectorAll("[data-open-plan]").forEach((button) => {
 document.querySelectorAll("[data-close-plan]").forEach((button) => {
   button.addEventListener("click", () => {
     planModal.classList.add("is-hidden");
-    if (button.textContent.includes("保存草稿")) {
+    if (button.classList.contains("primary-button")) {
       showToast("套餐草稿已保存");
-    } else if (button.classList.contains("primary-button")) {
-      showToast("套餐已保存并上架");
     }
   });
 });
@@ -444,11 +952,13 @@ planModal.addEventListener("click", (event) => {
 document.querySelectorAll("[data-open-edit-plan]").forEach((button) => {
   button.addEventListener("click", () => {
     const cells = button.closest("tr").children;
-    document.querySelector("#editPlanName").value = cells[0].querySelector("strong")?.textContent.trim() || cells[0].textContent.trim();
-    document.querySelector("#editPlanPrice").value = cells[2].textContent.trim();
-    document.querySelector("#editPlanKb").value = cells[4].textContent.trim();
-    document.querySelector("#editPlanSkill").value = cells[5].textContent.trim();
-    document.querySelector("#editPlanStatus").value = cells[8].textContent.trim();
+    const planName = cells[0].querySelector("strong")?.textContent.trim() || cells[0].textContent.trim();
+    document.querySelector("#editPlanName").value = planName;
+    document.querySelector("#editPlanPrice").value = cells[3].textContent.trim();
+    document.querySelector("#editPlanKb").value = cells[5].textContent.trim();
+    document.querySelector("#editPlanSkill").value = cells[6].textContent.trim();
+    document.querySelector("#editPlanStatus").value = cells[10].textContent.trim();
+    syncPlanModelAccess(planName);
     editPlanModal.classList.remove("is-hidden");
   });
 });
@@ -456,9 +966,7 @@ document.querySelectorAll("[data-open-edit-plan]").forEach((button) => {
 document.querySelectorAll("[data-close-edit-plan]").forEach((button) => {
   button.addEventListener("click", () => {
     editPlanModal.classList.add("is-hidden");
-    if (button.textContent.includes("保存草稿")) {
-      showToast("套餐草稿已保存");
-    } else if (button.classList.contains("primary-button")) {
+    if (button.classList.contains("primary-button")) {
       showToast("套餐修改已保存");
     }
   });
@@ -467,6 +975,99 @@ document.querySelectorAll("[data-close-edit-plan]").forEach((button) => {
 editPlanModal.addEventListener("click", (event) => {
   if (event.target === editPlanModal) {
     editPlanModal.classList.add("is-hidden");
+  }
+});
+
+document.querySelectorAll("[data-open-plan-detail]").forEach((button) => {
+  button.addEventListener("click", () => {
+    const row = button.closest("tr");
+    const planName = row.children[0].querySelector("strong")?.textContent.trim() || row.children[0].textContent.trim();
+    renderPlanDetail(planName);
+    switchPage("planDetail");
+  });
+});
+
+document.querySelector("[data-plan-detail-back]")?.addEventListener("click", () => {
+  switchPage("plans");
+});
+
+document.querySelectorAll("[data-open-plan-subscribers]").forEach((button) => {
+  button.addEventListener("click", () => {
+    const row = button.closest("tr");
+    const planName = row.children[0].querySelector("strong")?.textContent.trim() || row.children[0].textContent.trim();
+    renderPlanSubscribers(planName, button.textContent.trim());
+    switchPage("planSubscribers");
+  });
+});
+
+document.querySelector("[data-plan-subscribers-back]")?.addEventListener("click", () => {
+  switchPage("plans");
+});
+
+document.querySelector("#planSubscribersList")?.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-open-subscriber-detail]");
+  if (!button) return;
+  renderSubscriberDetail(button.dataset.openSubscriberDetail);
+  switchPage("subscriberDetail");
+});
+
+document.querySelector("[data-subscriber-detail-back]")?.addEventListener("click", () => {
+  switchPage("planSubscribers");
+});
+
+document.querySelector("[data-open-current-plan-subscribers]")?.addEventListener("click", () => {
+  const detail = planDetails[currentPlanDetailName] || planDetails["专业版"];
+  renderPlanSubscribers(currentPlanDetailName, detail.subscribers);
+  switchPage("planSubscribers");
+});
+
+document.querySelector("[data-open-current-plan-subscribers]")?.addEventListener("keydown", (event) => {
+  if (event.key !== "Enter" && event.key !== " ") return;
+  event.preventDefault();
+  const detail = planDetails[currentPlanDetailName] || planDetails["专业版"];
+  renderPlanSubscribers(currentPlanDetailName, detail.subscribers);
+  switchPage("planSubscribers");
+});
+
+document.querySelectorAll("[data-open-plan-users]").forEach((button) => {
+  button.addEventListener("click", () => {
+    const row = button.closest("tr");
+    const planName = row.children[0].querySelector("strong")?.textContent.trim() || row.children[0].textContent.trim();
+    const users = planUserData[planName] || [];
+    const tbody = document.querySelector("#planUsersTableBody");
+    document.querySelector("#planUsersTitle").textContent = `${planName}订阅用户`;
+    document.querySelector("#planUsersSubtitle").textContent = `查看订阅 ${planName} 的用户表。`;
+    document.querySelector("#planUsersSummary").textContent = `共 ${users.length || 0} 条，每页 20 条`;
+    tbody.innerHTML = users.length
+      ? users.map((user) => {
+        const progress = user.limit ? Math.min(100, Math.round((user.usage / user.limit) * 100)) : 0;
+        const usageText = user.limit ? `问答 ${user.usage.toLocaleString()} / ${user.limit.toLocaleString()}` : "—";
+        return `
+          <tr>
+            <td><div class="subscriber-user"><span class="member-avatar ${user.avatarClass}">${user.avatar}</span><div><strong>${user.name}</strong><small>${user.email}</small></div></div></td>
+            <td>${user.type}</td>
+            <td>${user.start}</td>
+            <td>${user.expires}</td>
+            <td><div class="usage-meter"><span>${usageText}</span><i style="width: ${progress}%"></i></div></td>
+            <td><span class="status ${user.statusClass}">${user.status}</span></td>
+            <td><button class="mini-button" type="button">查看详情</button></td>
+          </tr>
+        `;
+      }).join("")
+      : `<tr><td colspan="7">暂无订阅用户。</td></tr>`;
+    planUsersModal.classList.remove("is-hidden");
+  });
+});
+
+document.querySelectorAll("[data-close-plan-users]").forEach((button) => {
+  button.addEventListener("click", () => {
+    planUsersModal.classList.add("is-hidden");
+  });
+});
+
+planUsersModal.addEventListener("click", (event) => {
+  if (event.target === planUsersModal) {
+    planUsersModal.classList.add("is-hidden");
   }
 });
 
@@ -569,6 +1170,13 @@ function setSelectValue(select, value) {
   select.value = option?.value || "";
 }
 
+function renderExpertGroup(group) {
+  const selectedGroup = Array.isArray(group) ? group[0] || "" : group || "";
+  expertModal.querySelectorAll("#expertGroupPicker input").forEach((input) => {
+    input.checked = input.value === selectedGroup;
+  });
+}
+
 function clearExpertModal() {
   expertModal.querySelector("#expertNameInput").value = "";
   expertModal.querySelector("#expertIntroInput").value = "";
@@ -576,6 +1184,7 @@ function clearExpertModal() {
   expertModal.querySelector("#expertCtaInput").value = "";
   expertModal.querySelector("#expertCategoryInput").value = "";
   expertModal.querySelector("#expertStatusInput").value = "";
+  renderExpertGroup("");
   renderExpertSkillChips([]);
   renderExpertKbChips([]);
   renderGuideQuestions([]);
@@ -595,9 +1204,10 @@ function openExpertModal(row) {
 
   const name = row.querySelector(".expert-name strong")?.textContent.trim() || "";
   const category = row.children[1]?.textContent.trim() || "";
-  const skills = [...row.children[2]?.querySelectorAll(".skill-chip") || []].map((chip) => chip.textContent.trim());
-  const knowledgeBases = [...row.children[3]?.querySelectorAll(".kb-chip") || []].map((chip) => chip.textContent.trim());
-  const status = row.children[6]?.textContent.trim() || "";
+  const expertGroup = row.children[2]?.querySelector(".soft-label")?.textContent.trim() || "";
+  const skills = [...row.children[3]?.querySelectorAll(".skill-chip") || []].map((chip) => chip.textContent.trim());
+  const knowledgeBases = [...row.children[4]?.querySelectorAll(".kb-chip") || []].map((chip) => chip.textContent.trim());
+  const status = row.children[7]?.textContent.trim() || "";
   const detail = expertDetails[name] || {};
 
   title.textContent = `编辑专家 · ${name}`;
@@ -606,6 +1216,7 @@ function openExpertModal(row) {
   expertModal.querySelector("#expertTagsInput").value = detail.tags || "";
   setSelectValue(expertModal.querySelector("#expertCategoryInput"), category);
   setSelectValue(expertModal.querySelector("#expertStatusInput"), status === "已上架" ? "上架（立即展示）" : status === "已下架" ? "下架" : status);
+  renderExpertGroup(expertGroup);
   renderExpertSkillChips(skills);
   renderExpertKbChips(knowledgeBases);
   renderGuideQuestions(detail.questions || []);
@@ -627,6 +1238,7 @@ function getExpertFormData() {
   const status = statusValue === "上架（立即展示）" ? "已上架" : statusValue === "下架" ? "已下架" : statusValue;
   const skillNames = [...expertModal.querySelectorAll("#expertSkillPicker .skill-chip")].map((chip) => chip.firstChild.textContent.trim());
   const knowledgeBases = [...expertModal.querySelectorAll("#expertKbPicker .kb-chip")].map((chip) => chip.firstChild.textContent.trim());
+  const expertGroup = expertModal.querySelector("#expertGroupPicker input:checked")?.value || "";
   const questions = [...expertModal.querySelectorAll("#expertGuideList input")].map((input) => input.value.trim()).filter(Boolean).slice(0, maxGuideQuestions);
 
   return {
@@ -634,6 +1246,7 @@ function getExpertFormData() {
     category: expertModal.querySelector("#expertCategoryInput").value,
     intro: expertModal.querySelector("#expertIntroInput").value.trim(),
     tags: expertModal.querySelector("#expertTagsInput").value.trim(),
+    expertGroup,
     skillNames,
     knowledgeBases,
     questions,
@@ -656,17 +1269,18 @@ function getExpertActions(status) {
 function updateExpertRow(row, data) {
   row.children[0].querySelector("strong").textContent = data.name;
   row.children[1].textContent = data.category;
-  row.children[2].innerHTML = data.skillNames.map((name) => `<span class="skill-chip">${escapeHtml(name)}</span>`).join("");
-  row.children[3].innerHTML = data.knowledgeBases.map((name) => `<span class="kb-chip">${escapeHtml(name)}</span>`).join("");
-  row.children[4].textContent = data.questions.length;
-  row.children[6].innerHTML = `<span class="status ${getExpertStatusClass(data.status)}">${escapeHtml(data.status)}</span>`;
-  row.children[7].innerHTML = getExpertActions(data.status);
+  row.children[2].innerHTML = `<div class="expert-group-tags">${data.expertGroup ? `<span class="soft-label">${escapeHtml(data.expertGroup)}</span>` : ""}</div>`;
+  row.children[3].innerHTML = data.skillNames.map((name) => `<span class="skill-chip">${escapeHtml(name)}</span>`).join("");
+  row.children[4].innerHTML = data.knowledgeBases.map((name) => `<span class="kb-chip">${escapeHtml(name)}</span>`).join("");
+  row.children[5].textContent = data.questions.length;
+  row.children[7].innerHTML = `<span class="status ${getExpertStatusClass(data.status)}">${escapeHtml(data.status)}</span>`;
+  row.children[8].innerHTML = getExpertActions(data.status);
   row.querySelector("[data-open-edit-expert]")?.addEventListener("click", () => openExpertModal(row));
 }
 
 function createExpertRow(data) {
   const row = document.createElement("tr");
-  row.innerHTML = `<td><div class="expert-name"><span class="expert-avatar blue"></span><strong>${escapeHtml(data.name)}</strong></div></td><td></td><td></td><td></td><td>${data.questions.length}</td><td>0</td><td></td><td></td>`;
+  row.innerHTML = `<td><div class="expert-name"><span class="expert-avatar blue"></span><strong>${escapeHtml(data.name)}</strong></div></td><td></td><td></td><td></td><td></td><td>${data.questions.length}</td><td>0</td><td></td><td></td>`;
   updateExpertRow(row, data);
   return row;
 }
@@ -891,6 +1505,54 @@ knowledgeModal.addEventListener("click", (event) => {
   }
 });
 
+let editingKnowledgeBase = null;
+
+function openEditKnowledgeBase(row) {
+  editingKnowledgeBase = row;
+  document.querySelector("#editKbName").value = row?.dataset.kbName || "";
+  document.querySelector("#editKbDescription").value = row?.querySelector(".kb-card-main p")?.textContent.trim() || "";
+  editKnowledgeModal.classList.remove("is-hidden");
+}
+
+document.querySelectorAll("[data-open-edit-kb]").forEach((button) => {
+  button.addEventListener("click", () => openEditKnowledgeBase(button.closest(".kb-row")));
+});
+
+document.querySelectorAll("[data-close-edit-kb]").forEach((button) => {
+  button.addEventListener("click", () => {
+    if (button.classList.contains("primary-button") && editingKnowledgeBase) {
+      const nextName = document.querySelector("#editKbName").value.trim();
+      const nextDescription = document.querySelector("#editKbDescription").value.trim();
+      if (nextName) {
+        const oldName = editingKnowledgeBase.dataset.kbName;
+        editingKnowledgeBase.dataset.kbName = nextName;
+        editingKnowledgeBase.querySelector(".kb-card-title strong").textContent = nextName;
+        editingKnowledgeBase.querySelector("[data-toggle-kb]")?.setAttribute("aria-label", `展开 ${nextName} 文档`);
+        editingKnowledgeBase.closest(".kb-card")?.querySelectorAll(".kb-doc-row").forEach((docRow) => {
+          if (docRow.dataset.parentKb === oldName) docRow.dataset.parentKb = nextName;
+        });
+        uploadModal.querySelectorAll("select option").forEach((option) => {
+          if (option.value === oldName || option.textContent.trim() === oldName) {
+            option.value = nextName;
+            option.textContent = nextName;
+          }
+        });
+      }
+      if (nextDescription) {
+        editingKnowledgeBase.querySelector(".kb-card-main p").textContent = nextDescription;
+      }
+      showToast("知识库信息已保存");
+    }
+    editKnowledgeModal.classList.add("is-hidden");
+  });
+});
+
+editKnowledgeModal.addEventListener("click", (event) => {
+  if (event.target === editKnowledgeModal) {
+    editKnowledgeModal.classList.add("is-hidden");
+  }
+});
+
 document.querySelectorAll("[data-toggle-kb]").forEach((button) => {
   button.addEventListener("click", () => {
     const row = button.closest(".kb-row");
@@ -939,7 +1601,8 @@ document.querySelector("[data-confirm-disable-kb]")?.addEventListener("click", (
     const actionGroup = pendingKnowledgeBase.querySelector(".action-group");
     status.textContent = "已停用";
     status.className = "status pending";
-    actionGroup.innerHTML = '<button class="mini-button" data-open-upload>上传文档</button><button class="mini-button">启用</button><button class="danger-button" data-open-delete-kb>删除</button>';
+    actionGroup.innerHTML = '<button class="mini-button" data-open-edit-kb>编辑</button><button class="mini-button" data-open-upload>上传文档</button><button class="mini-button">启用</button><button class="danger-button" data-open-delete-kb>删除</button>';
+    actionGroup.querySelector("[data-open-edit-kb]").addEventListener("click", () => openEditKnowledgeBase(disabledRow));
     actionGroup.querySelector("[data-open-upload]").addEventListener("click", () => {
       const targetSelect = uploadModal.querySelector("select");
       if (targetSelect) targetSelect.value = disabledRow.dataset.kbName;
