@@ -50,8 +50,9 @@
           <button class="nav-item" data-page="skills" type="button">Skill 管理</button>
           <button class="nav-item nav-parent" data-page="users" data-users-toggle type="button" aria-expanded="false">用户管理</button>
           <div class="nav-submenu users-submenu is-collapsed" aria-label="用户管理子目录">
-            <button class="nav-subitem" data-users-tab="team" data-page-link="users" type="button">成员管理</button>
-            <button class="nav-subitem" data-users-tab="roles" data-page-link="users" type="button">角色管理</button>
+            <button class="nav-subitem" data-users-tab="team" data-page-link="users" type="button">成员账号管理</button>
+            <button class="nav-subitem" data-users-tab="roles" data-page-link="users" type="button">角色权限管理</button>
+            <button class="nav-subitem" data-users-tab="customer-info" data-page-link="users" type="button">客户信息管理</button>
           </div>
           <button class="nav-item" data-page="ops" type="button">运维指标</button>
           <button class="nav-item" data-page="plans" type="button">套餐管理</button>
@@ -112,119 +113,38 @@
         </section>
 
         <section id="knowledge" class="page">
-          <div class="knowledge-stats">
-            <article><span>知识库总数</span><strong>4</strong></article>
-            <article><span>文档总数</span><strong>50</strong></article>
-            <article><span>已同步</span><strong class="text-ok">45</strong></article>
-            <article><span>同步异常</span><strong class="text-danger">3</strong></article>
-            <article><span>处理中</span><strong class="text-warn">2</strong></article>
-          </div>
-          <section class="panel">
-            <div class="panel-head">
-              <div>
-                <h2>知识库列表</h2>
-                <p>支持删除、停用、上传文档和查看同步状态。</p>
+          <section class="knowledge-workbench">
+            <aside class="knowledge-rail">
+              <div class="knowledge-rail-head">
+                <h2>知识库</h2>
+                <button class="primary-button compact knowledge-add-button" data-open-knowledge type="button" aria-label="新建知识库">+</button>
               </div>
-              <button class="primary-button compact" data-open-knowledge type="button">创建知识库</button>
-            </div>
-            <input class="search-input knowledge-search" data-filter="kbList" placeholder="搜索知识库" />
-            <div id="kbList" class="knowledge-list">
-              <article class="kb-card" data-kb-card>
-                <div class="kb-row" data-kb-name="expert">
-                  <button class="icon-button row-toggle" data-toggle-kb type="button" aria-label="展开 expert 文档">›</button>
-                  <div class="kb-card-main">
-                    <div class="kb-card-title"><span class="kb-icon">▣</span><strong>expert</strong><span class="status ok">生效中</span><span class="kb-count">50 份文档</span></div>
-                    <p>专家问答核心资料库，覆盖运营、售后和平台规则。</p>
-                  </div>
-                  <div class="action-group"><button class="mini-button" data-open-edit-kb>编辑</button><button class="mini-button" data-open-upload>上传文档</button><button class="mini-button" data-open-disable-kb>停用</button></div>
-                </div>
-                <div class="kb-doc-panel is-hidden-row" data-doc-panel>
-                  <div class="kb-doc-head"><span>文档名称</span><span>更新时间</span><span>KB 状态</span><span>分块</span><span>操作</span></div>
-                  <div class="kb-doc-row" data-parent-kb="expert">
-                    <div class="kb-doc-title"><span class="doc-file pdf">P</span><strong>防窜息标签.pdf</strong></div>
-                    <span>2026/05/29 09:12</span><span class="status ok">已同步</span><span>18 块</span>
-                    <div class="doc-actions"><button class="icon-mini icon-view" data-open-kb-doc type="button" aria-label="查看文档"></button><button class="icon-mini icon-download" data-download-doc type="button" aria-label="下载文档"></button><button class="icon-mini icon-delete danger-button" type="button" aria-label="删除文档"></button></div>
-                  </div>
-                  <div class="kb-doc-row" data-parent-kb="expert">
-                    <div class="kb-doc-title"><span class="doc-file doc">P</span><strong>亚马逊最新选品方案.pptx</strong></div>
-                    <span>2026/05/29 08:57</span><span class="status ok">已同步</span><span>42 块</span>
-                    <div class="doc-actions"><button class="icon-mini icon-view" data-open-kb-doc type="button" aria-label="查看文档"></button><button class="icon-mini icon-download" data-download-doc type="button" aria-label="下载文档"></button><button class="icon-mini icon-delete danger-button" type="button" aria-label="删除文档"></button></div>
-                  </div>
-                </div>
-              </article>
+              <input class="search-input knowledge-search" data-filter="kbList" placeholder="搜索知识库" />
+              <div class="knowledge-rail-label"><span class="rail-lock">⌂</span>知识库列表</div>
+              <div id="kbList" class="knowledge-list knowledge-nav-list"></div>
+            </aside>
 
-              <article class="kb-card" data-kb-card>
-                <div class="kb-row" data-kb-name="faq">
-                  <button class="icon-button row-toggle" data-toggle-kb type="button" aria-label="展开 faq 文档">›</button>
-                  <div class="kb-card-main">
-                    <div class="kb-card-title"><span class="kb-icon">▣</span><strong>faq</strong><span class="status ok">生效中</span><span class="kb-count">8 份文档</span></div>
-                    <p>常见问题解答库，包含用户常问问题和解决方案。</p>
+            <div class="knowledge-main">
+              <div class="knowledge-main-head kb-row" data-kb-name="expert">
+                <div class="knowledge-avatar"><span></span></div>
+                <div class="kb-card-main">
+                  <div class="kb-card-title"><strong>expert</strong><span class="status ok">生效中</span></div>
+                  <p>专家问答核心资料库，覆盖运营、售后和平台规则。</p>
+                  <div class="knowledge-inline-stats">
+                    <span>文档总数 <strong>50</strong></span>
+                    <span>已同步 <strong class="text-ok">47</strong></span>
+                    <span>同步异常 <strong class="text-danger">1</strong></span>
+                    <span>处理中 <strong class="text-warn">2</strong></span>
                   </div>
-                  <div class="action-group"><button class="mini-button" data-open-edit-kb>编辑</button><button class="mini-button" data-open-upload>上传文档</button><button class="mini-button" data-open-disable-kb>停用</button></div>
                 </div>
-                <div class="kb-doc-panel is-hidden-row" data-doc-panel>
-                  <div class="kb-doc-head"><span>文档名称</span><span>更新时间</span><span>KB 状态</span><span>分块</span><span>操作</span></div>
-                  <div class="kb-doc-row" data-parent-kb="faq">
-                    <div class="kb-doc-title"><span class="doc-file pdf">P</span><strong>注销店铺流程步骤.pdf</strong></div>
-                    <span>2026/05/27 16:40</span><span class="status ok">已同步</span><span>12 块</span>
-                    <div class="doc-actions"><button class="icon-mini icon-view" data-open-kb-doc type="button" aria-label="查看文档"></button><button class="icon-mini icon-download" data-download-doc type="button" aria-label="下载文档"></button><button class="icon-mini icon-delete danger-button" type="button" aria-label="删除文档"></button></div>
-                  </div>
-                  <div class="kb-doc-row" data-parent-kb="faq">
-                    <div class="kb-doc-title"><span class="doc-file doc">D</span><strong>账号申诉指引.docx</strong></div>
-                    <span>2026/05/26 11:00</span><span class="status ok">已同步</span><span>9 块</span>
-                    <div class="doc-actions"><button class="icon-mini icon-view" data-open-kb-doc type="button" aria-label="查看文档"></button><button class="icon-mini icon-download" data-download-doc type="button" aria-label="下载文档"></button><button class="icon-mini icon-delete danger-button" type="button" aria-label="删除文档"></button></div>
-                  </div>
-                  <div class="kb-doc-row" data-parent-kb="faq">
-                    <div class="kb-doc-title"><span class="doc-file pdf">P</span><strong>常见报错汇总.pdf</strong></div>
-                    <span>2026/05/28 08:30</span><span class="status warn">同步中</span><span>—</span>
-                    <div class="doc-actions"><button class="icon-mini icon-view" data-open-kb-doc type="button" aria-label="查看文档"></button><button class="icon-mini icon-download" data-download-doc type="button" aria-label="下载文档"></button><button class="icon-mini icon-delete danger-button" type="button" aria-label="删除文档"></button></div>
-                  </div>
-                  <p class="kb-doc-foot">共 8 份文档，第 1 / 1 页</p>
-                </div>
-              </article>
+                <div class="action-group"><button class="mini-button" data-open-edit-kb>编辑</button><button class="mini-button" data-open-upload>上传文档</button><button class="danger-button" data-open-disable-kb>停用</button></div>
+              </div>
 
-              <article class="kb-card" data-kb-card>
-                <div class="kb-row" data-kb-name="patent">
-                  <button class="icon-button row-toggle" data-toggle-kb type="button" aria-label="展开 patent 文档">›</button>
-                  <div class="kb-card-main">
-                    <div class="kb-card-title"><span class="kb-icon">▣</span><strong>patent</strong><span class="status ok">生效中</span><span class="kb-count">15 份文档</span></div>
-                    <p>专利知识产权库，存储专利文档和法律资料。</p>
-                  </div>
-                  <div class="action-group"><button class="mini-button" data-open-edit-kb>编辑</button><button class="mini-button" data-open-upload>上传文档</button><button class="mini-button" data-open-disable-kb>停用</button></div>
-                </div>
-                <div class="kb-doc-panel is-hidden-row" data-doc-panel>
-                  <div class="kb-doc-head"><span>文档名称</span><span>更新时间</span><span>KB 状态</span><span>分块</span><span>操作</span></div>
-                  <div class="kb-doc-row" data-parent-kb="patent">
-                    <div class="kb-doc-title"><span class="doc-file pdf">P</span><strong>知识产权的辨认、查询与侵权规避.pdf</strong></div>
-                    <span>2026/05/29 08:20</span><span class="status warn">同步中</span><span>0 块</span>
-                    <div class="doc-actions"><button class="icon-mini icon-view" data-open-kb-doc type="button" aria-label="查看文档"></button><button class="icon-mini icon-download" data-download-doc type="button" aria-label="下载文档"></button><button class="icon-mini icon-delete danger-button" type="button" aria-label="删除文档"></button></div>
-                  </div>
-                  <div class="kb-doc-row" data-parent-kb="patent">
-                    <div class="kb-doc-title"><span class="doc-file pdf">P</span><strong>宠物智能产品专利检索报告.pdf</strong></div>
-                    <span>2026/05/25 13:09</span><span class="status danger">失败</span><span>0 块</span>
-                    <div class="doc-actions"><button class="icon-mini icon-view" data-open-kb-doc type="button" aria-label="查看文档"></button><button class="icon-mini icon-download" data-download-doc type="button" aria-label="下载文档"></button><button class="icon-mini icon-delete danger-button" type="button" aria-label="删除文档"></button></div>
-                  </div>
-                </div>
-              </article>
-
-              <article class="kb-card" data-kb-card>
-                <div class="kb-row" data-kb-name="ops_runbook">
-                  <button class="icon-button row-toggle" data-toggle-kb type="button" aria-label="展开 ops_runbook 文档">›</button>
-                  <div class="kb-card-main">
-                    <div class="kb-card-title"><span class="kb-icon muted">▣</span><strong>ops_runbook</strong><span class="status pending">已停用</span><span class="kb-count">8 份文档</span></div>
-                    <p>运维排障手册，记录异常数据、同步延迟和任务处理流程。</p>
-                  </div>
-                  <div class="action-group"><button class="mini-button" data-open-edit-kb>编辑</button><button class="mini-button" data-open-upload>上传文档</button><button class="mini-button">启用</button><button class="danger-button" data-open-delete-kb>删除</button></div>
-                </div>
-                <div class="kb-doc-panel is-hidden-row" data-doc-panel>
-                  <div class="kb-doc-head"><span>文档名称</span><span>更新时间</span><span>KB 状态</span><span>分块</span><span>操作</span></div>
-                  <div class="kb-doc-row" data-parent-kb="ops_runbook">
-                    <div class="kb-doc-title"><span class="doc-file pdf">P</span><strong>同步延迟排查手册.pdf</strong></div>
-                    <span>2026/05/29 10:42</span><span class="status ok">已同步</span><span>8 块</span>
-                    <div class="doc-actions"><button class="icon-mini icon-view" data-open-kb-doc type="button" aria-label="查看文档"></button><button class="icon-mini icon-download" data-download-doc type="button" aria-label="下载文档"></button><button class="icon-mini icon-delete danger-button" type="button" aria-label="删除文档"></button></div>
-                  </div>
-                </div>
-              </article>
+              <div class="knowledge-doc-toolbar">
+                <h3>文档列表 <span>5 项</span></h3>
+                <input class="search-input knowledge-doc-search" placeholder="搜索文档" />
+              </div>
+              <div class="kb-doc-panel" data-doc-panel data-panel-kb="expert"></div>
             </div>
           </section>
         </section>
@@ -401,6 +321,41 @@
                 <article><strong>运维人员</strong><p>关注数据质量、同步异常、性能指标和用户问答反馈。</p></article>
                 <article><strong>套餐管理员</strong><p>维护套餐规则、价格、上下架状态，并查看订阅用户。</p></article>
               </div>
+            </section>
+          </section>
+
+          <section id="users-customer-info" class="user-detail">
+            <section class="panel user-management-panel customer-info-page-panel">
+              <div class="panel-head">
+                <div>
+                  <h2>订阅用户列表</h2>
+                  <p>查看不同订阅类型的用户、周期、到期时间与用量。</p>
+                </div>
+                <button class="primary-button compact" type="button">导出</button>
+              </div>
+              <div class="customer-info-filters">
+                <input class="search-input user-search" data-filter="customerInfoTable" placeholder="搜索用户" />
+                <select><option>全部状态</option><option>订阅中</option><option>即将到期</option><option>已过期</option></select>
+                <select><option>全部类型</option><option>免费版</option><option>个人付费</option><option>团队 / Business</option></select>
+                <select><option>到期时间排序</option><option>订阅开始排序</option><option>用量从高到低</option></select>
+              </div>
+              <div class="table-wrap">
+                <table id="customerInfoTable" class="member-table customer-info-table">
+                  <thead>
+                    <tr><th>用户</th><th>订阅类型</th><th>订阅开始</th><th>到期时间</th><th>本月用量（问答 · Token）</th><th>状态</th><th>操作</th></tr>
+                  </thead>
+                  <tbody>
+                    <tr><td><div class="customer-user-cell"><span class="member-avatar blue">张三</span><div><strong>张三</strong><small>zhangsan@corp.com</small></div></div></td><td><span class="soft-label">免费版</span></td><td>2026/01/15</td><td>—</td><td><div class="customer-usage"><strong>62%</strong><span class="usage-meter"><i style="width: 62%"></i></span><p class="usage-split"><span>问答 623/1,000</span><span>Token 10万/10万</span></p></div></td><td><span class="status ok">订阅中</span></td><td><button class="mini-button" data-plan-name="免费版" data-open-subscriber-detail="zhangsan@corp.com" type="button">查看详情</button></td></tr>
+                    <tr><td><div class="customer-user-cell"><span class="member-avatar green">孙九</span><div><strong>孙九</strong><small>sunjiu@store.cn</small></div></div></td><td><span class="soft-label">个人付费</span></td><td>2025/09/18</td><td>2026/09/18</td><td><div class="customer-usage"><strong>32%</strong><span class="usage-meter"><i style="width: 32%"></i></span><p class="usage-split"><span>问答 318/1,000</span><span>Token 2.4万/10万</span></p></div></td><td><span class="status ok">订阅中</span></td><td><button class="mini-button" data-plan-name="专业版" data-open-subscriber-detail="sunjiu@store.cn" type="button">查看详情</button></td></tr>
+                    <tr><td><div class="customer-user-cell"><span class="member-avatar blue">吴</span><div><strong>吴十</strong><small>wushi@amazoner.cn</small></div></div></td><td><span class="soft-label">个人付费</span></td><td>2026/02/02</td><td>2026/07/02</td><td><div class="customer-usage"><strong>74%</strong><span class="usage-meter"><i style="width: 74%"></i></span><p class="usage-split"><span>问答 742/1,000</span><span>Token 4.2万/10万</span></p></div></td><td><span class="status ok">订阅中</span></td><td><button class="mini-button" data-plan-name="专业版" data-open-subscriber-detail="wushi@amazoner.cn" type="button">查看详情</button></td></tr>
+                    <tr class="is-warning"><td><div class="customer-user-cell"><span class="member-avatar teal">周</span><div><strong>周青</strong><small>zhouqing@seller.net</small></div></div></td><td><span class="soft-label">个人付费</span></td><td>2025/07/08</td><td>2026/06/18</td><td><div class="customer-usage"><strong>82%</strong><span class="usage-meter warning"><i style="width: 82%"></i></span><p class="usage-split"><span>问答 821/1,000</span><span>Token 7.6万/10万</span></p></div></td><td><span class="status warn">即将到期</span></td><td><button class="mini-button" data-plan-name="专业版" data-open-subscriber-detail="zhouqing@seller.net" type="button">查看详情</button></td></tr>
+                    <tr><td><div class="customer-user-cell"><span class="member-avatar yellow">郑</span><div><strong>郑敏</strong><small>zhengmin@cross.cn</small></div></div></td><td><span class="soft-label">团队 / Business</span></td><td>2026/04/12</td><td>2026/07/12</td><td><div class="customer-usage"><strong>11%</strong><span class="usage-meter"><i style="width: 11%"></i></span><p class="usage-split"><span>问答 112/1,000</span><span>Token 1.1万/10万</span></p></div></td><td><span class="status ok">订阅中</span></td><td><button class="mini-button" data-plan-name="Business版" data-open-subscriber-detail="zhengmin@cross.cn" type="button">查看详情</button></td></tr>
+                    <tr class="is-warning"><td><div class="customer-user-cell"><span class="member-avatar purple">冯</span><div><strong>冯可</strong><small>fengke@brand.io</small></div></div></td><td><span class="soft-label">团队 / Business</span></td><td>2025/10/20</td><td>2026/10/20</td><td><div class="customer-usage"><strong>96%</strong><span class="usage-meter warning"><i style="width: 96%"></i></span><p class="usage-split"><span>问答 956/1,000</span><span>Token 8.9万/10万</span></p></div></td><td><span class="status ok">订阅中</span></td><td><button class="mini-button" data-plan-name="Business版" data-open-subscriber-detail="fengke@brand.io" type="button">查看详情</button></td></tr>
+                    <tr><td><div class="customer-user-cell"><span class="member-avatar red">曹</span><div><strong>曹然</strong><small>caoran@shop.cn</small></div></div></td><td><span class="soft-label">免费版</span></td><td>2025/12/01</td><td>—</td><td><div class="customer-usage"><strong>0%</strong><span class="usage-meter"><i style="width: 0%"></i></span><p class="usage-split"><span>问答 —</span><span>Token —</span></p></div></td><td><span class="status ok">订阅中</span></td><td><button class="mini-button" data-plan-name="免费版" data-open-subscriber-detail="caoran@shop.cn" type="button">查看详情</button></td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="table-summary"><span>共 2,108 位客户</span><span>最近更新：2026/06/11</span></div>
             </section>
           </section>
         </section>
@@ -1666,8 +1621,8 @@
           </div>
         </div>
         <form class="data-form">
-          <label class="wide"><span>知识库名称</span><input placeholder="例如：售后专家库" /></label>
-          <label class="wide"><span>描述</span><input placeholder="说明知识库的业务范围和适用角色" /></label>
+          <label class="wide"><span>知识库名称</span><input id="newKbName" placeholder="例如：售后专家库" /></label>
+          <label class="wide"><span>描述</span><input id="newKbDescription" placeholder="说明知识库的业务范围和适用角色" /></label>
           <button class="primary-button wide" data-close-knowledge type="button">创建知识库</button>
         </form>
       </section>

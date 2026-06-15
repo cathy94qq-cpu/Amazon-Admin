@@ -135,6 +135,8 @@ function getPlanSubscriberRows(planName) {
     type: "免费版",
     expires: "—",
     expiresNote: "",
+    status: "订阅中",
+    statusClass: "ok",
   }));
 }
 
@@ -146,6 +148,7 @@ const planModelAccess = {
 
 let currentPlanDetailName = "专业版";
 let currentSubscriberPlanName = "专业版";
+let subscriberDetailBackTarget = "planSubscribers";
 
 const planDetails = {
   免费版: {
@@ -543,23 +546,200 @@ function renderSubscriberDetail(userEmail) {
   ].map(([title, body, role, time, tone]) => `<article class="${tone}"><strong>${title}<span>${role}</span></strong><p>${body}</p><small>${time}</small></article>`).join("");
 }
 
+const knowledgeStore = [
+  {
+    name: "expert",
+    description: "专家问答核心资料库，覆盖运营、售后和平台规则。",
+    status: "生效中",
+    dot: "green",
+    stats: { total: 50, synced: 47, failed: 1, processing: 2 },
+    docs: [
+      { type: "pdf", mark: "P", title: "防窜息标签.pdf", updated: "2026/05/29 09:12", sync: "已同步", status: "ready", statusClass: "status ok", chunks: "18" },
+      { type: "doc", mark: "P", title: "亚马逊最新选品方案.pptx", updated: "2026/05/29 08:57", sync: "已同步", status: "ready", statusClass: "status ok", chunks: "42" },
+      {
+        type: "folder",
+        title: "网站资料",
+        updated: "2026/06/02",
+        open: false,
+        children: [
+          { type: "doc", mark: "D", title: "DataDID网站首页内容.doc", updated: "2026/06/02 10:00", sync: "已同步", status: "ready", statusClass: "status ok", chunks: "10" },
+          { type: "image", mark: "I", title: "产品截图.png", updated: "2026/06/01 14:30", sync: "已同步", status: "ready", statusClass: "status ok", chunks: "1" },
+        ],
+      },
+      { type: "pdf", mark: "P", title: "平台规则汇总.pdf", updated: "2026/05/20 11:00", sync: "同步异常", status: "failed", statusClass: "status danger", chunks: "30" },
+      { type: "doc", mark: "D", title: "运营手册2026.docx", updated: "2026/05/18 09:00", sync: "处理中", status: "processing", statusClass: "status warn", chunks: "0" },
+    ],
+  },
+  {
+    name: "faq",
+    description: "常见问题解答库，包含用户常问问题和解决方案。",
+    status: "生效中",
+    dot: "blue",
+    stats: { total: 8, synced: 7, failed: 0, processing: 1 },
+    docs: [
+      { type: "pdf", mark: "P", title: "注销店铺流程步骤.pdf", updated: "2026/05/27 16:40", sync: "已同步", status: "ready", statusClass: "status ok", chunks: "12" },
+      { type: "doc", mark: "D", title: "账号申诉指引.docx", updated: "2026/05/26 11:00", sync: "已同步", status: "ready", statusClass: "status ok", chunks: "9" },
+      { type: "pdf", mark: "P", title: "常见报错汇总.pdf", updated: "2026/05/28 08:30", sync: "同步中", status: "processing", statusClass: "status warn", chunks: "0" },
+    ],
+  },
+  {
+    name: "patent",
+    description: "专利知识产权库，存储专利文档和法律资料。",
+    status: "生效中",
+    dot: "violet",
+    stats: { total: 15, synced: 13, failed: 1, processing: 1 },
+    docs: [
+      { type: "pdf", mark: "P", title: "知识产权的辨认、查询与侵权规避.pdf", updated: "2026/05/29 08:20", sync: "同步中", status: "processing", statusClass: "status warn", chunks: "0" },
+      { type: "pdf", mark: "P", title: "宠物智能产品专利检索报告.pdf", updated: "2026/05/25 13:09", sync: "失败", status: "failed", statusClass: "status danger", chunks: "0" },
+      { type: "pdf", mark: "P", title: "灯具产品专利检索报告.pdf", updated: "2026/05/23 15:42", sync: "已同步", status: "ready", statusClass: "status ok", chunks: "16" },
+    ],
+  },
+  {
+    name: "ops_runbook",
+    description: "运维排障手册，记录异常数据、同步延迟和任务处理流程。",
+    status: "已停用",
+    dot: "muted",
+    stats: { total: 8, synced: 8, failed: 0, processing: 0 },
+    docs: [
+      { type: "pdf", mark: "P", title: "同步延迟排查手册.pdf", updated: "2026/05/29 10:42", sync: "已同步", status: "ready", statusClass: "status ok", chunks: "8" },
+      { type: "doc", mark: "D", title: "向量队列巡检清单.docx", updated: "2026/05/28 18:10", sync: "已同步", status: "ready", statusClass: "status ok", chunks: "6" },
+    ],
+  },
+];
+
+let currentKnowledgeName = "expert";
+
+function getKnowledgeData(name = currentKnowledgeName) {
+  return knowledgeStore.find((item) => item.name === name) || knowledgeStore[0];
+}
+
 function getKnowledgeDocRows(name) {
   return [...document.querySelectorAll(`.kb-doc-row[data-parent-kb="${name}"]`)];
 }
 
 function getKnowledgeDocPanel(name) {
-  return document.querySelector(`.kb-row[data-kb-name="${name}"]`)?.closest(".kb-card")?.querySelector("[data-doc-panel]");
+  return document.querySelector(`[data-doc-panel][data-panel-kb="${name}"]`)
+    || document.querySelector(`.kb-row[data-kb-name="${name}"]`)?.closest(".kb-card")?.querySelector("[data-doc-panel]");
 }
 
 function getParentKnowledgeRow(docRow) {
   const cardRow = docRow?.closest(".kb-card")?.querySelector(".kb-row");
   if (cardRow) return cardRow;
 
+  const detailRow = docRow?.closest(".knowledge-main")?.querySelector(".kb-row");
+  if (detailRow) return detailRow;
+
   let row = docRow?.previousElementSibling;
   while (row && !row.classList.contains("kb-row")) {
     row = row.previousElementSibling;
   }
   return row;
+}
+
+function getKnowledgeStatusClass(status) {
+  return status === "已停用" ? "status pending" : status === "待启用" ? "status pending" : "status ok";
+}
+
+function renderKnowledgeActions(kb) {
+  const disabled = kb.status === "已停用" || kb.status === "待启用";
+  if (disabled) {
+    return `
+      <button class="mini-button" data-open-edit-kb type="button">编辑</button>
+      <button class="mini-button" data-open-upload type="button">上传文档</button>
+      <button class="mini-button" data-enable-kb type="button">启用</button>
+      <button class="danger-button" data-open-delete-kb type="button">删除</button>
+    `;
+  }
+  return `
+    <button class="mini-button" data-open-edit-kb type="button">编辑</button>
+    <button class="mini-button" data-open-upload type="button">上传文档</button>
+    <button class="danger-button" data-open-disable-kb type="button">停用</button>
+  `;
+}
+
+function renderDocActions(doc) {
+  if (doc.type === "folder") return "";
+  return `
+    <button class="icon-mini icon-view" data-open-kb-doc type="button" aria-label="查看文档"></button>
+    <button class="icon-mini icon-download" data-download-doc type="button" aria-label="下载文档"></button>
+    <button class="icon-mini icon-delete danger-button" data-delete-doc type="button" aria-label="删除文档"></button>
+  `;
+}
+
+function renderKnowledgeDocRow(doc, kbName, index, isChild = false) {
+  if (doc.type === "folder") {
+    return `
+      <div class="kb-doc-row kb-folder-row ${doc.open ? "is-open" : ""}" data-folder-index="${index}">
+        <div class="kb-doc-title">
+          <button class="folder-toggle" data-toggle-folder type="button" aria-label="${doc.open ? "收起" : "展开"} ${escapeHtml(doc.title)}">${doc.open ? "⌄" : "›"}</button>
+          <span class="doc-file folder"></span>
+          <strong>${escapeHtml(doc.title)}</strong>
+        </div>
+        <span>${escapeHtml(doc.updated)}</span>
+        <div class="doc-actions"></div>
+      </div>
+      ${doc.open ? doc.children.map((child) => renderKnowledgeDocRow(child, kbName, index, true)).join("") : ""}
+    `;
+  }
+
+  return `
+    <div class="kb-doc-row ${isChild ? "kb-doc-child" : ""}" data-parent-kb="${escapeHtml(kbName)}" data-doc-sync="${escapeHtml(doc.sync)}" data-doc-status="${escapeHtml(doc.status)}" data-doc-status-class="${escapeHtml(doc.statusClass)}" data-doc-chunks="${escapeHtml(doc.chunks)}">
+      <div class="kb-doc-title"><span class="doc-file ${escapeHtml(doc.type)}">${escapeHtml(doc.mark || "")}</span><strong>${escapeHtml(doc.title)}</strong></div>
+      <span>${escapeHtml(doc.updated)}</span>
+      <div class="doc-actions">${renderDocActions(doc)}</div>
+    </div>
+  `;
+}
+
+function renderKnowledgeWorkbench(name = currentKnowledgeName) {
+  const kb = getKnowledgeData(name);
+  if (!kb) return;
+  currentKnowledgeName = kb.name;
+
+  const nav = document.querySelector("#kbList");
+  if (nav) {
+    nav.innerHTML = knowledgeStore.map((item) => `
+      <button class="knowledge-nav-item ${item.name === currentKnowledgeName ? "is-active" : ""}" data-kb-card data-kb-name="${escapeHtml(item.name)}" type="button">
+        <span class="kb-dot ${escapeHtml(item.dot)}"></span>
+        <span>${escapeHtml(item.name)}</span>
+        ${item.status === "已停用" ? '<span class="kb-nav-state">已停用</span>' : ""}
+      </button>
+    `).join("");
+  }
+
+  const mainRow = document.querySelector(".knowledge-main-head");
+  if (mainRow) {
+    mainRow.dataset.kbName = kb.name;
+    mainRow.querySelector(".kb-card-title strong").textContent = kb.name;
+    const status = mainRow.querySelector(".status");
+    status.textContent = kb.status;
+    status.className = getKnowledgeStatusClass(kb.status);
+    mainRow.querySelector(".kb-card-main p").textContent = kb.description;
+    mainRow.querySelector(".knowledge-avatar span").className = kb.dot;
+    mainRow.querySelector(".knowledge-inline-stats").innerHTML = `
+      <span>文档总数 <strong>${kb.stats.total}</strong></span>
+      <span>已同步 <strong class="text-ok">${kb.stats.synced}</strong></span>
+      <span>同步异常 <strong class="text-danger">${kb.stats.failed}</strong></span>
+      <span>处理中 <strong class="text-warn">${kb.stats.processing}</strong></span>
+    `;
+    mainRow.querySelector(".action-group").innerHTML = renderKnowledgeActions(kb);
+  }
+
+  document.querySelector(".knowledge-doc-toolbar h3 span").textContent = `${kb.docs.length} 项`;
+  const panel = document.querySelector("[data-doc-panel]");
+  if (panel) {
+    panel.dataset.panelKb = kb.name;
+    panel.innerHTML = `
+      <div class="kb-doc-head"><span>文档名称</span><span>更新时间</span><span>操作</span></div>
+      ${kb.docs.map((doc, index) => renderKnowledgeDocRow(doc, kb.name, index)).join("")}
+    `;
+  }
+
+  const uploadSelect = uploadModal?.querySelector("select");
+  if (uploadSelect) {
+    uploadSelect.innerHTML = knowledgeStore.map((item) => `<option>${escapeHtml(item.name)}</option>`).join("");
+    uploadSelect.value = kb.name;
+  }
 }
 
 function selectSettingsTab(tab) {
@@ -1007,16 +1187,38 @@ document.querySelector("[data-plan-subscribers-back]")?.addEventListener("click"
 document.querySelector("#planSubscribersList")?.addEventListener("click", (event) => {
   const button = event.target.closest("[data-open-subscriber-detail]");
   if (!button) return;
+  subscriberDetailBackTarget = "planSubscribers";
   renderSubscriberDetail(button.dataset.openSubscriberDetail);
   switchPage("subscriberDetail");
 });
 
 document.querySelector("[data-subscriber-detail-back]")?.addEventListener("click", () => {
+  if (subscriberDetailBackTarget === "customerInfo") {
+    switchPage("users");
+    selectUsersTab("customer-info");
+    return;
+  }
   switchPage("planSubscribers");
+});
+
+document.querySelector("#customerInfoTable")?.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-open-subscriber-detail]");
+  if (!button) return;
+  currentSubscriberPlanName = button.dataset.planName || "免费版";
+  subscriberDetailBackTarget = "customerInfo";
+  renderSubscriberDetail(button.dataset.openSubscriberDetail);
+  switchPage("subscriberDetail");
+  document.querySelectorAll(".nav-item").forEach((item) => {
+    item.classList.toggle("is-active", item.dataset.page === "users");
+  });
+  document.querySelectorAll("[data-users-tab]").forEach((item) => {
+    item.classList.toggle("is-active", item.dataset.usersTab === "customer-info");
+  });
 });
 
 document.querySelector("[data-open-current-plan-subscribers]")?.addEventListener("click", () => {
   const detail = planDetails[currentPlanDetailName] || planDetails["专业版"];
+  subscriberDetailBackTarget = "planSubscribers";
   renderPlanSubscribers(currentPlanDetailName, detail.subscribers);
   switchPage("planSubscribers");
 });
@@ -1492,10 +1694,34 @@ document.querySelectorAll("[data-open-knowledge]").forEach((button) => {
 
 document.querySelectorAll("[data-close-knowledge]").forEach((button) => {
   button.addEventListener("click", () => {
-    knowledgeModal.classList.add("is-hidden");
     if (button.classList.contains("primary-button")) {
+      const nameInput = document.querySelector("#newKbName");
+      const descriptionInput = document.querySelector("#newKbDescription");
+      const name = nameInput?.value.trim();
+      const description = descriptionInput?.value.trim() || "新建知识库，等待补充业务范围和适用说明。";
+      if (!name) {
+        showToast("请输入知识库名称");
+        return;
+      }
+      if (knowledgeStore.some((item) => item.name === name)) {
+        showToast("知识库名称已存在");
+        return;
+      }
+      knowledgeStore.push({
+        name,
+        description,
+        status: "待启用",
+        dot: "muted",
+        stats: { total: 0, synced: 0, failed: 0, processing: 0 },
+        docs: [],
+      });
+      currentKnowledgeName = name;
+      renderKnowledgeWorkbench(name);
+      nameInput.value = "";
+      if (descriptionInput) descriptionInput.value = "";
       showToast("知识库已创建，状态为待启用");
     }
+    knowledgeModal.classList.add("is-hidden");
   });
 });
 
@@ -1523,24 +1749,19 @@ document.querySelectorAll("[data-close-edit-kb]").forEach((button) => {
     if (button.classList.contains("primary-button") && editingKnowledgeBase) {
       const nextName = document.querySelector("#editKbName").value.trim();
       const nextDescription = document.querySelector("#editKbDescription").value.trim();
-      if (nextName) {
+      const data = getKnowledgeData(editingKnowledgeBase.dataset.kbName);
+      if (nextName && data) {
         const oldName = editingKnowledgeBase.dataset.kbName;
-        editingKnowledgeBase.dataset.kbName = nextName;
-        editingKnowledgeBase.querySelector(".kb-card-title strong").textContent = nextName;
-        editingKnowledgeBase.querySelector("[data-toggle-kb]")?.setAttribute("aria-label", `展开 ${nextName} 文档`);
-        editingKnowledgeBase.closest(".kb-card")?.querySelectorAll(".kb-doc-row").forEach((docRow) => {
-          if (docRow.dataset.parentKb === oldName) docRow.dataset.parentKb = nextName;
-        });
-        uploadModal.querySelectorAll("select option").forEach((option) => {
-          if (option.value === oldName || option.textContent.trim() === oldName) {
-            option.value = nextName;
-            option.textContent = nextName;
-          }
+        data.name = nextName;
+        currentKnowledgeName = nextName;
+        getKnowledgeDocRows(oldName).forEach((docRow) => {
+          docRow.dataset.parentKb = nextName;
         });
       }
-      if (nextDescription) {
-        editingKnowledgeBase.querySelector(".kb-card-main p").textContent = nextDescription;
+      if (nextDescription && data) {
+        data.description = nextDescription;
       }
+      renderKnowledgeWorkbench(currentKnowledgeName);
       showToast("知识库信息已保存");
     }
     editKnowledgeModal.classList.add("is-hidden");
@@ -1596,20 +1817,13 @@ document.querySelectorAll("[data-close-disable-kb]").forEach((button) => {
 
 document.querySelector("[data-confirm-disable-kb]")?.addEventListener("click", () => {
   if (pendingKnowledgeBase) {
-    const disabledRow = pendingKnowledgeBase;
-    const status = pendingKnowledgeBase.querySelector(".status");
-    const actionGroup = pendingKnowledgeBase.querySelector(".action-group");
-    status.textContent = "已停用";
-    status.className = "status pending";
-    actionGroup.innerHTML = '<button class="mini-button" data-open-edit-kb>编辑</button><button class="mini-button" data-open-upload>上传文档</button><button class="mini-button">启用</button><button class="danger-button" data-open-delete-kb>删除</button>';
-    actionGroup.querySelector("[data-open-edit-kb]").addEventListener("click", () => openEditKnowledgeBase(disabledRow));
-    actionGroup.querySelector("[data-open-upload]").addEventListener("click", () => {
-      const targetSelect = uploadModal.querySelector("select");
-      if (targetSelect) targetSelect.value = disabledRow.dataset.kbName;
-      uploadModal.classList.remove("is-hidden");
-    });
-    actionGroup.querySelector("[data-open-delete-kb]").addEventListener("click", () => openDeleteKnowledgeBase(disabledRow));
-    showToast(`${disabledRow.dataset.kbName} 已停用`);
+    const kb = getKnowledgeData(pendingKnowledgeBase.dataset.kbName);
+    if (kb) {
+      kb.status = "已停用";
+      kb.dot = "muted";
+      renderKnowledgeWorkbench(kb.name);
+      showToast(`${kb.name} 已停用`);
+    }
   }
   kbDisableConfirmModal.classList.add("is-hidden");
 });
@@ -1638,7 +1852,12 @@ document.querySelectorAll("[data-close-delete-kb]").forEach((button) => {
 document.querySelector("[data-confirm-delete-kb]")?.addEventListener("click", () => {
   if (pendingKnowledgeBase) {
     const name = pendingKnowledgeBase.dataset.kbName;
-    pendingKnowledgeBase.closest(".kb-card")?.remove();
+    const index = knowledgeStore.findIndex((item) => item.name === name);
+    if (index > -1) {
+      knowledgeStore.splice(index, 1);
+    }
+    currentKnowledgeName = knowledgeStore[0]?.name || "";
+    renderKnowledgeWorkbench(currentKnowledgeName);
     showToast(`${name} 已删除`);
   }
   kbDeleteConfirmModal.classList.add("is-hidden");
@@ -1650,6 +1869,106 @@ document.querySelector("[data-confirm-delete-kb]")?.addEventListener("click", ()
       modal.classList.add("is-hidden");
     }
   });
+});
+
+document.querySelector(".knowledge-workbench")?.addEventListener("click", (event) => {
+  const navItem = event.target.closest("[data-kb-card]");
+  if (navItem) {
+    renderKnowledgeWorkbench(navItem.dataset.kbName);
+    return;
+  }
+
+  const mainRow = document.querySelector(".knowledge-main-head");
+
+  if (event.target.closest("[data-open-edit-kb]")) {
+    openEditKnowledgeBase(mainRow);
+    return;
+  }
+
+  if (event.target.closest("[data-open-upload]")) {
+    const targetSelect = uploadModal.querySelector("select");
+    if (targetSelect) targetSelect.value = currentKnowledgeName;
+    uploadModal.classList.remove("is-hidden");
+    return;
+  }
+
+  if (event.target.closest("[data-open-disable-kb]")) {
+    pendingKnowledgeBase = mainRow;
+    document.querySelector("#disableKbName").textContent = currentKnowledgeName || "当前知识库";
+    kbDisableConfirmModal.classList.remove("is-hidden");
+    return;
+  }
+
+  if (event.target.closest("[data-open-delete-kb]")) {
+    openDeleteKnowledgeBase(mainRow);
+    return;
+  }
+
+  if (event.target.closest("[data-enable-kb]")) {
+    const kb = getKnowledgeData(currentKnowledgeName);
+    if (kb) {
+      kb.status = "生效中";
+      kb.dot = kb.name === "faq" ? "blue" : kb.name === "patent" ? "violet" : "green";
+      renderKnowledgeWorkbench(kb.name);
+      showToast(`${kb.name} 已启用`);
+    }
+    return;
+  }
+
+  const folderRow = event.target.closest(".kb-folder-row");
+  if (folderRow) {
+    const kb = getKnowledgeData(currentKnowledgeName);
+    const folder = kb?.docs[Number(folderRow.dataset.folderIndex)];
+    if (folder?.type === "folder") {
+      folder.open = !folder.open;
+      renderKnowledgeWorkbench(kb.name);
+    }
+    return;
+  }
+
+  const docAction = event.target.closest("[data-open-kb-doc]");
+  if (docAction) {
+    const row = docAction.closest(".kb-doc-row");
+    const cells = row.children;
+    const docTitle = cells[0]?.querySelector("strong")?.textContent.trim() || "文档详情";
+    const parentRow = getParentKnowledgeRow(row);
+    const syncText = row.dataset.docSync || "已同步";
+    const parseStatus = row.dataset.docStatus || (syncText === "同步中" ? "processing" : syncText === "失败" ? "failed" : "ready");
+    document.querySelector("#docDetailTitle").textContent = docTitle;
+    document.querySelector("#docDetailSubtitle").textContent = `查看 ${parentRow?.dataset.kbName || currentKnowledgeName || "expert"} 知识库中的文档处理详情`;
+    document.querySelector("#docDetailKb").textContent = parentRow?.dataset.kbName || currentKnowledgeName || "expert";
+    document.querySelector("#docDetailParse").textContent = parseStatus;
+    document.querySelector("#docDetailStatus").textContent = syncText;
+    document.querySelector("#docDetailStatus").className = row.dataset.docStatusClass || "status ok";
+    document.querySelector("#docDetailChunks").textContent = row.dataset.docChunks || "0";
+    document.querySelector("#docDetailUpdated").textContent = cells[1]?.textContent.trim().replace(/\s+/g, " ") || "2026/05/29 09:12";
+    docDetailModal.classList.remove("is-hidden");
+    return;
+  }
+
+  const downloadAction = event.target.closest("[data-download-doc]");
+  if (downloadAction) {
+    const title = downloadAction.closest(".kb-doc-row")?.querySelector(".kb-doc-title strong")?.textContent.trim() || "文档";
+    showToast(`${title} 已开始下载`);
+    return;
+  }
+
+  const deleteDocAction = event.target.closest("[data-delete-doc]");
+  if (deleteDocAction) {
+    const row = deleteDocAction.closest(".kb-doc-row");
+    const title = row?.querySelector(".kb-doc-title strong")?.textContent.trim();
+    const kb = getKnowledgeData(currentKnowledgeName);
+    if (kb && title) {
+      kb.docs = kb.docs
+        .map((doc) => {
+          if (doc.type !== "folder") return doc;
+          return { ...doc, children: doc.children.filter((child) => child.title !== title) };
+        })
+        .filter((doc) => doc.title !== title);
+      renderKnowledgeWorkbench(kb.name);
+      showToast(`${title} 已删除`);
+    }
+  }
 });
 
 document.querySelectorAll("[data-close-upload]").forEach((button) => {
@@ -1736,14 +2055,15 @@ document.querySelectorAll("[data-open-kb-doc]").forEach((button) => {
     const cells = row.children;
     const docTitle = cells[0]?.querySelector("strong")?.textContent.trim() || "文档详情";
     const parentRow = getParentKnowledgeRow(row);
-    const status = cells[2]?.querySelector(".status");
+    const syncText = row.dataset.docSync || "已同步";
+    const parseStatus = row.dataset.docStatus || (syncText === "同步中" ? "processing" : syncText === "失败" ? "failed" : "ready");
     document.querySelector("#docDetailTitle").textContent = docTitle;
     document.querySelector("#docDetailSubtitle").textContent = `查看 ${parentRow?.dataset.kbName || "expert"} 知识库中的文档处理详情`;
     document.querySelector("#docDetailKb").textContent = parentRow?.dataset.kbName || "expert";
-    document.querySelector("#docDetailParse").textContent = status?.textContent === "同步中" ? "processing" : status?.textContent === "失败" ? "failed" : "ready";
-    document.querySelector("#docDetailStatus").textContent = status?.textContent || "已同步";
-    document.querySelector("#docDetailStatus").className = status?.className || "status ok";
-    document.querySelector("#docDetailChunks").textContent = cells[3]?.textContent.replace("块", "").trim() || "0";
+    document.querySelector("#docDetailParse").textContent = parseStatus;
+    document.querySelector("#docDetailStatus").textContent = syncText;
+    document.querySelector("#docDetailStatus").className = row.dataset.docStatusClass || "status ok";
+    document.querySelector("#docDetailChunks").textContent = row.dataset.docChunks || "0";
     document.querySelector("#docDetailUpdated").textContent = cells[1]?.textContent.trim().replace(/\s+/g, " ") || "2026/05/29 09:12";
     docDetailModal.classList.remove("is-hidden");
   });
@@ -1801,3 +2121,5 @@ docKbFilter.addEventListener("change", () => {
     applyTableFilter(docSearchInput);
   }
 });
+
+renderKnowledgeWorkbench();
