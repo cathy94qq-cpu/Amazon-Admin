@@ -32,6 +32,11 @@ const skillModal = document.querySelector("#skillModal");
 const addSkillModal = document.querySelector("#addSkillModal");
 const editSkillModal = document.querySelector("#editSkillModal");
 const docDetailModal = document.querySelector("#docDetailModal");
+const mcpConfigModal = document.querySelector("#mcpConfigModal");
+const mcpConfirmModal = document.querySelector("#mcpConfirmModal");
+const mcpDetailDrawer = document.querySelector("#mcpDetailDrawer");
+const mcpTableBody = document.querySelector("#mcpTableBody");
+const mcpSearch = document.querySelector("#mcpSearch");
 const issueModals = {
   parse: document.querySelector("#parseIssueModal"),
   rating: document.querySelector("#ratingIssueModal"),
@@ -62,6 +67,7 @@ const pageNames = {
   users: "用户管理",
   ops: "运维指标",
   plans: "套餐管理",
+  mcp: "MCP 管理",
   planDetail: "",
   planSubscribers: "",
   subscriberDetail: "",
@@ -74,6 +80,284 @@ const navPageMap = {
   planSubscribers: "plans",
   subscriberDetail: "plans",
 };
+
+const mcpStatusMeta = {
+  enabled: { label: "已启用", className: "enabled" },
+  disabled: { label: "已停用", className: "disabled" },
+  pending: { label: "待信任", className: "pending" },
+  failed: { label: "连接失败", className: "failed" },
+};
+
+const initialMcpConfig = {
+  mcpServers: {
+    "sellerspace-mcp": {
+      url: "https://mcp.sellerspace.com/sse",
+      headers: { "x-api-key": "sk-ss-demo-N38Q" },
+      tools: ["get_sales_report", "list_products", "get_inventory_status", "get_profit_analysis", "get_keyword_rank", "create_report", "update_inventory", "sync_orders", "export_metrics", "query_shipments", "analyze_ads", "store_health_check"],
+      prompts: ["运营日报", "库存诊断"],
+    },
+    "amazon-ads-mcp": {
+      url: "https://ads-api.example.com/mcp",
+      headers: { Authorization: "Bearer invalid-demo-key" },
+      tools: ["get_campaigns", "get_ad_report", "update_campaign"],
+      simulateFailure: true,
+    },
+    "inventory-helper": {
+      url: "https://inventory.example.com/mcp",
+      tools: ["lookup_stock", "sync_stock"],
+      disabled: true,
+    },
+    "catalog-sync-mcp": {
+      url: "https://catalog.example.com/mcp",
+      headers: { Authorization: "Bearer pending-trust-token" },
+      tools: ["sync_catalog", "validate_products"],
+      trustRequired: true,
+    },
+  },
+};
+
+let mcpConfigSource = JSON.stringify(initialMcpConfig, null, 2);
+let mcpServices = parseMcpJsonConfig(mcpConfigSource).servers.map((service) => ({
+  ...service,
+  status: service.failedByConfig ? "failed" : service.disabledByConfig ? "disabled" : service.pendingByConfig ? "pending" : "enabled",
+  error: service.failedByConfig ? "认证失败，API Key 可能不正确或已过期" : "",
+  addedBy: "Cathy",
+  addedAt: "2026-07-06 14:32",
+  lastCheck: "2 分钟前",
+}));
+let pendingMcpAction = null;
+let currentMcpDetailId = null;
+let mcpConfigMode = "add";
+
+const mcpToolDescriptions = {
+  get_sales_report: "获取指定时间范围的销售数据",
+  list_products: "查询店铺商品与 SKU 信息",
+  get_inventory_status: "读取当前库存与补货建议",
+  get_profit_analysis: "计算商品利润与成本结构",
+  get_keyword_rank: "查询关键词自然排名",
+  create_report: "创建并导出自定义经营报表",
+  update_inventory: "更新商品库存数据",
+  sync_orders: "同步店铺订单与履约状态",
+  export_metrics: "导出经营指标数据",
+  query_shipments: "查询货件与物流进度",
+  analyze_ads: "分析广告表现和异常",
+  store_health_check: "检查店铺经营健康度",
+};
+
+function getMcpTools(name, config) {
+  if (Array.isArray(config.tools)) return config.tools.map(String);
+  if (/filesystem/i.test(name)) {
+    return ["filesystem_read_file", "filesystem_read_text_file", "filesystem_read_media_file", "filesystem_read_multiple_files", "filesystem_write_file", "filesystem_edit_file", "filesystem_create_directory", "filesystem_list_directory", "filesystem_directory_tree", "filesystem_move_file", "filesystem_search_files", "filesystem_get_file_info", "filesystem_list_allowed_directories"];
+  }
+  if (/sellerspace/i.test(name)) {
+    return ["sellerspace-mcp_get_stores", "sellerspace-mcp_discover_capabilities", "sellerspace-mcp_query_ads", "sellerspace-mcp_query_products", "sellerspace-mcp_query_store_performance", "sellerspace-mcp_get_metric_history", "sellerspace-mcp_query_shipments", "sellerspace-mcp_export_data", "diagnose_ads_performance", "product_performance_review", "bulk_adjust_keyword_bids", "store_health_check"];
+  }
+  return [];
+}
+
+function parseMcpJsonConfig(rawConfig) {
+  let parsed;
+  try {
+    parsed = JSON.parse(rawConfig);
+  } catch (error) {
+    throw new Error("JSON 格式错误，请检查逗号、引号和括号是否完整。");
+  }
+
+  const servers = parsed?.mcpServers;
+  if (!servers || typeof servers !== "object" || Array.isArray(servers)) {
+    throw new Error('配置必须包含对象字段 "mcpServers"。');
+  }
+  const entries = Object.entries(servers);
+  if (!entries.length) {
+    throw new Error('"mcpServers" 中至少需要配置一个 Server。');
+  }
+
+  const parsedServers = entries.map(([serverName, serverConfig]) => {
+    if (!serverConfig || typeof serverConfig !== "object") throw new Error(`Server「${serverName}」的配置必须是对象。`);
+    if (!serverConfig.url) throw new Error(`Server「${serverName}」必须包含远程服务 url，不支持本地 command 配置。`);
+    const isFailed = serverConfig.simulateFailure === true || JSON.stringify(serverConfig).toLowerCase().includes("invalid");
+    return {
+      id: `mcp-${serverName.replace(/[^a-z0-9_-]/gi, "-").toLowerCase()}`,
+      name: serverName,
+      icon: serverName.slice(0, 1).toUpperCase(),
+      config: serverConfig,
+      connectionType: "远程 HTTP",
+      endpoint: serverConfig.url,
+      disabledByConfig: serverConfig.disabled === true,
+      pendingByConfig: serverConfig.trustRequired === true,
+      failedByConfig: isFailed,
+      tools: getMcpTools(serverName, serverConfig),
+      prompts: Array.isArray(serverConfig.prompts) ? serverConfig.prompts.length : 0,
+      resources: Array.isArray(serverConfig.resources) ? serverConfig.resources.length : 0,
+    };
+  });
+  return {
+    servers: parsedServers,
+    normalized: JSON.stringify(parsed, null, 2),
+  };
+}
+
+function renderMcpTable() {
+  if (!mcpTableBody) return;
+  const keyword = (mcpSearch?.value || "").trim().toLowerCase();
+  const visibleServices = mcpServices.filter((service) => service.name.toLowerCase().includes(keyword));
+
+  mcpTableBody.innerHTML = visibleServices
+    .map((service) => {
+      const statusMeta = mcpStatusMeta[service.status];
+      const totalTools = service.tools.length;
+      const enabledTools = service.status === "enabled" ? totalTools : 0;
+      const statusLabel = service.status === "enabled" ? "运行正常" : service.status === "failed" ? "连接异常" : service.status === "pending" ? "待信任" : "已停用";
+      const statusDescription = service.status === "enabled"
+        ? `${Math.max(enabledTools - 2, 0)}/${totalTools} 个工具启用 · ${Math.min(2, totalTools)} 个需确认 · 上次检查 ${service.lastCheck || "2 分钟前"}`
+        : service.status === "failed"
+          ? `${service.error || "认证失败，API Key 可能不正确或已过期"}　<span class="mcp-update-link">更新凭据</span>`
+          : service.status === "pending"
+            ? "首次连接需要管理员完成信任确认"
+            : `${totalTools} 个工具 · 停用后用户端不可调用`;
+      return `
+        <article class="mcp-service-item is-${service.status}" data-mcp-action="detail" data-mcp-id="${service.id}" tabindex="0" role="button" aria-label="查看 ${escapeHtml(service.name)} 详情">
+          <div class="mcp-service-row">
+            <span class="mcp-brand-icon custom">${escapeHtml(service.icon)}</span>
+            <div class="mcp-service-info">
+              <strong>${escapeHtml(service.name)} <span class="mcp-row-status ${statusMeta.className}"><i></i>${statusLabel}</span></strong>
+              <small>${statusDescription}</small>
+            </div>
+            <div class="mcp-row-actions">
+              ${service.status !== "pending" ? `<button class="mcp-switch ${service.status === "enabled" || service.status === "failed" ? "is-on" : ""}" data-mcp-action="toggle" data-mcp-id="${service.id}" type="button" role="switch" aria-checked="${service.status === "enabled" || service.status === "failed"}"><i></i></button>` : ""}
+            </div>
+          </div>
+          ${service.status === "pending" ? `<div class="mcp-trust-notice"><span>首次连接此 MCP 服务需要您的信任确认。</span><button data-mcp-action="trust" data-mcp-id="${service.id}" type="button">信任</button></div>` : ""}
+        </article>`;
+    })
+    .join("");
+
+  const enabledCount = mcpServices.filter((service) => service.status === "enabled").length;
+  const failedCount = mcpServices.filter((service) => service.status === "failed").length;
+  const pendingCount = mcpServices.filter((service) => service.status === "pending").length;
+  document.querySelector("#mcpServiceCount").textContent = mcpServices.length;
+  document.querySelector("#mcpServiceSummary").innerHTML = `${enabledCount} 启用${failedCount ? ` · <em>${failedCount} 异常</em>` : ""}${pendingCount ? ` · <span class="mcp-summary-pending">${pendingCount} 待信任</span>` : ""}`;
+  const empty = document.querySelector("#mcpEmpty");
+  empty?.classList.toggle("is-hidden", visibleServices.length > 0);
+  if (empty && mcpServices.length && !visibleServices.length) {
+    empty.querySelector("strong").textContent = "未找到匹配的 MCP 服务器";
+    empty.querySelector("p").textContent = "请尝试使用其他关键词搜索";
+    empty.querySelector("button").classList.add("is-hidden");
+  } else if (empty) {
+    empty.querySelector("strong").textContent = "暂无 MCP 服务器";
+    empty.querySelector("p").textContent = "点击添加按钮，通过 JSON 添加 MCP 服务器";
+    empty.querySelector("button").classList.remove("is-hidden");
+  }
+}
+
+function renderMcpDetailTools(service) {
+  const container = document.querySelector("#mcpDetailTools");
+  if (!container) return;
+  service.toolPermissions ||= {};
+  container.innerHTML = service.tools.map((tool, index) => {
+    const permission = service.toolPermissions[tool] || (index > 4 ? "ask" : "allow");
+    return `<article class="mcp-permission-row">
+      <div><strong>${escapeHtml(tool)}</strong><small>${escapeHtml(mcpToolDescriptions[tool] || "由该 MCP Server 提供的工具能力")}</small></div>
+      <div class="mcp-permission-control" data-tool="${escapeHtml(tool)}">
+        <button class="${permission === "allow" ? "is-active" : ""}" data-mcp-permission="allow" type="button">允许</button>
+        <button class="${permission === "ask" ? "is-active" : ""}" data-mcp-permission="ask" type="button">询问</button>
+        <button class="${permission === "disabled" ? "is-active" : ""}" data-mcp-permission="disabled" type="button">停用</button>
+      </div>
+    </article>`;
+  }).join("") || '<div class="mcp-detail-empty">当前服务未提供工具。</div>';
+}
+
+function openMcpDetail(service) {
+  if (!service || !mcpDetailDrawer) return;
+  currentMcpDetailId = service.id;
+  const statusMeta = mcpStatusMeta[service.status];
+  const statusText = service.status === "enabled" ? "运行正常 · 320ms" : service.status === "failed" ? "连接异常" : service.status === "pending" ? "待信任" : "已停用";
+  document.querySelector("#mcpDetailIcon").textContent = service.icon;
+  document.querySelector("#mcpDetailTitle").textContent = service.name;
+  const status = document.querySelector("#mcpDetailStatus");
+  status.className = `mcp-row-status ${statusMeta.className}`;
+  status.innerHTML = `<i></i>${statusText}`;
+  document.querySelector("#mcpDetailEndpoint").textContent = service.endpoint || "—";
+  document.querySelector("#mcpDetailTransport").textContent = service.connectionType === "远程 HTTP" ? "Streamable HTTP" : service.connectionType;
+  const credential = service.config?.headers ? Object.values(service.config.headers)[0] : "无需凭据";
+  document.querySelector("#mcpDetailCredential").textContent = credential === "无需凭据" ? credential : `${String(credential).slice(0, 5)}••••••${String(credential).slice(-4)}`;
+  document.querySelector("#mcpDetailAddedBy").textContent = service.addedBy || "Cathy";
+  document.querySelector("#mcpDetailAddedAt").textContent = service.addedAt || "2026-07-06 14:32";
+  document.querySelector("#mcpDetailLastCheck").textContent = service.lastCheck || "2 分钟前";
+  document.querySelector("#mcpDetailToolCount").textContent = service.tools.length;
+  renderMcpDetailTools(service);
+  mcpDetailDrawer.classList.remove("is-hidden");
+}
+
+function openMcpConfigModal(mode = "add") {
+  mcpConfigMode = mode;
+  const editor = document.querySelector("#mcpJsonConfig");
+  document.querySelector("#mcpConfigTitle").textContent = mode === "edit" ? "编辑 MCP" : "添加 MCP";
+  document.querySelector("#mcpConfigSubtitle").textContent = mode === "edit" ? "更新远程服务配置，并自动测试连接。" : "配置远程服务，并自动测试连接。";
+  editor.value = mode === "edit" ? mcpConfigSource : `{
+  "mcpServers": {
+    "my-remote-mcp": {
+      "url": "https://mcp.example.com/sse",
+      "headers": {
+        "Authorization": "Bearer YOUR_API_KEY"
+      }
+    }
+  }
+}`;
+  document.querySelector("#mcpSaveStatus").textContent = mode === "edit" ? "已保存" : "JSON 结构有效";
+  document.querySelector("#mcpSaveStatus").className = "status ok";
+  document.querySelector("#mcpSaveButton").disabled = mode === "edit";
+  const verifyState = document.querySelector("#mcpVerifyState");
+  verifyState.textContent = "";
+  verifyState.className = "mcp-verify-state is-hidden";
+  mcpConfigModal.classList.remove("is-hidden");
+}
+
+function openMcpConfirm({ title, message, detail = "", buttonText = "确认", danger = false, compact = false, action = null }) {
+  document.querySelector(".mcp-confirm-panel")?.classList.toggle("is-compact-confirm", compact);
+  document.querySelector("#mcpConfirmTitle").textContent = title;
+  document.querySelector("#mcpConfirmMessage").textContent = message;
+  const detailBox = document.querySelector("#mcpConfirmDetail");
+  detailBox.textContent = detail;
+  detailBox.classList.toggle("is-hidden", !detail);
+  const confirmButton = document.querySelector("#mcpConfirmButton");
+  confirmButton.textContent = buttonText;
+  confirmButton.className = danger ? "danger-button" : "primary-button";
+  pendingMcpAction = action;
+  mcpConfirmModal.classList.remove("is-hidden");
+}
+
+function closeMcpConfirm() {
+  mcpConfirmModal.classList.add("is-hidden");
+  pendingMcpAction = null;
+}
+
+function testMcpConnection(service, button) {
+  const originalText = button?.textContent || "测试连接";
+  if (button) {
+    button.disabled = true;
+    button.textContent = "测试中...";
+  }
+  window.setTimeout(() => {
+    const succeeded = !service.failedByConfig;
+    if (succeeded) {
+      service.lastCheck = "刚刚";
+      service.error = "";
+      if (service.status === "failed") service.status = "disabled";
+      showToast(`${service.name} 连接成功`);
+    } else {
+      service.status = "failed";
+      service.lastCheck = "刚刚";
+      service.error = "API Key 无效，请更新密钥后重试。";
+      showToast(`${service.name} 连接失败：API Key 无效`);
+    }
+    if (button) {
+      button.disabled = false;
+      button.textContent = originalText;
+    }
+    renderMcpTable();
+  }, 700);
+}
 
 const planUserData = {
   免费版: [
@@ -948,6 +1232,7 @@ document.querySelectorAll("[data-open-edit-model]").forEach((button) => {
 
 document.querySelectorAll("[data-delete-model]").forEach((button) => {
   button.addEventListener("click", () => {
+    button.closest(".model-row")?.remove();
     showToast("停用模型已删除");
   });
 });
@@ -1062,6 +1347,7 @@ editUserModal.addEventListener("click", (event) => {
 
 document.querySelectorAll("[data-delete-user]").forEach((button) => {
   button.addEventListener("click", () => {
+    button.closest("tr")?.remove();
     showToast("用户已删除");
   });
 });
@@ -2122,4 +2408,255 @@ docKbFilter.addEventListener("change", () => {
   }
 });
 
+document.querySelectorAll("[data-open-mcp-add]").forEach((button) => {
+  button.addEventListener("click", () => openMcpConfigModal("add"));
+});
+
+document.querySelectorAll("[data-close-mcp]").forEach((button) => {
+  button.addEventListener("click", () => mcpConfigModal.classList.add("is-hidden"));
+});
+
+mcpConfigModal?.addEventListener("click", (event) => {
+  if (event.target === mcpConfigModal) mcpConfigModal.classList.add("is-hidden");
+});
+
+document.querySelector("#mcpJsonConfig")?.addEventListener("input", () => {
+  const saveStatus = document.querySelector("#mcpSaveStatus");
+  saveStatus.textContent = "未保存";
+  saveStatus.className = "status warn";
+  document.querySelector("#mcpSaveButton").disabled = false;
+  document.querySelector("#mcpVerifyState").className = "mcp-verify-state is-hidden";
+});
+
+document.querySelector("#mcpSaveButton")?.addEventListener("click", (event) => {
+  const saveButton = event.currentTarget;
+  const editor = document.querySelector("#mcpJsonConfig");
+  const verifyState = document.querySelector("#mcpVerifyState");
+  let parsedConfig;
+  try {
+    parsedConfig = parseMcpJsonConfig(editor.value.trim());
+    if (mcpConfigMode === "add") {
+      const existingConfig = JSON.parse(mcpConfigSource);
+      const addedConfig = JSON.parse(parsedConfig.normalized);
+      existingConfig.mcpServers = { ...existingConfig.mcpServers, ...addedConfig.mcpServers };
+      parsedConfig = parseMcpJsonConfig(JSON.stringify(existingConfig));
+    }
+  } catch (error) {
+    verifyState.className = "mcp-verify-state failed";
+    verifyState.textContent = error.message;
+    return;
+  }
+
+  const existingByName = new Map(mcpServices.map((service) => [service.name, service]));
+  mcpServices = parsedConfig.servers.map((server) => {
+    const existing = existingByName.get(server.name);
+    const status = server.failedByConfig ? "failed" : server.disabledByConfig ? "disabled" : server.pendingByConfig ? "pending" : existing?.status || "pending";
+    return {
+      ...existing,
+      ...server,
+      status,
+      error: server.failedByConfig ? "MCP error -32000: Connection closed" : "",
+      lastCheck: "刚刚",
+    };
+  });
+  mcpConfigSource = parsedConfig.normalized;
+  if (mcpConfigMode === "edit") editor.value = parsedConfig.normalized;
+  document.querySelector("#mcpSaveStatus").textContent = "已保存";
+  document.querySelector("#mcpSaveStatus").className = "status ok";
+  verifyState.className = "mcp-verify-state success";
+  verifyState.textContent = `连接测试完成，配置已保存。`;
+  saveButton.disabled = true;
+  renderMcpTable();
+  showToast("MCP JSON 配置已保存");
+});
+
+mcpSearch?.addEventListener("input", renderMcpTable);
+
+document.querySelector("#mcpHubButton")?.addEventListener("click", () => {
+  showToast("MCP Hub 即将开放");
+});
+
+mcpTableBody?.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-mcp-action]");
+  if (!button) return;
+  const service = mcpServices.find((item) => item.id === button.dataset.mcpId);
+  if (!service) return;
+  const action = button.dataset.mcpAction;
+
+  if (action === "detail") {
+    openMcpDetail(service);
+    return;
+  }
+  if (action === "reconnect") {
+    testMcpConnection(service, button);
+    return;
+  }
+  if (action === "error") {
+    openMcpConfirm({
+      title: `${service.name} 连接错误`,
+      message: service.error || "MCP 服务连接失败。",
+      detail: "请检查服务地址、命令、请求头和网络环境后重试。",
+      buttonText: "知道了",
+    });
+    return;
+  }
+  if (action === "trust" || (action === "toggle" && service.status === "pending")) {
+    openMcpConfirm({
+      title: `启用「${service.name}」？`,
+      message: "这是一个第三方 MCP Server。启用后，管理员可在专家系统中调用其提供的工具能力。",
+      buttonText: "信任并启用",
+      compact: true,
+      action: () => {
+        service.status = "enabled";
+        service.config.trustRequired = false;
+        const parsed = JSON.parse(mcpConfigSource);
+        if (parsed.mcpServers?.[service.name]) parsed.mcpServers[service.name].trustRequired = false;
+        mcpConfigSource = JSON.stringify(parsed, null, 2);
+        renderMcpTable();
+        showToast(`${service.name} 已信任并启用`);
+      },
+    });
+    return;
+  }
+  if (action === "toggle") {
+    if (service.status === "failed") {
+      service.status = "disabled";
+      renderMcpTable();
+      showToast(`${service.name} 已停用`);
+      return;
+    }
+    service.status = service.status === "enabled" ? "disabled" : "enabled";
+    renderMcpTable();
+    showToast(`${service.name} 已${service.status === "enabled" ? "启用" : "停用"}`);
+    return;
+  }
+});
+
+mcpTableBody?.addEventListener("keydown", (event) => {
+  if (event.key !== "Enter" && event.key !== " ") return;
+  const row = event.target.closest(".mcp-service-item");
+  if (!row) return;
+  event.preventDefault();
+  const service = mcpServices.find((item) => item.id === row.dataset.mcpId);
+  openMcpDetail(service);
+});
+
+document.querySelectorAll("[data-close-mcp-detail]").forEach((button) => {
+  button.addEventListener("click", () => mcpDetailDrawer?.classList.add("is-hidden"));
+});
+
+mcpDetailDrawer?.addEventListener("click", (event) => {
+  if (event.target === mcpDetailDrawer) mcpDetailDrawer.classList.add("is-hidden");
+
+  const permissionButton = event.target.closest("[data-mcp-permission]");
+  if (permissionButton) {
+    const service = mcpServices.find((item) => item.id === currentMcpDetailId);
+    const control = permissionButton.closest(".mcp-permission-control");
+    if (!service || !control) return;
+    service.toolPermissions ||= {};
+    service.toolPermissions[control.dataset.tool] = permissionButton.dataset.mcpPermission;
+    control.querySelectorAll("button").forEach((button) => button.classList.toggle("is-active", button === permissionButton));
+    showToast("工具权限已更新");
+  }
+});
+
+document.querySelector("#mcpDetailTest")?.addEventListener("click", (event) => {
+  const service = mcpServices.find((item) => item.id === currentMcpDetailId);
+  if (!service) return;
+  testMcpConnection(service, event.currentTarget);
+  window.setTimeout(() => openMcpDetail(service), 760);
+});
+
+document.querySelector("#mcpDetailEdit")?.addEventListener("click", () => {
+  mcpDetailDrawer?.classList.add("is-hidden");
+  openMcpConfigModal("edit");
+});
+
+document.querySelector("#mcpDetailDelete")?.addEventListener("click", () => {
+  const service = mcpServices.find((item) => item.id === currentMcpDetailId);
+  if (!service) return;
+  openMcpConfirm({
+    title: `删除「${service.name}」？`,
+    message: "该 Server 的 JSON 配置将一并移除，且无法恢复。",
+    buttonText: "删除",
+    danger: true,
+    compact: true,
+    action: () => {
+      mcpServices = mcpServices.filter((item) => item.id !== service.id);
+      const parsed = JSON.parse(mcpConfigSource);
+      delete parsed.mcpServers[service.name];
+      mcpConfigSource = JSON.stringify(parsed, null, 2);
+      mcpDetailDrawer?.classList.add("is-hidden");
+      renderMcpTable();
+      showToast(`${service.name} 已删除`);
+    },
+  });
+});
+
+document.querySelectorAll("[data-close-mcp-confirm]").forEach((button) => {
+  button.addEventListener("click", closeMcpConfirm);
+});
+
+document.querySelector("#mcpConfirmButton")?.addEventListener("click", () => {
+  const action = pendingMcpAction;
+  closeMcpConfirm();
+  action?.();
+});
+
+mcpConfirmModal?.addEventListener("click", (event) => {
+  if (event.target === mcpConfirmModal) closeMcpConfirm();
+});
+
+const confirmedDeleteButtons = new WeakSet();
+
+function getDeleteTargetName(button) {
+  const documentTitle = button.closest(".kb-doc-row")?.querySelector(".kb-doc-title strong")?.textContent;
+  const row = button.closest("tr");
+  const rowTitle = row?.querySelector("td strong")?.textContent || row?.querySelector("td")?.textContent;
+  const modalTitle = button.closest(".modal-panel")?.querySelector("h2")?.textContent;
+  return (documentTitle || rowTitle || modalTitle || "当前项目").trim().replace(/\s+/g, " ");
+}
+
+document.addEventListener("click", (event) => {
+  const button = event.target.closest("button");
+  if (!button || confirmedDeleteButtons.has(button)) {
+    if (button) confirmedDeleteButtons.delete(button);
+    return;
+  }
+
+  const label = `${button.textContent || ""} ${button.getAttribute("aria-label") || ""}`;
+  const isDeleteButton = (button.classList.contains("danger-button") && label.includes("删除"))
+    || button.matches("[data-delete-doc], [data-delete-model], [data-delete-user]");
+  if (!isDeleteButton) return;
+
+  const hasDedicatedConfirmation = button.matches("[data-open-delete-confirm], [data-open-delete-kb], [data-mcp-action='delete'], [data-mcp-detail-delete]");
+  const isConfirmationAction = Boolean(button.closest(".confirm-panel, .mcp-confirm-panel"));
+  if (hasDedicatedConfirmation || isConfirmationAction) return;
+
+  event.preventDefault();
+  event.stopImmediatePropagation();
+  const targetName = getDeleteTargetName(button);
+  const hasExistingDeleteHandler = button.matches("[data-delete-doc], [data-delete-model], [data-delete-user]");
+
+  openMcpConfirm({
+    title: `删除「${targetName}」？`,
+    message: "删除后相关数据将无法恢复，请确认是否继续。",
+    buttonText: "删除",
+    danger: true,
+    compact: true,
+    action: () => {
+      confirmedDeleteButtons.add(button);
+      button.click();
+      if (!hasExistingDeleteHandler) {
+        const row = button.closest("tr");
+        if (row?.isConnected) row.remove();
+        const modal = button.closest(".modal-backdrop");
+        if (modal && !row) modal.classList.add("is-hidden");
+        showToast(`${targetName} 已删除`);
+      }
+    },
+  });
+}, true);
+
 renderKnowledgeWorkbench();
+renderMcpTable();
