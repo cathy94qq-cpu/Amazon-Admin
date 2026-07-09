@@ -1234,6 +1234,145 @@ progress::-webkit-progress-value {
   min-height: 36px;
 }
 
+.mcp-bind-picker {
+  position: relative;
+}
+
+.mcp-bind-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  border-radius: 5px;
+  padding: 0 8px;
+  background: #eef4ff;
+  color: #245a86;
+  font-size: 12px;
+}
+
+.mcp-bind-chip.removable {
+  gap: 6px;
+  padding-right: 4px;
+}
+
+.mcp-bind-chip button,
+.kb-chip button,
+.skill-chip button {
+  width: 18px;
+  height: 18px;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: currentColor;
+  line-height: 1;
+}
+
+.mcp-bind-chip button:hover,
+.kb-chip button:hover,
+.skill-chip button:hover {
+  background: rgba(15, 23, 42, 0.08);
+}
+
+.mcp-bind-empty {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.expert-mcp-dropdown {
+  width: 100%;
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 0;
+  z-index: 5;
+  display: grid;
+  gap: 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 10px;
+  background: #fff;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+}
+
+.expert-mcp-search {
+  width: 100%;
+  min-height: 38px;
+  border: 1px solid var(--ink);
+  border-radius: 7px;
+  padding: 0 12px;
+  outline: 1px solid var(--ink);
+  outline-offset: -3px;
+}
+
+.expert-mcp-dropdown-list {
+  display: grid;
+  gap: 2px;
+  max-height: 240px;
+  overflow: auto;
+}
+
+.expert-mcp-option {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 38px minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  border: 0;
+  border-radius: 7px;
+  padding: 8px 12px;
+  background: #fff;
+  text-align: left;
+}
+
+.expert-mcp-option:hover,
+.expert-mcp-option:focus-visible {
+  background: #f6f8fa;
+  outline: 0;
+}
+
+.expert-mcp-option.is-disabled {
+  cursor: not-allowed;
+  opacity: 0.48;
+}
+
+.expert-mcp-option strong,
+.expert-mcp-option small {
+  display: block;
+}
+
+.expert-mcp-option strong {
+  color: var(--text);
+  font-size: 15px;
+  font-weight: 400;
+}
+
+.expert-mcp-option small {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.expert-mcp-option small em {
+  border-radius: 5px;
+  padding: 1px 6px;
+  background: #e8f7ef;
+  color: #15915a;
+  font-style: normal;
+}
+
+.expert-mcp-option small b {
+  color: var(--muted);
+  font-weight: 400;
+}
+
+.expert-mcp-empty {
+  padding: 12px;
+  color: var(--muted);
+  font-size: 13px;
+  text-align: center;
+}
+
 .skill-upload-head {
   margin-bottom: 16px;
 }
@@ -2448,7 +2587,7 @@ progress::-webkit-progress-value {
 }
 
 #expertTable {
-  min-width: 1360px;
+  min-width: 1480px;
 }
 
 .expert-table th:nth-child(2),
@@ -2459,6 +2598,11 @@ progress::-webkit-progress-value {
 .expert-table th:nth-child(3),
 .expert-table td:nth-child(3) {
   width: 180px;
+}
+
+.expert-table th:nth-child(6),
+.expert-table td:nth-child(6) {
+  width: 170px;
 }
 
 .expert-table th:last-child,
@@ -5250,8 +5394,56 @@ td:first-child {
   font-style: normal;
 }
 
+.mcp-batch-link {
+  min-height: 24px;
+  border: 0;
+  background: transparent;
+  color: #1d65d8;
+  padding: 0 8px;
+}
+
 .mcp-summary-pending {
   color: #a77308;
+}
+
+.mcp-batch-bar {
+  min-height: 62px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 0 18px;
+  padding: 10px 4px;
+  border-top: 1px solid var(--line);
+  color: var(--text);
+  font-size: 13px;
+}
+
+.mcp-batch-select-all,
+.mcp-batch-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.mcp-batch-select-all input,
+.mcp-batch-check input {
+  width: 14px;
+  height: 14px;
+  accent-color: var(--ink);
+}
+
+.mcp-batch-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mcp-batch-actions .mini-button,
+.mcp-batch-actions .danger-button {
+  min-height: 38px;
+  border-radius: 7px;
+  padding: 0 13px;
 }
 
 .mcp-service-list {
@@ -5270,6 +5462,10 @@ td:first-child {
 .mcp-service-item:focus-visible {
   background: #fafbf9;
   outline: 0;
+}
+
+.mcp-service-item.is-selected {
+  background: #fbfcff;
 }
 
 .mcp-service-row {

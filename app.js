@@ -128,6 +128,9 @@ let mcpServices = parseMcpJsonConfig(mcpConfigSource).servers.map((service) => (
 let pendingMcpAction = null;
 let currentMcpDetailId = null;
 let mcpConfigMode = "add";
+let mcpConfigTargetName = null;
+let mcpBatchMode = false;
+let selectedMcpIds = new Set();
 
 const mcpToolDescriptions = {
   get_sales_report: "获取指定时间范围的销售数据",
@@ -201,12 +204,14 @@ function renderMcpTable() {
   if (!mcpTableBody) return;
   const keyword = (mcpSearch?.value || "").trim().toLowerCase();
   const visibleServices = mcpServices.filter((service) => service.name.toLowerCase().includes(keyword));
+  selectedMcpIds = new Set([...selectedMcpIds].filter((id) => mcpServices.some((service) => service.id === id)));
 
   mcpTableBody.innerHTML = visibleServices
     .map((service) => {
       const statusMeta = mcpStatusMeta[service.status];
       const totalTools = service.tools.length;
       const enabledTools = service.status === "enabled" ? totalTools : 0;
+      const isSelected = selectedMcpIds.has(service.id);
       const statusLabel = service.status === "enabled" ? "运行正常" : service.status === "failed" ? "连接异常" : service.status === "pending" ? "待信任" : "已停用";
       const statusDescription = service.status === "enabled"
         ? `${Math.max(enabledTools - 2, 0)}/${totalTools} 个工具启用 · ${Math.min(2, totalTools)} 个需确认 · 上次检查 ${service.lastCheck || "2 分钟前"}`
@@ -216,8 +221,9 @@ function renderMcpTable() {
             ? "首次连接需要管理员完成信任确认"
             : `${totalTools} 个工具 · 停用后用户端不可调用`;
       return `
-        <article class="mcp-service-item is-${service.status}" data-mcp-action="detail" data-mcp-id="${service.id}" tabindex="0" role="button" aria-label="查看 ${escapeHtml(service.name)} 详情">
+        <article class="mcp-service-item is-${service.status} ${isSelected ? "is-selected" : ""}" data-mcp-action="detail" data-mcp-id="${service.id}" tabindex="0" role="button" aria-label="查看 ${escapeHtml(service.name)} 详情">
           <div class="mcp-service-row">
+            ${mcpBatchMode ? `<label class="mcp-batch-check" aria-label="选择 ${escapeHtml(service.name)}"><input data-mcp-select="${service.id}" type="checkbox" ${isSelected ? "checked" : ""} /></label>` : ""}
             <span class="mcp-brand-icon custom">${escapeHtml(service.icon)}</span>
             <div class="mcp-service-info">
               <strong>${escapeHtml(service.name)} <span class="mcp-row-status ${statusMeta.className}"><i></i>${statusLabel}</span></strong>
@@ -236,7 +242,21 @@ function renderMcpTable() {
   const failedCount = mcpServices.filter((service) => service.status === "failed").length;
   const pendingCount = mcpServices.filter((service) => service.status === "pending").length;
   document.querySelector("#mcpServiceCount").textContent = mcpServices.length;
-  document.querySelector("#mcpServiceSummary").innerHTML = `${enabledCount} 启用${failedCount ? ` · <em>${failedCount} 异常</em>` : ""}${pendingCount ? ` · <span class="mcp-summary-pending">${pendingCount} 待信任</span>` : ""}`;
+  document.querySelector("#mcpServiceSummary").innerHTML = `<button class="mcp-batch-link" data-mcp-batch-toggle type="button">${mcpBatchMode ? "退出批量" : "批量管理"}</button> ${enabledCount} 启用${failedCount ? ` · <em>${failedCount} 异常</em>` : ""}${pendingCount ? ` · <span class="mcp-summary-pending">${pendingCount} 待信任</span>` : ""}`;
+  const batchBar = document.querySelector("#mcpBatchBar");
+  if (batchBar) {
+    const visibleIds = visibleServices.map((service) => service.id);
+    const selectedVisibleCount = visibleIds.filter((id) => selectedMcpIds.has(id)).length;
+    batchBar.classList.toggle("is-hidden", !mcpBatchMode);
+    batchBar.innerHTML = `
+      <label class="mcp-batch-select-all"><input id="mcpBatchSelectAll" type="checkbox" ${visibleIds.length && selectedVisibleCount === visibleIds.length ? "checked" : ""} /> 已选 ${selectedMcpIds.size} 项 / 共 ${mcpServices.length} 项</label>
+      <div class="mcp-batch-actions">
+        <button class="mini-button" data-mcp-batch-action="enable" type="button">▷ 启用</button>
+        <button class="mini-button" data-mcp-batch-action="disable" type="button">▣ 停用</button>
+        <button class="danger-button" data-mcp-batch-action="delete" type="button">♧ 删除</button>
+        <button class="mini-button" data-mcp-batch-action="done" type="button">完成</button>
+      </div>`;
+  }
   const empty = document.querySelector("#mcpEmpty");
   empty?.classList.toggle("is-hidden", visibleServices.length > 0);
   if (empty && mcpServices.length && !visibleServices.length) {
@@ -289,12 +309,31 @@ function openMcpDetail(service) {
   mcpDetailDrawer.classList.remove("is-hidden");
 }
 
-function openMcpConfigModal(mode = "add") {
+function getSingleMcpConfig(name) {
+  const parsed = JSON.parse(mcpConfigSource);
+  const targetConfig = parsed?.mcpServers?.[name];
+  if (!targetConfig) {
+    throw new Error(`未找到 MCP「${name}」的配置`);
+  }
+
+  return JSON.stringify(
+    {
+      mcpServers: {
+        [name]: targetConfig,
+      },
+    },
+    null,
+    2
+  );
+}
+
+function openMcpConfigModal(mode = "add", service = null) {
   mcpConfigMode = mode;
+  mcpConfigTargetName = mode === "edit" ? service?.name || null : null;
   const editor = document.querySelector("#mcpJsonConfig");
   document.querySelector("#mcpConfigTitle").textContent = mode === "edit" ? "编辑 MCP" : "添加 MCP";
   document.querySelector("#mcpConfigSubtitle").textContent = mode === "edit" ? "更新远程服务配置，并自动测试连接。" : "配置远程服务，并自动测试连接。";
-  editor.value = mode === "edit" ? mcpConfigSource : `{
+  editor.value = mode === "edit" ? getSingleMcpConfig(mcpConfigTargetName) : `{
   "mcpServers": {
     "my-remote-mcp": {
       "url": "https://mcp.example.com/sse",
@@ -330,6 +369,36 @@ function openMcpConfirm({ title, message, detail = "", buttonText = "确认", da
 function closeMcpConfirm() {
   mcpConfirmModal.classList.add("is-hidden");
   pendingMcpAction = null;
+}
+
+function updateMcpConfigForServices(services) {
+  const parsed = JSON.parse(mcpConfigSource);
+  services.forEach((service) => {
+    const config = parsed.mcpServers?.[service.name];
+    if (!config) return;
+    if (service.status === "disabled") {
+      config.disabled = true;
+    } else {
+      delete config.disabled;
+    }
+    if (service.status === "enabled") {
+      delete config.trustRequired;
+    }
+  });
+  mcpConfigSource = JSON.stringify(parsed, null, 2);
+}
+
+function deleteMcpServices(services) {
+  const serviceIds = new Set(services.map((service) => service.id));
+  const parsed = JSON.parse(mcpConfigSource);
+  services.forEach((service) => {
+    delete parsed.mcpServers?.[service.name];
+  });
+  mcpServices = mcpServices.filter((service) => !serviceIds.has(service.id));
+  selectedMcpIds = new Set([...selectedMcpIds].filter((id) => !serviceIds.has(id)));
+  mcpConfigSource = JSON.stringify(parsed, null, 2);
+  if (!selectedMcpIds.size) mcpBatchMode = false;
+  renderMcpTable();
 }
 
 function testMcpConnection(service, button) {
@@ -1675,6 +1744,7 @@ function clearExpertModal() {
   renderExpertGroup("");
   renderExpertSkillChips([]);
   renderExpertKbChips([]);
+  renderExpertMcpChips([]);
   renderGuideQuestions([]);
 }
 
@@ -1695,7 +1765,8 @@ function openExpertModal(row) {
   const expertGroup = row.children[2]?.querySelector(".soft-label")?.textContent.trim() || "";
   const skills = [...row.children[3]?.querySelectorAll(".skill-chip") || []].map((chip) => chip.textContent.trim());
   const knowledgeBases = [...row.children[4]?.querySelectorAll(".kb-chip") || []].map((chip) => chip.textContent.trim());
-  const status = row.children[7]?.textContent.trim() || "";
+  const boundMcps = [...row.children[5]?.querySelectorAll(".mcp-bind-chip") || []].map((chip) => chip.textContent.trim());
+  const status = row.children[8]?.textContent.trim() || "";
   const detail = expertDetails[name] || {};
 
   title.textContent = `编辑专家 · ${name}`;
@@ -1707,6 +1778,7 @@ function openExpertModal(row) {
   renderExpertGroup(expertGroup);
   renderExpertSkillChips(skills);
   renderExpertKbChips(knowledgeBases);
+  renderExpertMcpChips(detail.mcps || boundMcps);
   renderGuideQuestions(detail.questions || []);
   expertModal.classList.remove("is-hidden");
 }
@@ -1726,6 +1798,7 @@ function getExpertFormData() {
   const status = statusValue === "上架（立即展示）" ? "已上架" : statusValue === "下架" ? "已下架" : statusValue;
   const skillNames = [...expertModal.querySelectorAll("#expertSkillPicker .skill-chip")].map((chip) => chip.firstChild.textContent.trim());
   const knowledgeBases = [...expertModal.querySelectorAll("#expertKbPicker .kb-chip")].map((chip) => chip.firstChild.textContent.trim());
+  const boundMcps = [...expertModal.querySelectorAll("#expertMcpPicker .mcp-bind-chip")].map((chip) => chip.firstChild.textContent.trim());
   const expertGroup = expertModal.querySelector("#expertGroupPicker input:checked")?.value || "";
   const questions = [...expertModal.querySelectorAll("#expertGuideList input")].map((input) => input.value.trim()).filter(Boolean).slice(0, maxGuideQuestions);
 
@@ -1737,6 +1810,7 @@ function getExpertFormData() {
     expertGroup,
     skillNames,
     knowledgeBases,
+    boundMcps,
     questions,
     status,
   };
@@ -1760,15 +1834,16 @@ function updateExpertRow(row, data) {
   row.children[2].innerHTML = `<div class="expert-group-tags">${data.expertGroup ? `<span class="soft-label">${escapeHtml(data.expertGroup)}</span>` : ""}</div>`;
   row.children[3].innerHTML = data.skillNames.map((name) => `<span class="skill-chip">${escapeHtml(name)}</span>`).join("");
   row.children[4].innerHTML = data.knowledgeBases.map((name) => `<span class="kb-chip">${escapeHtml(name)}</span>`).join("");
-  row.children[5].textContent = data.questions.length;
-  row.children[7].innerHTML = `<span class="status ${getExpertStatusClass(data.status)}">${escapeHtml(data.status)}</span>`;
-  row.children[8].innerHTML = getExpertActions(data.status);
+  row.children[5].innerHTML = data.boundMcps.length ? data.boundMcps.map((name) => `<span class="mcp-bind-chip">${escapeHtml(name)}</span>`).join("") : '<span class="mcp-bind-empty">未绑定</span>';
+  row.children[6].textContent = data.questions.length;
+  row.children[8].innerHTML = `<span class="status ${getExpertStatusClass(data.status)}">${escapeHtml(data.status)}</span>`;
+  row.children[9].innerHTML = getExpertActions(data.status);
   row.querySelector("[data-open-edit-expert]")?.addEventListener("click", () => openExpertModal(row));
 }
 
 function createExpertRow(data) {
   const row = document.createElement("tr");
-  row.innerHTML = `<td><div class="expert-name"><span class="expert-avatar blue"></span><strong>${escapeHtml(data.name)}</strong></div></td><td></td><td></td><td></td><td></td><td>${data.questions.length}</td><td>0</td><td></td><td></td>`;
+  row.innerHTML = `<td><div class="expert-name"><span class="expert-avatar blue"></span><strong>${escapeHtml(data.name)}</strong></div></td><td></td><td></td><td></td><td></td><td></td><td>${data.questions.length}</td><td>0</td><td></td><td></td>`;
   updateExpertRow(row, data);
   return row;
 }
@@ -1791,6 +1866,7 @@ function saveExpertModal() {
   expertDetails[data.name] = {
     intro: data.intro,
     tags: data.tags,
+    mcps: data.boundMcps,
     questions: data.questions,
   };
 
@@ -1882,6 +1958,71 @@ function addExpertKnowledgeBase() {
   });
 }
 
+function getConnectedMcpServers() {
+  return mcpServices.filter((service) => service.status === "enabled");
+}
+
+function getSelectedExpertMcps() {
+  return [...expertModal.querySelectorAll("#expertMcpPicker .mcp-bind-chip")].map((chip) => chip.firstChild.textContent.trim());
+}
+
+function closeExpertMcpDropdown() {
+  expertModal.querySelector("#expertMcpDropdown")?.remove();
+}
+
+function renderExpertMcpDropdown(keyword = "") {
+  const picker = expertModal.querySelector("#expertMcpPicker");
+  const dropdown = picker.querySelector("#expertMcpDropdown");
+  if (!dropdown) return;
+  const selected = new Set(getSelectedExpertMcps());
+  const normalizedKeyword = keyword.trim().toLowerCase();
+  const servers = getConnectedMcpServers().filter((service) => service.name.toLowerCase().includes(normalizedKeyword));
+  const list = dropdown.querySelector(".expert-mcp-dropdown-list");
+
+  list.innerHTML = servers.map((service) => {
+    const isSelected = selected.has(service.name);
+    return `<button class="expert-mcp-option ${isSelected ? "is-disabled" : ""}" data-expert-mcp-name="${escapeHtml(service.name)}" type="button" ${isSelected ? "disabled" : ""}>
+      <span class="mcp-brand-icon custom">${escapeHtml(service.icon)}</span>
+      <span><strong>${escapeHtml(service.name)}</strong><small><em>已连接</em><b>· ${service.tools.length} 个工具</b></small></span>
+    </button>`;
+  }).join("") || '<div class="expert-mcp-empty">暂无可添加的已连接 MCP</div>';
+}
+
+function openExpertMcpDropdown() {
+  const picker = expertModal.querySelector("#expertMcpPicker");
+  const addButton = picker.querySelector("[data-add-expert-mcp]");
+  let dropdown = picker.querySelector("#expertMcpDropdown");
+  if (dropdown) {
+    closeExpertMcpDropdown();
+    return;
+  }
+
+  dropdown = document.createElement("div");
+  dropdown.id = "expertMcpDropdown";
+  dropdown.className = "expert-mcp-dropdown";
+  dropdown.innerHTML = `
+    <input class="search-input expert-mcp-search" placeholder="搜索 MCP Server" />
+    <div class="expert-mcp-dropdown-list"></div>`;
+  picker.insertBefore(dropdown, addButton.nextSibling);
+  const search = dropdown.querySelector(".expert-mcp-search");
+  search.addEventListener("input", () => renderExpertMcpDropdown(search.value));
+  renderExpertMcpDropdown();
+  search.focus();
+}
+
+function renderExpertMcpChips(names) {
+  const picker = expertModal.querySelector("#expertMcpPicker");
+  const addButton = picker.querySelector("[data-add-expert-mcp]");
+  picker.querySelectorAll(".mcp-bind-chip").forEach((chip) => chip.remove());
+  [...new Set(names.filter(Boolean))].forEach((name) => {
+    const chip = document.createElement("span");
+    chip.className = "mcp-bind-chip removable";
+    chip.innerHTML = `${escapeHtml(name)} <button type="button" data-remove-expert-mcp>×</button>`;
+    picker.insertBefore(chip, addButton);
+  });
+  renderExpertMcpDropdown(expertModal.querySelector(".expert-mcp-search")?.value || "");
+}
+
 function renderGuideQuestions(questions) {
   const list = expertModal.querySelector("#expertGuideList");
   list.innerHTML = "";
@@ -1914,6 +2055,8 @@ expertModal.querySelector("[data-add-expert-skill]")?.addEventListener("click", 
 
 expertModal.querySelector("[data-add-expert-kb]")?.addEventListener("click", addExpertKnowledgeBase);
 
+expertModal.querySelector("[data-add-expert-mcp]")?.addEventListener("click", openExpertMcpDropdown);
+
 expertModal.querySelector("[data-add-guide-question]")?.addEventListener("click", () => addGuideQuestion());
 
 expertModal.addEventListener("click", (event) => {
@@ -1923,6 +2066,18 @@ expertModal.addEventListener("click", (event) => {
   if (event.target.matches("[data-remove-expert-skill]")) {
     event.target.closest(".skill-chip")?.remove();
     renderExpertSkillPreview();
+  }
+  if (event.target.matches("[data-remove-expert-mcp]")) {
+    event.target.closest(".mcp-bind-chip")?.remove();
+    renderExpertMcpDropdown(expertModal.querySelector(".expert-mcp-search")?.value || "");
+  }
+  const mcpOption = event.target.closest("[data-expert-mcp-name]");
+  if (mcpOption && !mcpOption.disabled) {
+    renderExpertMcpChips([...getSelectedExpertMcps(), mcpOption.dataset.expertMcpName]);
+    return;
+  }
+  if (!event.target.closest("#expertMcpPicker") && !event.target.closest("[data-add-expert-mcp]")) {
+    closeExpertMcpDropdown();
   }
   if (event.target.matches("[data-remove-guide-question]")) {
     event.target.closest("article")?.remove();
@@ -2440,6 +2595,29 @@ document.querySelector("#mcpSaveButton")?.addEventListener("click", (event) => {
       const addedConfig = JSON.parse(parsedConfig.normalized);
       existingConfig.mcpServers = { ...existingConfig.mcpServers, ...addedConfig.mcpServers };
       parsedConfig = parseMcpJsonConfig(JSON.stringify(existingConfig));
+    } else if (mcpConfigMode === "edit") {
+      if (!mcpConfigTargetName) {
+        throw new Error("当前未指定可编辑的 MCP 服务");
+      }
+
+      const existingConfig = JSON.parse(mcpConfigSource);
+      const editedConfig = JSON.parse(parsedConfig.normalized);
+      const editedEntries = Object.entries(editedConfig.mcpServers || {});
+
+      if (editedEntries.length !== 1) {
+        throw new Error("编辑 MCP 时只能保存当前选中的一个服务配置");
+      }
+
+      const [editedName, editedServer] = editedEntries[0];
+      if (existingConfig.mcpServers?.[mcpConfigTargetName]) {
+        delete existingConfig.mcpServers[mcpConfigTargetName];
+      }
+      existingConfig.mcpServers = {
+        ...existingConfig.mcpServers,
+        [editedName]: editedServer,
+      };
+      mcpConfigTargetName = editedName;
+      parsedConfig = parseMcpJsonConfig(JSON.stringify(existingConfig));
     }
   } catch (error) {
     verifyState.className = "mcp-verify-state failed";
@@ -2460,7 +2638,9 @@ document.querySelector("#mcpSaveButton")?.addEventListener("click", (event) => {
     };
   });
   mcpConfigSource = parsedConfig.normalized;
-  if (mcpConfigMode === "edit") editor.value = parsedConfig.normalized;
+  if (mcpConfigMode === "edit" && mcpConfigTargetName) {
+    editor.value = getSingleMcpConfig(mcpConfigTargetName);
+  }
   document.querySelector("#mcpSaveStatus").textContent = "已保存";
   document.querySelector("#mcpSaveStatus").className = "status ok";
   verifyState.className = "mcp-verify-state success";
@@ -2476,7 +2656,84 @@ document.querySelector("#mcpHubButton")?.addEventListener("click", () => {
   showToast("MCP Hub 即将开放");
 });
 
+document.querySelector("#mcpServiceSummary")?.addEventListener("click", (event) => {
+  const toggle = event.target.closest("[data-mcp-batch-toggle]");
+  if (!toggle) return;
+  mcpBatchMode = !mcpBatchMode;
+  if (!mcpBatchMode) selectedMcpIds.clear();
+  renderMcpTable();
+});
+
+document.querySelector("#mcpBatchBar")?.addEventListener("click", (event) => {
+  const selectAll = event.target.closest("#mcpBatchSelectAll");
+  if (selectAll) {
+    const keyword = (mcpSearch?.value || "").trim().toLowerCase();
+    const visibleServices = mcpServices.filter((service) => service.name.toLowerCase().includes(keyword));
+    if (selectAll.checked) {
+      visibleServices.forEach((service) => selectedMcpIds.add(service.id));
+    } else {
+      visibleServices.forEach((service) => selectedMcpIds.delete(service.id));
+    }
+    renderMcpTable();
+    return;
+  }
+
+  const actionButton = event.target.closest("[data-mcp-batch-action]");
+  if (!actionButton) return;
+  const action = actionButton.dataset.mcpBatchAction;
+  if (action === "done") {
+    mcpBatchMode = false;
+    selectedMcpIds.clear();
+    renderMcpTable();
+    return;
+  }
+
+  const selectedServices = mcpServices.filter((service) => selectedMcpIds.has(service.id));
+  if (!selectedServices.length) {
+    showToast("请先选择 MCP 服务");
+    return;
+  }
+
+  if (action === "enable" || action === "disable") {
+    selectedServices.forEach((service) => {
+      service.status = action === "enable" ? "enabled" : "disabled";
+      if (action === "enable") service.error = "";
+    });
+    updateMcpConfigForServices(selectedServices);
+    renderMcpTable();
+    showToast(`已${action === "enable" ? "启用" : "停用"} ${selectedServices.length} 个 MCP`);
+    return;
+  }
+
+  if (action === "delete") {
+    openMcpConfirm({
+      title: `删除 ${selectedServices.length} 个 MCP？`,
+      message: "选中的 MCP JSON 配置将一并移除，删除后无法恢复。",
+      detail: selectedServices.map((service) => service.name).join("、"),
+      buttonText: "删除",
+      danger: true,
+      compact: true,
+      action: () => {
+        deleteMcpServices(selectedServices);
+        showToast(`已删除 ${selectedServices.length} 个 MCP`);
+      },
+    });
+  }
+});
+
 mcpTableBody?.addEventListener("click", (event) => {
+  const selectBox = event.target.closest("[data-mcp-select]");
+  if (selectBox) {
+    event.stopPropagation();
+    const id = selectBox.dataset.mcpSelect;
+    if (selectBox.checked) {
+      selectedMcpIds.add(id);
+    } else {
+      selectedMcpIds.delete(id);
+    }
+    renderMcpTable();
+    return;
+  }
   const button = event.target.closest("[data-mcp-action]");
   if (!button) return;
   const service = mcpServices.find((item) => item.id === button.dataset.mcpId);
@@ -2568,13 +2825,16 @@ document.querySelector("#mcpDetailTest")?.addEventListener("click", (event) => {
 });
 
 document.querySelector("#mcpDetailEdit")?.addEventListener("click", () => {
+  const service = mcpServices.find((item) => item.id === currentMcpDetailId);
+  if (!service) return;
   mcpDetailDrawer?.classList.add("is-hidden");
-  openMcpConfigModal("edit");
+  openMcpConfigModal("edit", service);
 });
 
 document.querySelector("#mcpDetailDelete")?.addEventListener("click", () => {
   const service = mcpServices.find((item) => item.id === currentMcpDetailId);
   if (!service) return;
+  mcpDetailDrawer?.classList.add("is-hidden");
   openMcpConfirm({
     title: `删除「${service.name}」？`,
     message: "该 Server 的 JSON 配置将一并移除，且无法恢复。",
@@ -2586,7 +2846,7 @@ document.querySelector("#mcpDetailDelete")?.addEventListener("click", () => {
       const parsed = JSON.parse(mcpConfigSource);
       delete parsed.mcpServers[service.name];
       mcpConfigSource = JSON.stringify(parsed, null, 2);
-      mcpDetailDrawer?.classList.add("is-hidden");
+      selectedMcpIds.delete(service.id);
       renderMcpTable();
       showToast(`${service.name} 已删除`);
     },
@@ -2629,7 +2889,7 @@ document.addEventListener("click", (event) => {
     || button.matches("[data-delete-doc], [data-delete-model], [data-delete-user]");
   if (!isDeleteButton) return;
 
-  const hasDedicatedConfirmation = button.matches("[data-open-delete-confirm], [data-open-delete-kb], [data-mcp-action='delete'], [data-mcp-detail-delete]");
+  const hasDedicatedConfirmation = button.matches("[data-open-delete-confirm], [data-open-delete-kb], [data-mcp-action='delete'], [data-mcp-detail-delete], [data-mcp-batch-action='delete']");
   const isConfirmationAction = Boolean(button.closest(".confirm-panel, .mcp-confirm-panel"));
   if (hasDedicatedConfirmation || isConfirmationAction) return;
 
