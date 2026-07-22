@@ -45,6 +45,7 @@
         </div>
         <nav class="side-nav" aria-label="管理员导航">
           <button class="nav-item is-active" data-page="dashboard" type="button">控制台</button>
+          <button class="nav-item" data-page="featured" type="button">精选示例 <span class="nav-new">NEW</span></button>
           <button class="nav-item" data-page="knowledge" type="button">知识库管理</button>
           <button class="nav-item" data-page="experts" type="button">专家管理</button>
           <button class="nav-item" data-page="skills" type="button">Skill 管理</button>
@@ -114,6 +115,76 @@
               </div>
             </section>
           </div>
+        </section>
+
+        <section id="featured" class="page featured-page">
+          <section class="featured-workbench">
+            <aside class="featured-rail">
+              <div class="knowledge-rail-head">
+                <h2>精选示例</h2>
+                <button class="primary-button compact knowledge-add-button" data-open-featured-category type="button" aria-label="新增分类">+</button>
+              </div>
+              <input class="search-input knowledge-search" data-featured-category-search placeholder="搜索分类" />
+              <div class="knowledge-rail-label"><span class="rail-lock">⌂</span>分类列表</div>
+              <div class="knowledge-list knowledge-nav-list" data-featured-category-list></div>
+            </aside>
+
+            <div class="featured-main">
+              <div class="knowledge-main-head featured-main-head">
+                <div class="knowledge-avatar featured-avatar"><span data-featured-current-mark></span></div>
+                <div class="kb-card-main">
+                  <div class="kb-card-title"><strong data-featured-current-title>生成方案</strong><span class="status ok">展示中</span></div>
+                  <p data-featured-summary>共 3 条示例</p>
+                  <div class="knowledge-inline-stats">
+                    <span>示例总数 <strong data-featured-stat-total>3</strong></span>
+                    <span>已上架 <strong class="text-ok" data-featured-stat-live>3</strong></span>
+                    <span>待审核 <strong class="text-warn" data-featured-stat-pending>0</strong></span>
+                    <span>复审中 <strong class="text-warn" data-featured-stat-review>0</strong></span>
+                  </div>
+                </div>
+                <div class="action-group">
+                  <button class="mini-button" data-featured-edit-current type="button">编辑</button>
+                  <button class="mini-button" data-open-featured-example type="button">新增示例</button>
+                  <button class="danger-button" data-featured-delete-current type="button">删除</button>
+                </div>
+              </div>
+
+              <div class="featured-review-alert is-hidden" data-featured-review-alert>
+                <span></span>
+                <strong data-featured-alert-text>1 条示例复审已到期或临期</strong>
+                <button class="mini-button" data-featured-filter-expired type="button">查看</button>
+              </div>
+
+              <section class="featured-list-card">
+                <div class="featured-list-head">
+                  <div>
+                    <h3>示例列表 <span data-featured-current-count>3 项</span></h3>
+                  </div>
+                  <div class="featured-list-controls">
+                    <select data-featured-status-filter>
+                      <option>全部状态</option>
+                      <option>待审核</option>
+                      <option>已上架</option>
+                      <option>已驳回</option>
+                      <option>复审中</option>
+                      <option>已下架</option>
+                    </select>
+                    <select data-featured-review-filter>
+                      <option>全部复审状态</option>
+                      <option>已过期</option>
+                      <option>7天内到期</option>
+                      <option>正常</option>
+                    </select>
+                    <input class="search-input knowledge-doc-search" data-featured-search placeholder="搜索示例" />
+                  </div>
+                </div>
+                <div class="featured-example-panel-list">
+                  <div class="featured-example-head"><span>排序</span><span>问题</span><span>状态</span><span>复审状态</span><span>更新时间</span><span>更新人</span><span>点击量</span><span>操作</span></div>
+                  <div data-featured-example-table></div>
+                </div>
+              </section>
+            </div>
+          </section>
         </section>
 
         <section id="knowledge" class="page">
@@ -846,6 +917,77 @@
         </section>
       </main>
     </section>
+
+    <div id="featuredCategoryModal" class="modal-backdrop is-hidden" role="dialog" aria-modal="true" aria-labelledby="featuredCategoryTitle">
+      <section class="modal-panel featured-form-panel">
+        <button class="modal-close" data-close-featured-category type="button" aria-label="关闭新增分类弹窗">×</button>
+        <div class="featured-modal-head">
+          <h2 id="featuredCategoryTitle">新增分类</h2>
+          <p data-featured-category-subtitle>分类创建后，方可在该分类下新增示例</p>
+        </div>
+        <form class="featured-form">
+          <label><span>分类名称</span><input data-featured-category-name placeholder="例如：政策解读 / 费率说明" /></label>
+          <p class="featured-form-note">该分类将出现在 C 端精选示例板块中，排序可在分类管理页拖拽调整。</p>
+          <button class="primary-button" data-save-featured-category type="button">保存分类</button>
+        </form>
+      </section>
+    </div>
+
+    <div id="featuredExampleModal" class="modal-backdrop is-hidden" role="dialog" aria-modal="true" aria-labelledby="featuredExampleTitle">
+      <section class="modal-panel featured-form-panel featured-example-panel">
+        <button class="modal-close" data-close-featured-example type="button" aria-label="关闭新增示例弹窗">×</button>
+        <div class="featured-modal-head">
+          <h2 id="featuredExampleTitle">新增精选示例</h2>
+          <p>在「<span data-featured-modal-category>生成方案</span>」分类下创建示例问题与标准答案</p>
+        </div>
+        <form class="featured-form">
+          <label><span>问题文本 <b>*</b></span><input data-featured-example-question placeholder="例如：亚马逊广告 ACOS 异常升高怎么办?" /></label>
+          <label><span>标准答案（缓存用，C 端直接展示） <b>*</b></span><textarea data-featured-example-answer placeholder="填写将被缓存并直接展示给用户的标准答案..."></textarea></label>
+          <label class="featured-check"><input data-featured-time-sensitive type="checkbox" /><span><strong>时效性标记</strong><small>勾选表示答案涉及平台政策、费率、规则等随时间变化的内容，用于后续复审提醒</small></span></label>
+          <div class="featured-review-fields is-hidden" data-featured-review-fields>
+            <label><span>复审周期</span><select><option>60 天</option><option>30 天</option><option>90 天</option></select></label>
+            <p>下次复审到期日：<strong>2026-09-20</strong></p>
+          </div>
+          <p class="featured-form-note" data-featured-example-note>保存后示例状态将变为 <strong>待审核</strong>，需内容审核员审核通过后方可在 C 端展示。</p>
+          <button class="primary-button" data-save-featured-example type="button">提交示例</button>
+        </form>
+      </section>
+    </div>
+
+    <div id="featuredAuditModal" class="modal-backdrop is-hidden" role="dialog" aria-modal="true" aria-labelledby="featuredAuditTitle">
+      <section class="modal-panel featured-audit-panel">
+        <button class="modal-close" data-close-featured-audit type="button" aria-label="关闭审核示例弹窗">×</button>
+        <div class="featured-modal-head">
+          <h2 id="featuredAuditTitle">审核示例</h2>
+          <p>确认问题与答案内容准确、符合规范后再通过</p>
+        </div>
+        <div class="featured-audit-meta">
+          <span>创建人：<strong data-audit-author>cathy</strong></span>
+          <span>分类：<strong data-audit-category>运营分析</strong></span>
+          <span>创建时间：<strong data-audit-created>2026-07-18</strong></span>
+        </div>
+        <div class="featured-audit-block">
+          <span>问题文本</span>
+          <p data-audit-question>旺季前预算应该如何分配?</p>
+        </div>
+        <div class="featured-audit-block">
+          <span>标准答案</span>
+          <p data-audit-answer>问题定位<br />近期 ACOS 异常升高通常来自三类原因：竞价环境变化、转化率下滑、预算/否词策略滞后。<br /><br />建议先检查同类目 CPC 近7天走势，判断是否为大盘竞价上涨，再拆分自动/手动广告位表现定位异常。</p>
+        </div>
+        <div class="featured-audit-block">
+          <span>时效性标记</span>
+          <p data-audit-review>是 · 复审周期 60 天</p>
+        </div>
+        <label class="featured-audit-reject is-hidden" data-featured-reject-panel>
+          <span>驳回原因 <b>*</b></span>
+          <textarea data-featured-reject-reason placeholder="请填写驳回原因，将退回创建人修改后重新提交..."></textarea>
+        </label>
+        <div class="featured-audit-actions">
+          <button class="danger-button" data-featured-audit-reject type="button">× 驳回</button>
+          <button class="success-button" data-featured-audit-pass type="button">✓ 通过</button>
+        </div>
+      </section>
+    </div>
 
     <div id="planModal" class="modal-backdrop is-hidden" role="dialog" aria-modal="true" aria-labelledby="planModalTitle">
       <section class="modal-panel plan-modal-panel">

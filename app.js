@@ -34,6 +34,9 @@ const editSkillModal = document.querySelector("#editSkillModal");
 const docDetailModal = document.querySelector("#docDetailModal");
 const mcpConfigModal = document.querySelector("#mcpConfigModal");
 const mcpConfirmModal = document.querySelector("#mcpConfirmModal");
+const featuredCategoryModal = document.querySelector("#featuredCategoryModal");
+const featuredExampleModal = document.querySelector("#featuredExampleModal");
+const featuredAuditModal = document.querySelector("#featuredAuditModal");
 const mcpDetailDrawer = document.querySelector("#mcpDetailDrawer");
 const mcpTableBody = document.querySelector("#mcpTableBody");
 const mcpSearch = document.querySelector("#mcpSearch");
@@ -60,6 +63,7 @@ const roleValues = {
 
 const pageNames = {
   dashboard: "控制台",
+  featured: "精选示例",
   knowledge: "知识库管理",
   experts: "专家管理",
   documents: "文档管理",
@@ -80,6 +84,42 @@ const navPageMap = {
   planSubscribers: "plans",
   subscriberDetail: "plans",
 };
+
+const featuredCategories = [
+  { id: "ops", name: "运营分析", short: "运", tone: "blue" },
+  { id: "report", name: "生成报告", short: "生", tone: "green" },
+  { id: "plan", name: "生成方案", short: "生", tone: "violet" },
+  { id: "strategy", name: "生成策略", short: "生", tone: "orange" },
+];
+
+const featuredExamples = {
+  ops: [
+    { id: "EX-0101", question: "亚马逊广告 ACOS 异常升高怎么办?", status: "已上架", statusClass: "ok", review: "2026-09-12 到期", reviewState: "正常", reviewTone: "ok", updated: "2026-07-14", author: "cathy", clicks: "3,001" },
+    { id: "EX-0102", question: "旺季前预算应该如何分配?", status: "待审核", statusClass: "warn", review: "2026-09-19 到期", reviewState: "正常", reviewTone: "ok", updated: "2026-07-21", author: "cathy", clicks: "987", createdAt: "2026-07-18", answer: "问题定位\n近期 ACOS 异常升高通常来自三类原因：竞价环境变化、转化率下滑、预算/否词策略滞后。\n\n建议先检查同类目 CPC 近7天走势，判断是否为大盘竞价上涨，再拆分自动/手动广告位表现定位异常。\n\n建议动作\n优先收紧转化率低于均值50%的广告位出价，对新出现的高花费搜索词及时否定。" },
+    { id: "EX-0103", question: "平台旺季费率上调后如何调整定价?", status: "已上架", statusClass: "ok", review: "已过期 · 请复核", reviewState: "已过期", reviewTone: "danger", updated: "2026-04-01", author: "cathy", clicks: "4,501" },
+    { id: "EX-0104", question: "仓储费新规下如何优化补货节奏?", status: "待审核", statusClass: "warn", review: "2026-08-19 到期", reviewState: "7天内到期", reviewTone: "ok", updated: "2026-07-20", author: "cathy", clicks: "655" },
+  ],
+  report: [
+    { id: "EX-0108", question: "FBA 库存积压如何制定清仓节奏?", status: "已上架", statusClass: "ok", review: "2026-07-24 到期", reviewState: "7天内到期", reviewTone: "warn", updated: "2026-05-25", author: "cathy", clicks: "2,557" },
+    { id: "EX-0109", question: "月度经营周报应该包含哪些指标?", status: "已上架", statusClass: "ok", review: "2026-09-25 到期", reviewState: "正常", reviewTone: "ok", updated: "2026-06-27", author: "cathy", clicks: "2,033" },
+    { id: "EX-0110", question: "物流破损率过高如何向平台申诉?", status: "已驳回", statusClass: "danger", review: "2026-09-16 到期", reviewState: "正常", reviewTone: "ok", updated: "2026-07-18", author: "cathy", clicks: "0", note: "已驳回，可编辑后重新提交" },
+  ],
+  plan: [
+    { id: "EX-0105", question: "如何重构标题与五点描述提升转化?", status: "已上架", statusClass: "ok", review: "2026-09-28 到期", reviewState: "正常", reviewTone: "ok", updated: "2026-06-30", author: "cathy", clicks: "2,686" },
+    { id: "EX-0106", question: "新品测评广告策略怎么搭建?", status: "已上架", statusClass: "ok", review: "无需复审", reviewState: "正常", reviewTone: "muted", updated: "2026-06-18", author: "cathy", clicks: "1,920" },
+    { id: "EX-0107", question: "如何搭建 A+ 页面提升点击率?", status: "已上架", statusClass: "ok", review: "无需复审", reviewState: "正常", reviewTone: "muted", updated: "2026-06-12", author: "cathy", clicks: "1,440" },
+  ],
+  strategy: [
+    { id: "EX-0111", question: "如何从竞品差评中提炼产品卖点?", status: "已上架", statusClass: "ok", review: "2026-10-15 到期", reviewState: "正常", reviewTone: "ok", updated: "2026-07-17", author: "cathy", clicks: "6,482" },
+    { id: "EX-0112", question: "Listing 被恶意跟卖如何应对?", status: "复审中", statusClass: "pending", review: "已过期 · 请复核", reviewState: "已过期", reviewTone: "danger", updated: "2026-04-18", author: "cathy", clicks: "3,110" },
+  ],
+};
+
+let currentFeaturedCategory = featuredCategories[0].id;
+let currentAuditExampleId = "";
+let currentEditingExampleId = "";
+let currentEditingCategoryId = "";
+let draggingFeaturedCategoryId = "";
 
 const mcpStatusMeta = {
   enabled: { label: "已启用", className: "enabled" },
@@ -1060,7 +1100,7 @@ function renderKnowledgeWorkbench(name = currentKnowledgeName) {
     `).join("");
   }
 
-  const mainRow = document.querySelector(".knowledge-main-head");
+  const mainRow = document.querySelector("#knowledge .knowledge-main-head");
   if (mainRow) {
     mainRow.dataset.kbName = kb.name;
     mainRow.querySelector(".kb-card-title strong").textContent = kb.name;
@@ -1078,8 +1118,8 @@ function renderKnowledgeWorkbench(name = currentKnowledgeName) {
     mainRow.querySelector(".action-group").innerHTML = renderKnowledgeActions(kb);
   }
 
-  document.querySelector(".knowledge-doc-toolbar h3 span").textContent = `${kb.docs.length} 项`;
-  const panel = document.querySelector("[data-doc-panel]");
+  document.querySelector("#knowledge .knowledge-doc-toolbar h3 span").textContent = `${kb.docs.length} 项`;
+  const panel = document.querySelector("#knowledge [data-doc-panel]");
   if (panel) {
     panel.dataset.panelKb = kb.name;
     panel.innerHTML = `
@@ -1183,6 +1223,198 @@ function applyTableFilter(input) {
       });
     }
   });
+}
+
+function getFeaturedCategory() {
+  return featuredCategories.find((item) => item.id === currentFeaturedCategory) || featuredCategories[0];
+}
+
+function getFeaturedRows(categoryId = currentFeaturedCategory) {
+  return featuredExamples[categoryId] || [];
+}
+
+function getFeaturedCounts(categoryId = currentFeaturedCategory) {
+  const rows = getFeaturedRows(categoryId);
+  return {
+    total: rows.length,
+    live: rows.filter((item) => item.status === "已上架").length,
+    pending: rows.filter((item) => item.status === "待审核").length,
+    reviewing: rows.filter((item) => item.status === "复审中").length,
+    expired: rows.filter((item) => item.reviewState === "已过期" || item.reviewState === "7天内到期").length,
+  };
+}
+
+function getFeaturedFilteredRows(rows) {
+  const statusValue = document.querySelector("[data-featured-status-filter]")?.value || "全部状态";
+  const reviewValue = document.querySelector("[data-featured-review-filter]")?.value || "全部复审状态";
+  const keyword = document.querySelector("[data-featured-search]")?.value.trim().toLowerCase() || "";
+  return rows.filter((item) => {
+    const matchesStatus = statusValue === "全部状态" || item.status === statusValue;
+    const matchesReview = reviewValue === "全部复审状态" || item.reviewState === reviewValue;
+    const matchesKeyword = !keyword || `${item.question} ${item.id}`.toLowerCase().includes(keyword);
+    return matchesStatus && matchesReview && matchesKeyword;
+  });
+}
+
+function moveItem(list, fromIndex, direction) {
+  const toIndex = fromIndex + direction;
+  if (fromIndex < 0 || toIndex < 0 || toIndex >= list.length) return false;
+  const [item] = list.splice(fromIndex, 1);
+  list.splice(toIndex, 0, item);
+  return true;
+}
+
+function renderFeaturedCategories() {
+  const list = document.querySelector("[data-featured-category-list]");
+  if (!list) return;
+  list.innerHTML = featuredCategories.map((category, index) => `
+    <div class="featured-nav-row ${category.id === currentFeaturedCategory ? "is-active" : ""}" data-featured-category="${category.id}" draggable="true">
+      <button class="knowledge-nav-item" data-featured-select-category type="button">
+        <span class="featured-drag-handle" aria-hidden="true">⋮⋮</span>
+        <span class="featured-rail-dot ${category.tone}">${escapeHtml(category.short)}</span>
+        <span class="featured-nav-name">${escapeHtml(category.name)}</span>
+        ${getFeaturedCounts(category.id).pending ? `<span class="kb-nav-state">${getFeaturedCounts(category.id).pending}待审核</span>` : getFeaturedCounts(category.id).reviewing ? `<span class="kb-nav-state">${getFeaturedCounts(category.id).reviewing}复审中</span>` : ""}
+      </button>
+    </div>
+  `).join("");
+}
+
+function renderFeaturedExamples() {
+  const category = getFeaturedCategory();
+  const rows = getFeaturedRows(category.id);
+  const counts = getFeaturedCounts(category.id);
+  const filteredRows = getFeaturedFilteredRows(rows);
+  document.querySelector("[data-featured-current-title]").textContent = category.name;
+  document.querySelector("[data-featured-current-count]").textContent = `${filteredRows.length} 项`;
+  document.querySelector("[data-featured-modal-category]").textContent = category.name;
+  document.querySelector("[data-featured-current-mark]").textContent = category.short;
+  document.querySelector("[data-featured-current-mark]").className = category.tone || "";
+  const summaryParts = [`共 ${counts.total} 条示例`];
+  if (counts.pending) summaryParts.push(`${counts.pending} 条待审核`);
+  if (counts.reviewing) summaryParts.push(`${counts.reviewing} 条复审中`);
+  document.querySelector("[data-featured-summary]").textContent = summaryParts.join("，");
+  document.querySelector("[data-featured-stat-total]").textContent = counts.total;
+  document.querySelector("[data-featured-stat-live]").textContent = counts.live;
+  document.querySelector("[data-featured-stat-pending]").textContent = counts.pending;
+  document.querySelector("[data-featured-stat-review]").textContent = counts.reviewing;
+  const alert = document.querySelector("[data-featured-review-alert]");
+  alert?.classList.toggle("is-hidden", !counts.expired);
+  document.querySelector("[data-featured-alert-text]").textContent = `${counts.expired} 条示例复审已到期或临期，涉及广告费率 / 平台政策等时效性内容，建议尽快复核。`;
+
+  const tbody = document.querySelector("[data-featured-example-table]");
+  if (!tbody) return;
+  tbody.innerHTML = filteredRows.map((item, index) => `
+    <div class="featured-example-row" data-featured-example="${item.id}">
+      <span class="featured-rank-cell">
+        <span class="featured-sort-control">
+          <button class="featured-sort-arrow" data-featured-example-sort="up" type="button" aria-label="示例上移" ${index === 0 ? "disabled" : ""}>⌃</button>
+          <button class="featured-sort-arrow" data-featured-example-sort="down" type="button" aria-label="示例下移" ${index === filteredRows.length - 1 ? "disabled" : ""}>⌄</button>
+        </span>
+        <b class="featured-rank-number">${index + 1}</b>
+      </span>
+      <div class="featured-question"><strong>${escapeHtml(item.question)}</strong><small>#${escapeHtml(item.id)}${item.note ? ` · ${escapeHtml(item.note)}` : ""}</small></div>
+      <span><span class="status ${item.statusClass}">${escapeHtml(item.status)}</span></span>
+      <span><span class="review-dot ${item.reviewTone}"></span>${escapeHtml(item.review)}</span>
+      <span>${escapeHtml(item.updated)}</span>
+      <span>${escapeHtml(item.author)}</span>
+      <span>${escapeHtml(item.clicks)}</span>
+      <span>
+        <div class="action-group">
+          <button class="mini-button" data-featured-edit-example type="button">编辑</button>
+          ${item.status === "待审核" ? '<button class="mini-button" data-featured-action="audit" type="button">查看审核</button>' : '<button class="mini-button" data-featured-action="shelf" type="button">下架</button>'}
+          <button class="danger-button" data-featured-action="delete" type="button">删除</button>
+        </div>
+      </span>
+    </div>
+  `).join("");
+}
+
+function openFeaturedExampleView(categoryId) {
+  currentFeaturedCategory = categoryId;
+  renderFeaturedCategories();
+  renderFeaturedExamples();
+}
+
+function closeFeaturedModals() {
+  featuredCategoryModal?.classList.add("is-hidden");
+  featuredExampleModal?.classList.add("is-hidden");
+  currentEditingCategoryId = "";
+  currentEditingExampleId = "";
+}
+
+function openFeaturedCategoryForm(category = null) {
+  const title = document.querySelector("#featuredCategoryTitle");
+  const subtitle = document.querySelector("[data-featured-category-subtitle]");
+  const nameInput = document.querySelector("[data-featured-category-name]");
+  const isEdit = Boolean(category);
+  currentEditingCategoryId = category?.id || "";
+
+  if (title) title.textContent = isEdit ? "重命名分类" : "新增分类";
+  if (subtitle) subtitle.textContent = "分类创建后，方可在该分类下新增示例";
+  if (nameInput) nameInput.value = category?.name || "";
+  featuredCategoryModal?.classList.remove("is-hidden");
+}
+
+function openFeaturedExampleForm(example = null) {
+  const category = getFeaturedCategory();
+  const title = document.querySelector("#featuredExampleTitle");
+  const questionInput = document.querySelector("[data-featured-example-question]");
+  const answerInput = document.querySelector("[data-featured-example-answer]");
+  const timeSensitiveInput = document.querySelector("[data-featured-time-sensitive]");
+  const reviewFields = document.querySelector("[data-featured-review-fields]");
+  const note = document.querySelector("[data-featured-example-note]");
+  const isEdit = Boolean(example);
+  currentEditingExampleId = example?.id || "";
+
+  document.querySelector("[data-featured-modal-category]").textContent = category.name;
+  if (title) title.textContent = isEdit ? "编辑精选示例" : "新增精选示例";
+  if (questionInput) questionInput.value = example?.question || "";
+  if (answerInput) {
+    answerInput.value = example?.answer || "问题定位\n近期 ACOS 异常升高通常来自三类原因：竞价环境变化、转化率下滑、预算/否词策略滞后。\n\n建议先检查同类目 CPC 近7天走势，判断是否为大盘竞价上涨，再拆分自动/手动广告位表现定位异常。";
+    if (!isEdit) answerInput.value = "";
+  }
+  if (timeSensitiveInput) timeSensitiveInput.checked = isEdit;
+  reviewFields?.classList.toggle("is-hidden", !isEdit);
+  if (note) {
+    note.classList.toggle("is-warning", isEdit);
+    note.innerHTML = isEdit
+      ? "编辑已上架示例后，将自动转为 <strong>待审核</strong> 状态，需重新审核通过后才能再次上架。"
+      : "保存后示例状态将变为 <strong>待审核</strong>，需内容审核员审核通过后方可在 C 端展示。";
+  }
+  featuredExampleModal?.classList.remove("is-hidden");
+}
+
+function openFeaturedConfirm(kind, name, action) {
+  const isDelete = kind === "delete";
+  openMcpConfirm({
+    title: isDelete ? `删除「${name}」？` : "下架示例",
+    message: isDelete ? "删除后相关数据将无法恢复，请确认是否继续。" : `确认下架示例「${name}」？下架后前端将不再展示。`,
+    buttonText: isDelete ? "删除" : "确认",
+    danger: isDelete,
+    compact: true,
+    action,
+  });
+  document.querySelector("#mcpConfirmButton").className = isDelete ? "danger-button" : "primary-button";
+}
+
+function openFeaturedAudit(example) {
+  const category = getFeaturedCategory();
+  currentAuditExampleId = example.id;
+  document.querySelector("[data-audit-author]").textContent = example.author || "cathy";
+  document.querySelector("[data-audit-category]").textContent = category.name;
+  document.querySelector("[data-audit-created]").textContent = example.createdAt || "2026-07-18";
+  document.querySelector("[data-audit-question]").textContent = example.question;
+  document.querySelector("[data-audit-answer]").innerHTML = escapeHtml(example.answer || "问题定位\n近期 ACOS 异常升高通常来自三类原因：竞价环境变化、转化率下滑、预算/否词策略滞后。\n\n建议先检查同类目 CPC 近7天走势，判断是否为大盘竞价上涨，再拆分自动/手动广告位表现定位异常。\n\n建议动作\n优先收紧转化率低于均值50%的广告位出价，对新出现的高花费搜索词及时否定。").replace(/\n/g, "<br />");
+  document.querySelector("[data-audit-review]").textContent = example.reviewState === "正常" ? "是 · 复审周期 60 天" : `是 · ${example.review}`;
+  document.querySelector("[data-featured-reject-panel]")?.classList.add("is-hidden");
+  const rejectReason = document.querySelector("[data-featured-reject-reason]");
+  if (rejectReason) rejectReason.value = "";
+  featuredAuditModal?.classList.remove("is-hidden");
+}
+
+function closeFeaturedAudit() {
+  featuredAuditModal?.classList.add("is-hidden");
+  currentAuditExampleId = "";
 }
 
 loginForm.addEventListener("submit", (event) => {
@@ -2312,6 +2544,229 @@ document.querySelector("[data-confirm-delete-kb]")?.addEventListener("click", ()
   });
 });
 
+document.querySelector("[data-featured-category-list]")?.addEventListener("click", (event) => {
+  const card = event.target.closest("[data-featured-category]");
+  if (!card) return;
+  const category = featuredCategories.find((item) => item.id === card.dataset.featuredCategory);
+  if (!category) return;
+
+  openFeaturedExampleView(category.id);
+});
+
+document.querySelector("[data-featured-category-list]")?.addEventListener("dragstart", (event) => {
+  const card = event.target.closest("[data-featured-category]");
+  if (!card) return;
+  draggingFeaturedCategoryId = card.dataset.featuredCategory;
+  card.classList.add("is-dragging");
+  event.dataTransfer.effectAllowed = "move";
+  event.dataTransfer.setData("text/plain", draggingFeaturedCategoryId);
+});
+
+document.querySelector("[data-featured-category-list]")?.addEventListener("dragover", (event) => {
+  const card = event.target.closest("[data-featured-category]");
+  if (!card || !draggingFeaturedCategoryId || card.dataset.featuredCategory === draggingFeaturedCategoryId) return;
+  event.preventDefault();
+  const rect = card.getBoundingClientRect();
+  const isAfter = event.clientY > rect.top + rect.height / 2;
+  document.querySelectorAll("[data-featured-category]").forEach((row) => row.classList.remove("is-drop-target", "is-drop-before", "is-drop-after"));
+  card.classList.add("is-drop-target", isAfter ? "is-drop-after" : "is-drop-before");
+});
+
+document.querySelector("[data-featured-category-list]")?.addEventListener("dragleave", (event) => {
+  event.target.closest("[data-featured-category]")?.classList.remove("is-drop-target", "is-drop-before", "is-drop-after");
+});
+
+document.querySelector("[data-featured-category-list]")?.addEventListener("drop", (event) => {
+  const card = event.target.closest("[data-featured-category]");
+  if (!card || !draggingFeaturedCategoryId) return;
+  event.preventDefault();
+  const fromIndex = featuredCategories.findIndex((item) => item.id === draggingFeaturedCategoryId);
+  const toIndex = featuredCategories.findIndex((item) => item.id === card.dataset.featuredCategory);
+  if (fromIndex >= 0 && toIndex >= 0 && fromIndex !== toIndex) {
+    const [category] = featuredCategories.splice(fromIndex, 1);
+    let insertIndex = toIndex + (card.classList.contains("is-drop-after") ? 1 : 0);
+    if (fromIndex < insertIndex) insertIndex -= 1;
+    featuredCategories.splice(insertIndex, 0, category);
+    renderFeaturedCategories();
+    showToast("分类展示顺序已更新");
+  }
+  draggingFeaturedCategoryId = "";
+});
+
+document.querySelector("[data-featured-category-list]")?.addEventListener("dragend", () => {
+  draggingFeaturedCategoryId = "";
+  document.querySelectorAll(".featured-nav-row").forEach((row) => {
+    row.classList.remove("is-dragging", "is-drop-target", "is-drop-before", "is-drop-after");
+  });
+});
+
+document.querySelector("[data-featured-edit-current]")?.addEventListener("click", () => {
+  openFeaturedCategoryForm(getFeaturedCategory());
+});
+
+document.querySelector("[data-featured-delete-current]")?.addEventListener("click", () => {
+  const category = getFeaturedCategory();
+  openFeaturedConfirm("delete", category.name, () => showToast(`${category.name} 已删除`));
+});
+
+document.querySelector("[data-open-featured-category]")?.addEventListener("click", () => {
+  openFeaturedCategoryForm();
+});
+
+document.querySelector("[data-open-featured-example]")?.addEventListener("click", () => {
+  renderFeaturedExamples();
+  openFeaturedExampleForm();
+});
+
+document.querySelectorAll("[data-close-featured-category], [data-close-featured-example]").forEach((button) => {
+  button.addEventListener("click", closeFeaturedModals);
+});
+
+document.querySelector("[data-save-featured-category]")?.addEventListener("click", () => {
+  const category = featuredCategories.find((item) => item.id === currentEditingCategoryId);
+  const nameInput = document.querySelector("[data-featured-category-name]");
+  const nextName = nameInput?.value.trim();
+  if (category && nextName) {
+    category.name = nextName;
+    renderFeaturedCategories();
+    renderFeaturedExamples();
+  }
+  closeFeaturedModals();
+  showToast(category ? "分类已重命名" : "分类已保存");
+});
+
+document.querySelector("[data-save-featured-example]")?.addEventListener("click", () => {
+  const wasEditing = Boolean(currentEditingExampleId);
+  const example = getFeaturedRows().find((item) => item.id === currentEditingExampleId);
+  if (example) {
+    const questionInput = document.querySelector("[data-featured-example-question]");
+    const answerInput = document.querySelector("[data-featured-example-answer]");
+    example.question = questionInput?.value.trim() || example.question;
+    example.answer = answerInput?.value.trim() || example.answer;
+    example.status = "待审核";
+    example.statusClass = "warn";
+    example.updated = "2026-07-22";
+    renderFeaturedCategories();
+    renderFeaturedExamples();
+  }
+  closeFeaturedModals();
+  showToast(wasEditing ? "示例已重新提交审核" : "示例已提交审核");
+});
+
+document.querySelector("[data-featured-time-sensitive]")?.addEventListener("change", (event) => {
+  document.querySelector("[data-featured-review-fields]")?.classList.toggle("is-hidden", !event.target.checked);
+});
+
+document.querySelector("[data-featured-category-search]")?.addEventListener("input", (event) => {
+  const keyword = event.target.value.trim().toLowerCase();
+  document.querySelectorAll("[data-featured-category]").forEach((row) => {
+    row.hidden = keyword && !row.textContent.toLowerCase().includes(keyword);
+  });
+});
+
+document.querySelector("[data-featured-search]")?.addEventListener("input", (event) => {
+  renderFeaturedExamples();
+});
+
+document.querySelector("[data-featured-status-filter]")?.addEventListener("change", renderFeaturedExamples);
+document.querySelector("[data-featured-review-filter]")?.addEventListener("change", renderFeaturedExamples);
+document.querySelector("[data-featured-filter-expired]")?.addEventListener("click", () => {
+  const reviewFilter = document.querySelector("[data-featured-review-filter]");
+  if (reviewFilter) reviewFilter.value = "已过期";
+  renderFeaturedExamples();
+});
+
+document.querySelector("[data-featured-example-table]")?.addEventListener("click", (event) => {
+  const row = event.target.closest("[data-featured-example]");
+  if (!row) return;
+  const examples = featuredExamples[currentFeaturedCategory] || [];
+  const example = examples.find((item) => item.id === row.dataset.featuredExample);
+  if (!example) return;
+
+  const sortButton = event.target.closest("[data-featured-example-sort]");
+  if (sortButton) {
+    const index = examples.findIndex((item) => item.id === example.id);
+    const direction = sortButton.dataset.featuredExampleSort === "up" ? -1 : 1;
+    if (moveItem(examples, index, direction)) {
+      renderFeaturedExamples();
+      showToast("示例排序已更新");
+    }
+    return;
+  }
+
+  if (event.target.closest("[data-featured-edit-example]")) {
+    openFeaturedExampleForm(example);
+    return;
+  }
+
+  const actionButton = event.target.closest("[data-featured-action]");
+  if (!actionButton) return;
+
+  if (actionButton.dataset.featuredAction === "delete") {
+    openFeaturedConfirm("delete", example.question, () => showToast(`${example.question} 已删除`));
+    return;
+  }
+
+  if (actionButton.dataset.featuredAction === "audit") {
+    openFeaturedAudit(example);
+    return;
+  }
+
+  openFeaturedConfirm("shelf", example.question, () => {
+    example.status = "已下架";
+    example.statusClass = "pending";
+    renderFeaturedExamples();
+    showToast(`${example.question} 已下架`);
+  });
+});
+
+[featuredCategoryModal, featuredExampleModal, featuredAuditModal].forEach((modal) => {
+  modal?.addEventListener("click", (event) => {
+    if (event.target === modal) {
+      closeFeaturedModals();
+      closeFeaturedAudit();
+    }
+  });
+});
+
+document.querySelectorAll("[data-close-featured-audit]").forEach((button) => {
+  button.addEventListener("click", closeFeaturedAudit);
+});
+
+document.querySelector("[data-featured-audit-pass]")?.addEventListener("click", () => {
+  const example = getFeaturedRows().find((item) => item.id === currentAuditExampleId);
+  if (example) {
+    example.status = "已上架";
+    example.statusClass = "ok";
+    example.updated = "2026-07-22";
+    renderFeaturedCategories();
+    renderFeaturedExamples();
+    showToast("示例审核已通过");
+  }
+  closeFeaturedAudit();
+});
+
+document.querySelector("[data-featured-audit-reject]")?.addEventListener("click", () => {
+  const rejectPanel = document.querySelector("[data-featured-reject-panel]");
+  if (rejectPanel?.classList.contains("is-hidden")) {
+    rejectPanel.classList.remove("is-hidden");
+    document.querySelector("[data-featured-reject-reason]")?.focus();
+    return;
+  }
+
+  const example = getFeaturedRows().find((item) => item.id === currentAuditExampleId);
+  if (example) {
+    example.status = "已驳回";
+    example.statusClass = "danger";
+    example.note = "已驳回，可编辑后重新提交";
+    example.updated = "2026-07-22";
+    renderFeaturedCategories();
+    renderFeaturedExamples();
+    showToast("示例已驳回");
+  }
+  closeFeaturedAudit();
+});
+
 document.querySelector(".knowledge-workbench")?.addEventListener("click", (event) => {
   const navItem = event.target.closest("[data-kb-card]");
   if (navItem) {
@@ -2319,7 +2774,7 @@ document.querySelector(".knowledge-workbench")?.addEventListener("click", (event
     return;
   }
 
-  const mainRow = document.querySelector(".knowledge-main-head");
+  const mainRow = document.querySelector("#knowledge .knowledge-main-head");
 
   if (event.target.closest("[data-open-edit-kb]")) {
     openEditKnowledgeBase(mainRow);
@@ -2918,5 +3373,7 @@ document.addEventListener("click", (event) => {
   });
 }, true);
 
+renderFeaturedCategories();
+renderFeaturedExamples();
 renderKnowledgeWorkbench();
 renderMcpTable();
